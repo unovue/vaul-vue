@@ -10,12 +10,11 @@ import {
 </script>
 
 <template>
-  <DrawerRoot>
-    <!--  <DrawerRoot :snap-points="['148px', '355px', 1]">-->
+  <DrawerRoot should-scale-background>
     <DrawerTrigger
       class="rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
     >
-      Open
+      Open Drawer
     </DrawerTrigger>
     <DrawerPortal>
       <DrawerOverlay class="fixed bg-black/40 inset-0" />
