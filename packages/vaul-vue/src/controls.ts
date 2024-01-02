@@ -481,6 +481,7 @@ export const drawerContext = {
   pointerStartY,
   dismissible,
   snapPointsOffset,
+  shouldFade,
   handlePointerDown,
   handlePointerMove,
   handlePointerUp,

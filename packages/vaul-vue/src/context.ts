@@ -20,6 +20,7 @@ export interface DrawerRootContext {
   handlePointerMove: (event: PointerEvent) => void
   handlePointerUp: (event: PointerEvent) => void
   closeDrawer: () => void
+  shouldFade: Ref<boolean>
 }
 
 export const [injectDrawerRootContext, provideDrawerRootContext] =

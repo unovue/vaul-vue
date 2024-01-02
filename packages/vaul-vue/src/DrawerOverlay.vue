@@ -5,7 +5,9 @@ import { injectDrawerRootContext } from './context'
 
 const drawerRoot = injectDrawerRootContext()
 
-const hasSnapPoints = computed(() => drawerRoot.snapPoints && drawerRoot.snapPoints.length > 0)
+const hasSnapPoints = computed(
+  () => drawerRoot.snapPoints && (drawerRoot.snapPoints.value?.length ?? 0) > 0
+)
 </script>
 
 <template>
@@ -14,6 +16,7 @@ const hasSnapPoints = computed(() => drawerRoot.snapPoints && drawerRoot.snapPoi
     :vaul-drawer-visible="drawerRoot.isVisible ? 'true' : 'false'"
     vaul-overlay=""
     :vaul-snap-points="drawerRoot.isOpen && hasSnapPoints ? 'true' : 'false'"
+    :vaul-snap-points-overlay="drawerRoot.isOpen && drawerRoot.shouldFade ? 'true' : 'false'"
   />
 </template>
 
