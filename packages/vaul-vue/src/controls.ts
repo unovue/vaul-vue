@@ -78,7 +78,7 @@ const overlayRef = ref<ComponentPublicInstance | null>(null)
 const snapPoints = ref<(number | string)[] | undefined>(undefined)
 const pointerStartY = ref(0)
 const dismissible = ref(true)
-const shouldScaleBackground = ref(true)
+const shouldScaleBackground = ref(false)
 const justReleased = ref(false)
 
 const scrollLockTimeout = ref(SCROLL_LOCK_TIMEOUT)
@@ -482,6 +482,7 @@ export const drawerContext = {
   dismissible,
   snapPointsOffset,
   shouldFade,
+  shouldScaleBackground,
   handlePointerDown,
   handlePointerMove,
   handlePointerUp,

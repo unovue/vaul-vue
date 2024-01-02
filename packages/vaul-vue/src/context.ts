@@ -21,6 +21,7 @@ export interface DrawerRootContext {
   handlePointerUp: (event: PointerEvent) => void
   closeDrawer: () => void
   shouldFade: Ref<boolean>
+  shouldScaleBackground: Ref<boolean>
 }
 
 export const [injectDrawerRootContext, provideDrawerRootContext] =
