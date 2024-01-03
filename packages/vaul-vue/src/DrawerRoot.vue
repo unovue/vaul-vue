@@ -5,7 +5,7 @@ import { type DialogProps, drawerContext } from './controls'
 
 const props = defineProps<DialogProps>()
 
-const { isOpen, hasBeenOpened, snapPoints, activeSnapPoint, closeDrawer, shouldScaleBackground } =
+const { isOpen, hasBeenOpened, snapPoints, activeSnapPoint, closeDrawer, shouldScaleBackground, fadeFromIndex } =
   provideDrawerRootContext(drawerContext)
 
 if (props.snapPoints) {
@@ -16,6 +16,8 @@ if (props.snapPoints) {
 if (props.shouldScaleBackground) {
   shouldScaleBackground.value = props.shouldScaleBackground
 }
+
+fadeFromIndex.value = props.fadeFromIndex ?? (snapPoints.value && snapPoints.value.length - 1)
 
 const handleOpenChange = (o: boolean) => {
   if (!o) {

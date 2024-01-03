@@ -30,10 +30,10 @@ export function useSnapPoints({
     () =>
       (snapPoints.value &&
         snapPoints.value.length > 0 &&
-        (fadeFromIndex || fadeFromIndex === 0) &&
-        !Number.isNaN(fadeFromIndex) &&
+        (fadeFromIndex?.value || fadeFromIndex?.value === 0) &&
+        !Number.isNaN(fadeFromIndex?.value) &&
         snapPoints.value[fadeFromIndex?.value ?? -1] === activeSnapPoint.value) ||
-      !snapPoints
+      !snapPoints.value
   )
 
   const activeSnapPointIndex = computed(

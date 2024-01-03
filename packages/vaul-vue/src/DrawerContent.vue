@@ -3,23 +3,23 @@ import { computed, useAttrs, watch } from 'vue'
 import { DialogContent } from 'radix-vue'
 import { injectDrawerRootContext } from './context'
 
-const drawerRoot = injectDrawerRootContext()
+const { isOpen, isVisible, snapPointsOffset, drawerRef, handlePointerDown, handlePointerMove, handlePointerUp } = injectDrawerRootContext()
 
 const attrs = useAttrs()
 
 const snapPointHeight = computed(() => {
-  if (drawerRoot.snapPointsOffset.value && drawerRoot.snapPointsOffset.value.length > 0) {
-    return `${drawerRoot.snapPointsOffset.value[0]}px`
+  if (snapPointsOffset.value && snapPointsOffset.value.length > 0) {
+    return `${snapPointsOffset.value[0]}px`
   }
   return '0'
 })
 
 watch(
-  () => drawerRoot.isOpen.value,
+  () => isOpen.value,
   (isOpen) => {
     if (isOpen) {
       setTimeout(() => {
-        drawerRoot.isVisible.value = true
+        isVisible.value = true
       }, 1)
     }
   }
@@ -29,12 +29,12 @@ watch(
 <template>
   <DialogContent
     vaul-drawer=""
-    :vaul-drawer-visible="drawerRoot.isVisible.value ? 'true' : 'false'"
-    :ref="drawerRoot.drawerRef"
+    :vaul-drawer-visible="isVisible ? 'true' : 'false'"
+    ref="drawerRef"
     :style="[attrs.style, { '--snap-point-height': snapPointHeight }]"
-    @pointerdown="drawerRoot.handlePointerDown"
-    @pointermove="drawerRoot.handlePointerMove"
-    @pointerup="drawerRoot.handlePointerUp"
+    @pointerdown="handlePointerDown"
+    @pointermove="handlePointerMove"
+    @pointerup="handlePointerUp"
   >
     <slot />
   </DialogContent>
