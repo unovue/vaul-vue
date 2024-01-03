@@ -3,8 +3,7 @@ import { computed, useAttrs, watch } from 'vue'
 import { DialogContent } from 'radix-vue'
 import { injectDrawerRootContext } from './context'
 
-const { isOpen, isVisible, snapPointsOffset, drawerRef, handlePointerDown, handlePointerMove, handlePointerUp } =
-  injectDrawerRootContext()
+const { isOpen, isVisible, snapPointsOffset, drawerRef, handlePointerDown, handlePointerMove, handlePointerUp } = injectDrawerRootContext()
 
 const attrs = useAttrs()
 
