@@ -13,10 +13,10 @@ const hasSnapPoints = computed(
 <template>
   <DialogOverlay
     :ref="drawerRoot.overlayRef"
-    :vaul-drawer-visible="drawerRoot.isVisible ? 'true' : 'false'"
+    :vaul-drawer-visible="drawerRoot.isVisible.value ? 'true' : 'false'"
     vaul-overlay=""
-    :vaul-snap-points="drawerRoot.isOpen && hasSnapPoints ? 'true' : 'false'"
-    :vaul-snap-points-overlay="drawerRoot.isOpen && drawerRoot.shouldFade ? 'true' : 'false'"
+    :vaul-snap-points="drawerRoot.isOpen.value && hasSnapPoints ? 'true' : 'false'"
+    :vaul-snap-points-overlay="drawerRoot.isOpen.value && drawerRoot.shouldFade.value ? 'true' : 'false'"
   />
 </template>
 

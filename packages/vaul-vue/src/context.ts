@@ -21,6 +21,7 @@ export interface DrawerRootContext {
   handlePointerUp: (event: PointerEvent) => void
   closeDrawer: () => void
   shouldFade: Ref<boolean>
+  fadeFromIndex: Ref<number | undefined>
   shouldScaleBackground: Ref<boolean>
 }
 
