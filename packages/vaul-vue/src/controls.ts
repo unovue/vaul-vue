@@ -85,7 +85,7 @@ const scrollLockTimeout = ref(SCROLL_LOCK_TIMEOUT)
 const closeThreshold = ref(CLOSE_THRESHOLD)
 
 const activeSnapPointProp = ref(null)
-const fadeFromIndex = ref(null)
+const fadeFromIndex = ref(0)
 
 const onSnapPointChange = () => {
   // Change openTime ref when we reach the last snap point to prevent dragging for 500ms incase it's scrollable.
