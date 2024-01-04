@@ -5,7 +5,7 @@ import { type DialogProps, useDrawer } from './controls'
 
 const props = defineProps<DialogProps>()
 
-const { isOpen, hasBeenOpened, snapPoints, activeSnapPoint, closeDrawer, shouldScaleBackground, fadeFromIndex, onCloseProp, onOpenChangeProp, onDragProp, onReleaseProp } =
+const { isOpen, hasBeenOpened, snapPoints, activeSnapPoint, closeDrawer, shouldScaleBackground, fadeFromIndex, onCloseProp, onOpenChangeProp, onDragProp, onReleaseProp, nested } =
   provideDrawerRootContext(useDrawer())
 
 if (props.snapPoints) {
@@ -33,6 +33,10 @@ if (props.onDrag) {
 
 if (props.onRelease) {
   onReleaseProp.value = props.onRelease
+}
+
+if (props.nested) {
+  nested.value = props.nested
 }
 
 const handleOpenChange = (o: boolean) => {

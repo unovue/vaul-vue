@@ -7,18 +7,15 @@ const { onNestedDrag, onNestedOpenChange, onNestedRelease } = injectDrawerRootCo
 
 const props = defineProps<DialogProps>()
 const onClose = () => {
-  console.log('Nested', 'onClose')
   onNestedOpenChange(false)
 }
 
 const onDrag = (e: PointerEvent, p: number) => {
-  console.log('Nested', 'onDrag')
   onNestedDrag(e, p)
   props.onDrag?.(e, p)
 }
 
 const onOpenChange = (o: boolean) => {
-  console.log('Nested', 'onOpenChange')
   if (o) {
     onNestedOpenChange(o)
   }

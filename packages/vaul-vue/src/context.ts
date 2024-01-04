@@ -30,6 +30,7 @@ export interface DrawerRootContext {
   onOpenChangeProp: Ref<((open: boolean) => void) | undefined>
   onDragProp: Ref<((event: PointerEvent, percentageDragged: number) => void) | undefined>
   onReleaseProp: Ref<((event: PointerEvent, open: boolean) => void) | undefined>
+  nested: Ref<boolean>
 }
 
 export const [injectDrawerRootContext, provideDrawerRootContext] =

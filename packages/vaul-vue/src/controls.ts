@@ -83,6 +83,7 @@ export function useDrawer(): DrawerRootContext {
   const shouldScaleBackground = ref(false)
   const justReleased = ref(false)
   const nestedOpenChangeTimer = ref<NodeJS.Timeout | null>(null)
+  const nested = ref(false)
 
   const onCloseProp = ref<(() => void) | undefined>(undefined)
   const onOpenChangeProp = ref<((open: boolean) => void) | undefined>(undefined)
@@ -121,7 +122,7 @@ export function useDrawer(): DrawerRootContext {
   const { restorePositionSetting } = usePositionFixed({
     isOpen,
     modal: true,
-    nested: false,
+    nested,
     hasBeenOpened
   })
 
@@ -263,7 +264,6 @@ export function useDrawer(): DrawerRootContext {
         shouldFade.value ||
         (fadeFromIndex.value && activeSnapPointIndex.value === fadeFromIndex.value - 1)
       ) {
-        // onDragProp?.(event, percentageDragged);
         onDragProp.value?.(event, percentageDragged)
 
         set(
@@ -338,7 +338,6 @@ export function useDrawer(): DrawerRootContext {
   function closeDrawer() {
     if (!drawerRef.value) return
 
-    // onClose?.();
     onCloseProp.value?.()
     set(drawerRef.value.$el, {
       transform: `translate3d(0, 100%, 0)`,
@@ -401,7 +400,6 @@ export function useDrawer(): DrawerRootContext {
         velocity,
         dismissible: dismissible.value
       })
-      // onReleaseProp?.(event, true);
       onReleaseProp.value?.(event, true)
       return
     }
@@ -409,14 +407,12 @@ export function useDrawer(): DrawerRootContext {
     // Moved upwards, don't do anything
     if (distMoved > 0) {
       resetDrawer()
-      // onReleaseProp?.(event, true);
       onReleaseProp.value?.(event, true)
       return
     }
 
     if (velocity > VELOCITY_THRESHOLD) {
       closeDrawer()
-      // onReleaseProp?.(event, false);
       onReleaseProp.value?.(event, false)
       return
     }
@@ -428,12 +424,10 @@ export function useDrawer(): DrawerRootContext {
 
     if (swipeAmount >= visibleDrawerHeight * closeThreshold.value) {
       closeDrawer()
-      // onReleaseProp?.(event, false);
       onReleaseProp.value?.(event, false)
       return
     }
 
-    // onReleaseProp?.(event, true);
     onReleaseProp.value?.(event, true)
     resetDrawer()
   }
@@ -443,6 +437,7 @@ export function useDrawer(): DrawerRootContext {
       openTime.value = new Date()
       scaleBackground(true)
     }
+    onOpenChangeProp.value?.(open)
   })
 
   function scaleBackground(open: boolean) {
@@ -556,6 +551,7 @@ export function useDrawer(): DrawerRootContext {
     onCloseProp,
     onOpenChangeProp,
     onDragProp,
-    onReleaseProp
+    onReleaseProp,
+    nested
   }
 }
