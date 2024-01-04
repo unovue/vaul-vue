@@ -59,9 +59,9 @@ export type Drawer = {
   dismissible: Ref<boolean>
   drawerHeightRef: Ref<number>
   snapPointsOffset: Ref<number[]>
-  handlePointerDown: (event: PointerEvent) => void
-  handlePointerMove: (event: PointerEvent) => void
-  handlePointerUp: (event: PointerEvent) => void
+  onPress: (event: PointerEvent) => void
+  onDrag: (event: PointerEvent) => void
+  onRelease: (event: PointerEvent) => void
   closeDrawer: () => void
 }
 
@@ -194,7 +194,7 @@ export function useDrawer(): DrawerRootContext {
     return true
   }
 
-  function handlePointerDown(event: PointerEvent) {
+  function onPress(event: PointerEvent) {
     if (!dismissible.value && !snapPoints.value) return
     if (drawerRef.value && !drawerRef.value.$el.contains(event.target as Node)) return
     isDragging.value = true
@@ -209,7 +209,7 @@ export function useDrawer(): DrawerRootContext {
     pointerStartY.value = event.screenY
   }
 
-  function handlePointerMove(event: PointerEvent) {
+  function onDrag(event: PointerEvent) {
     // We need to know how much of the drawer has been dragged in percentages so that we can transform background accordingly
     if (isDragging.value) {
       const draggedDistance = pointerStartY.value - event.screenY
@@ -363,7 +363,7 @@ export function useDrawer(): DrawerRootContext {
     }, TRANSITIONS.DURATION * 1000) // seconds to ms
   }
 
-  function handlePointerUp(event: PointerEvent) {
+  function onRelease(event: PointerEvent) {
     if (!isDragging.value || !drawerRef.value) return
     // TODO use-prevent-scroll
     // if (isAllowedToDrag.value && isInput(event.target as HTMLElement)) {
@@ -541,9 +541,9 @@ export function useDrawer(): DrawerRootContext {
     shouldFade,
     fadeFromIndex,
     shouldScaleBackground,
-    handlePointerDown,
-    handlePointerMove,
-    handlePointerUp,
+    onPress,
+    onDrag,
+    onRelease,
     closeDrawer,
     onNestedDrag,
     onNestedRelease,

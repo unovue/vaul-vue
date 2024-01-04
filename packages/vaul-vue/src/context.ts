@@ -16,9 +16,9 @@ export interface DrawerRootContext {
   dismissible: Ref<boolean>
   drawerHeightRef: Ref<number>
   snapPointsOffset: Ref<number[]>
-  handlePointerDown: (event: PointerEvent) => void
-  handlePointerMove: (event: PointerEvent) => void
-  handlePointerUp: (event: PointerEvent) => void
+  onPress: (event: PointerEvent) => void
+  onDrag: (event: PointerEvent) => void
+  onRelease: (event: PointerEvent) => void
   closeDrawer: () => void
   shouldFade: Ref<boolean>
   fadeFromIndex: Ref<number | undefined>
