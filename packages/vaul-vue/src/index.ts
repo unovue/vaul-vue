@@ -6,6 +6,7 @@ import {
   DialogClose as DrawerClose
 } from 'radix-vue'
 import DrawerRoot from './DrawerRoot.vue'
+import DrawerRootNested from './DrawerRootNested.vue'
 import DrawerOverlay from './DrawerOverlay.vue'
 import DrawerContent from './DrawerContent.vue'
 
@@ -16,6 +17,7 @@ export {
   DrawerPortal,
   DrawerClose,
   DrawerRoot,
+  DrawerRootNested,
   DrawerOverlay,
   DrawerContent
 }
