@@ -11,8 +11,9 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "vaul-vue": "workspace:*",
     "vue": "^3.4.5",
-    "vaul-vue": "workspace:*"
+    "vue-router": "4"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
