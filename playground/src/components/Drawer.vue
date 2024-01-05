@@ -5,7 +5,8 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerPortal,
-  DrawerTitle
+  DrawerTitle,
+  DrawerRootNested
 } from 'vaul-vue'
 </script>
 

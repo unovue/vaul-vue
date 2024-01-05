@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import { DialogRoot } from 'radix-vue'
 import { provideDrawerRootContext } from './context'
-import { type DialogProps, drawerContext } from './controls'
+import { type DialogProps, useDrawer } from './controls'
 
 const props = defineProps<DialogProps>()
 
-const { isOpen, hasBeenOpened, snapPoints, activeSnapPoint, closeDrawer, shouldScaleBackground, fadeFromIndex } =
-  provideDrawerRootContext(drawerContext)
+const { isOpen, hasBeenOpened, snapPoints, activeSnapPoint, closeDrawer, shouldScaleBackground, fadeFromIndex, onCloseProp, onOpenChangeProp, onDragProp, onReleaseProp, nested } =
+  provideDrawerRootContext(useDrawer())
 
 if (props.snapPoints) {
   snapPoints.value = props.snapPoints
   activeSnapPoint.value = props.snapPoints[0]
+}
+
+if (props.onClose) {
+  onCloseProp.value = props.onClose
 }
 
 if (props.shouldScaleBackground) {
@@ -18,6 +22,22 @@ if (props.shouldScaleBackground) {
 }
 
 fadeFromIndex.value = props.fadeFromIndex ?? (snapPoints.value && snapPoints.value.length - 1)
+
+if (props.onOpenChange) {
+  onOpenChangeProp.value = props.onOpenChange
+}
+
+if (props.onDrag) {
+  onDragProp.value = props.onDrag
+}
+
+if (props.onRelease) {
+  onReleaseProp.value = props.onRelease
+}
+
+if (props.nested) {
+  nested.value = props.nested
+}
 
 const handleOpenChange = (o: boolean) => {
   if (!o) {

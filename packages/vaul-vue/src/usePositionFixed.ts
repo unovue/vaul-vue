@@ -10,7 +10,7 @@ interface BodyPosition {
 interface PositionFixedOptions {
   isOpen: Ref<boolean>
   modal: boolean
-  nested: boolean
+  nested: Ref<boolean>
   hasBeenOpened: Ref<boolean>
 }
 
@@ -83,7 +83,7 @@ export function usePositionFixed(options: PositionFixedOptions) {
   })
 
   watch([() => isOpen.value, () => hasBeenOpened.value, () => activeUrl.value], () => {
-    if (nested || !hasBeenOpened.value) return
+    if (nested.value || !hasBeenOpened.value) return
     if (isOpen.value) {
       setPositionFixed()
 

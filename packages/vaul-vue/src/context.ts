@@ -16,13 +16,21 @@ export interface DrawerRootContext {
   dismissible: Ref<boolean>
   drawerHeightRef: Ref<number>
   snapPointsOffset: Ref<number[]>
-  handlePointerDown: (event: PointerEvent) => void
-  handlePointerMove: (event: PointerEvent) => void
-  handlePointerUp: (event: PointerEvent) => void
+  onPress: (event: PointerEvent) => void
+  onDrag: (event: PointerEvent) => void
+  onRelease: (event: PointerEvent) => void
   closeDrawer: () => void
   shouldFade: Ref<boolean>
   fadeFromIndex: Ref<number | undefined>
   shouldScaleBackground: Ref<boolean>
+  onNestedDrag: (event: PointerEvent, percentageDragged: number) => void
+  onNestedRelease: (event: PointerEvent, o: boolean) => void
+  onNestedOpenChange: (o: boolean) => void
+  onCloseProp: Ref<(() => void) | undefined>
+  onOpenChangeProp: Ref<((open: boolean) => void) | undefined>
+  onDragProp: Ref<((event: PointerEvent, percentageDragged: number) => void) | undefined>
+  onReleaseProp: Ref<((event: PointerEvent, open: boolean) => void) | undefined>
+  nested: Ref<boolean>
 }
 
 export const [injectDrawerRootContext, provideDrawerRootContext] =
