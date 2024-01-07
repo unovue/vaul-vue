@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "radix-vue": "^1.2.5",
-    "vue": "^3.3.11"
+    "vue": "^3.4.5"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.1",

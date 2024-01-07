@@ -11,7 +11,7 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
-    "vue": "^3.3.11",
+    "vue": "^3.4.5",
     "vaul-vue": "workspace:*"
   },
   "devDependencies": {
