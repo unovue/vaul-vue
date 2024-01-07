@@ -2,42 +2,13 @@
 import { DialogRoot } from 'radix-vue'
 import { provideDrawerRootContext } from './context'
 import { type DialogProps, useDrawer } from './controls'
+import { useApplyPropsToContext } from './composables/useApplyPropToContext'
 
 const props = defineProps<DialogProps>()
 
-const { isOpen, hasBeenOpened, snapPoints, activeSnapPoint, closeDrawer, shouldScaleBackground, fadeFromIndex, onCloseProp, onOpenChangeProp, onDragProp, onReleaseProp, nested } =
-  provideDrawerRootContext(useDrawer())
+useApplyPropsToContext(props)
 
-if (props.snapPoints) {
-  snapPoints.value = props.snapPoints
-  activeSnapPoint.value = props.snapPoints[0]
-}
-
-if (props.onClose) {
-  onCloseProp.value = props.onClose
-}
-
-if (props.shouldScaleBackground) {
-  shouldScaleBackground.value = props.shouldScaleBackground
-}
-
-fadeFromIndex.value = props.fadeFromIndex ?? (snapPoints.value && snapPoints.value.length - 1)
-
-if (props.onOpenChange) {
-  onOpenChangeProp.value = props.onOpenChange
-}
-
-if (props.onDrag) {
-  onDragProp.value = props.onDrag
-}
-
-if (props.onRelease) {
-  onReleaseProp.value = props.onRelease
-}
-
-if (props.nested) {
-  nested.value = props.nested
-}
+const { isOpen, hasBeenOpened, closeDrawer } = provideDrawerRootContext(useDrawer())
 
 const handleOpenChange = (o: boolean) => {
   if (!o) {
