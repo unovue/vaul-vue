@@ -30,7 +30,7 @@ export interface WithoutFadeFromProps {
 
 export type DialogProps = {
   activeSnapPoint?: number | string | null
-  open?: boolean
+  // open?: boolean // declared in defineModel on DrawerRoot
   closeThreshold?: number
   onOpenChange?: (open: boolean) => void
   shouldScaleBackground?: boolean
@@ -87,7 +87,9 @@ export function useDrawer(): DrawerRootContext {
 
   const onCloseProp = ref<(() => void) | undefined>(undefined)
   const onOpenChangeProp = ref<((open: boolean) => void) | undefined>(undefined)
-  const onDragProp = ref<((event: PointerEvent, percentageDragged: number) => void) | undefined>(undefined)
+  const onDragProp = ref<((event: PointerEvent, percentageDragged: number) => void) | undefined>(
+    undefined
+  )
   const onReleaseProp = ref<((event: PointerEvent, open: boolean) => void) | undefined>(undefined)
 
   const scrollLockTimeout = ref(SCROLL_LOCK_TIMEOUT)
@@ -477,49 +479,51 @@ export function useDrawer(): DrawerRootContext {
   }
 
   function onNestedOpenChange(o: boolean) {
-    const scale = o ? (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth : 1;
-    const y = o ? -NESTED_DISPLACEMENT : 0;
+    const scale = o ? (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth : 1
+    const y = o ? -NESTED_DISPLACEMENT : 0
 
     if (nestedOpenChangeTimer.value) {
-      window.clearTimeout(nestedOpenChangeTimer.value);
+      window.clearTimeout(nestedOpenChangeTimer.value)
     }
 
     set(drawerRef.value?.$el, {
       transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-      transform: `scale(${scale}) translate3d(0, ${y}px, 0)`,
-    });
+      transform: `scale(${scale}) translate3d(0, ${y}px, 0)`
+    })
 
     if (!o && drawerRef.value?.$el) {
       nestedOpenChangeTimer.value = setTimeout(() => {
         set(drawerRef.value?.$el, {
           transition: 'none',
-          transform: `translate3d(0, ${getTranslateY(drawerRef.value?.$el as HTMLElement)}px, 0)`,
-        });
-      }, 500);
+          transform: `translate3d(0, ${getTranslateY(drawerRef.value?.$el as HTMLElement)}px, 0)`
+        })
+      }, 500)
     }
   }
 
   function onNestedDrag(event: PointerEvent, percentageDragged: number) {
-    if (percentageDragged < 0) return;
-    const initialScale = (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth;
-    const newScale = initialScale + percentageDragged * (1 - initialScale);
-    const newY = -NESTED_DISPLACEMENT + percentageDragged * NESTED_DISPLACEMENT;
+    if (percentageDragged < 0) return
+    const initialScale = (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth
+    const newScale = initialScale + percentageDragged * (1 - initialScale)
+    const newY = -NESTED_DISPLACEMENT + percentageDragged * NESTED_DISPLACEMENT
 
     set(drawerRef.value?.$el, {
       transform: `scale(${newScale}) translate3d(0, ${newY}px, 0)`,
-      transition: 'none',
-    });
+      transition: 'none'
+    })
   }
 
   function onNestedRelease(event: PointerEvent, o: boolean) {
-    const scale = o ? (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth : 1;
-    const y = o ? -NESTED_DISPLACEMENT : 0;
+    const scale = o ? (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth : 1
+    const y = o ? -NESTED_DISPLACEMENT : 0
 
     if (o) {
       set(drawerRef.value?.$el, {
-        transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-        transform: `scale(${scale}) translate3d(0, ${y}px, 0)`,
-      });
+        transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(
+          ','
+        )})`,
+        transform: `scale(${scale}) translate3d(0, ${y}px, 0)`
+      })
     }
   }
 
