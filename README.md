@@ -1,6 +1,6 @@
 # Vaul Vue
 
-Vaul Vue is an unstyled drawer component for Vue that can be used as a Dialog replacement on tablet and mobile devices. 
+Vaul Vue is an unstyled drawer component for Vue that can be used as a Dialog replacement on tablet and mobile devices.
 It uses [Radix Vue's Dialog primitive](https://www.radix-vue.com/components/dialog.html) under the hood and is a feature complete port of [Emil Kowalski's Vaul library](https://github.com/emilkowalski/vaul) (built for React).
 
 ## Installation
@@ -18,33 +18,27 @@ yarn add (not published yet sorry)
 ```
 
 ## Usage
+
 ```vue
 <script setup lang="ts">
-   import {
-      DrawerRoot,
-      DrawerTrigger,
-      DrawerOverlay,
-      DrawerContent,
-      DrawerPortal,
-   } from 'vaul-vue'
+import { DrawerRoot, DrawerTrigger, DrawerOverlay, DrawerContent, DrawerPortal } from 'vaul-vue'
 </script>
 
 <template>
-   <DrawerRoot>
-      <DrawerTrigger>
-         Open
-      </DrawerTrigger>
-      <DrawerPortal>
-         <DrawerOverlay />
-         <DrawerContent>
-            <p>Content</p>
-         </DrawerContent>
-      </DrawerPortal>
-   </DrawerRoot>
+  <DrawerRoot>
+    <DrawerTrigger> Open </DrawerTrigger>
+    <DrawerPortal>
+      <DrawerOverlay />
+      <DrawerContent>
+        <p>Content</p>
+      </DrawerContent>
+    </DrawerPortal>
+  </DrawerRoot>
 </template>
 ```
 
 ## Credits
+
 All credits go to these open-source works and resources
 
 - Major credits go to [Emil Kowalski](https://emilkowal.ski/) for the original [Vaul library](https://github.com/emilkowalski/vaul).

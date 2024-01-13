@@ -121,6 +121,7 @@ export function useDrawer(): DrawerRootContext {
     onSnapPointChange
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { restorePositionSetting } = usePositionFixed({
     isOpen,
     modal: true,

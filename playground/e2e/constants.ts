@@ -1,1 +1,1 @@
-export const ANIMATION_DURATION = 500;
+export const ANIMATION_DURATION = 500

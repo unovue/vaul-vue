@@ -23,7 +23,7 @@
           </h2>
         </div>
         <div class="flex gap-4 justify-center mt-6">
-          <Drawer />
+          <DemoDrawer />
           <a
             href="https://github.com"
             class="font-semibold text-sm px-4 py-2.5 hover:bg-gray-100 rounded-full"
@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import Drawer from '@/components/Drawer.vue'
+import DemoDrawer from '@/components/DemoDrawer.vue'
 import BackgroundTexture from '@/components/BackgroundTexture.vue'
 </script>
 
