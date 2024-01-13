@@ -1,4 +1,4 @@
 export interface SnapPoint {
-  fraction: number;
-  height: number;
+  fraction: number
+  height: number
 }

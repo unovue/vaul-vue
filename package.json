@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prettier:check": "prettier --check . --ignore-path .gitignore",
-    "prettier:fix": "prettier --write . --ignore-path .gitignore",
+    "prettier:check": "prettier --check .",
+    "prettier:fix": "prettier --write .",
     "eslint:check": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "eslint:fix": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "test": "pnpm -r test",

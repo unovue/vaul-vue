@@ -1,18 +1,10 @@
 {
   "extends": "@vue/tsconfig/tsconfig.app.json",
-  "include": [
-    "env.d.ts",
-    "src/**/*",
-    "src/**/*.ts",
-    "src/**/*.vue"
-  ],
-  "exclude": [
-    "src/**/*.test.ts",
-    "src/**/*.spec.ts"
-  ],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.ts", "src/**/*.vue"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.spec.ts"],
   "compilerOptions": {
     "paths": {
-      "@/*": ["src/*"],
+      "@/*": ["src/*"]
     },
     "target": "esnext",
     "module": "esnext",
