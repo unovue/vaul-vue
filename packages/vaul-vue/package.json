@@ -17,7 +17,7 @@
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "release": "npm run build-only"
+    "release": "pnpm run build-only && changeset publish"
   },
   "dependencies": {
     "radix-vue": "^1.2.5",
