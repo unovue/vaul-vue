@@ -54,7 +54,7 @@ export function addEvent<K extends keyof GlobalEventHandlersEventMap>(
 }
 
 // Sets a CSS property on an element, and returns a function to revert it to the previous value.
-export function setStyle<T>(
+export function setStyle(
   element: HTMLElement,
   style: keyof Omit<CSSStyleDeclaration, 'length' | 'parentRule' | number | typeof Symbol.iterator>,
   value: string

@@ -1,13 +1,5 @@
 <script setup lang="ts">
-import {
-  DrawerRoot,
-  DrawerTrigger,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerPortal,
-  DrawerTitle,
-  DrawerRootNested
-} from 'vaul-vue'
+import { DrawerRoot, DrawerTrigger, DrawerOverlay, DrawerContent, DrawerPortal } from 'vaul-vue'
 </script>
 
 <template>
