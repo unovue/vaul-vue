@@ -49,6 +49,7 @@ jobs:
         run: pnpm run prettier:check
 
   tests:
+    name: Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
