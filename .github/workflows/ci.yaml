@@ -4,6 +4,25 @@ on:
     branches-ignore:
       - main
 jobs:
+  sherif:
+    name: Monorepo Sherif
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.node-version'
+          cache: 'pnpm'
+
+      - name: Run sherif
+        run: pnpm dlx sherif@latest
+
   lint:
     name: Lint and Format
     runs-on: ubuntu-latest
