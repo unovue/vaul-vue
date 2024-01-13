@@ -17,7 +17,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.node-version'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Run sherif
@@ -36,7 +36,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.node-version'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -60,7 +60,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.node-version'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
