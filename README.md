@@ -6,15 +6,15 @@ It uses [Radix Vue's Dialog primitive](https://www.radix-vue.com/components/dial
 ## Installation
 
 ```bash
-pnpm add (not published yet sorry)
+pnpm add vaul-vue
 ```
 
 ```bash
-npm install (not published yet sorry)
+npm install vaul-vue
 ```
 
 ```bash
-yarn add (not published yet sorry)
+yarn add vaul-vue
 ```
 
 ## Usage
