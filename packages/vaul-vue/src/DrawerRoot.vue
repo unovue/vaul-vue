@@ -2,11 +2,31 @@
 import { DialogRoot } from 'radix-vue'
 import { provideDrawerRootContext } from './context'
 import { type DialogProps, useDrawer } from './controls'
+import { watch } from 'vue'
 
-const props = defineProps<DialogProps>()
+const open = defineModel<boolean>('open', {
+  default: false
+})
 
-const { isOpen, hasBeenOpened, snapPoints, activeSnapPoint, closeDrawer, shouldScaleBackground, fadeFromIndex, onCloseProp, onOpenChangeProp, onDragProp, onReleaseProp, nested } =
-  provideDrawerRootContext(useDrawer())
+const props = withDefaults(defineProps<DialogProps>(), {
+  dismissible: undefined
+})
+
+const {
+  isOpen,
+  hasBeenOpened,
+  snapPoints,
+  activeSnapPoint,
+  closeDrawer,
+  shouldScaleBackground,
+  fadeFromIndex,
+  onCloseProp,
+  onOpenChangeProp,
+  onDragProp,
+  onReleaseProp,
+  nested,
+  dismissible
+} = provideDrawerRootContext(useDrawer())
 
 if (props.snapPoints) {
   snapPoints.value = props.snapPoints
@@ -39,14 +59,22 @@ if (props.nested) {
   nested.value = props.nested
 }
 
+dismissible.value = props.dismissible ?? dismissible.value
+
 const handleOpenChange = (o: boolean) => {
   if (!o) {
     closeDrawer()
+    open.value = false
   } else {
     hasBeenOpened.value = true
     isOpen.value = o
+
+    // manage external / controlled open state
+    open.value = o
   }
 }
+
+watch(open, (o) => handleOpenChange(o), { immediate: true })
 </script>
 
 <template>
