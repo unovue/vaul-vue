@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test": "pnpm run test:e2e"
   },
   "dependencies": {
     "vaul-vue": "workspace:*",

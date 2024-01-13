@@ -3,8 +3,15 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prettier:check": "prettier --check . --ignore-path .gitignore",
+    "prettier:fix": "prettier --write . --ignore-path .gitignore",
+    "eslint:check": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
+    "eslint:fix": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "test": "pnpm -r test",
+    "release": "pnpm -r release"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.1",
     "@rushstack/eslint-patch": "^1.3.3",
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",
