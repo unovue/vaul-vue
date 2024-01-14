@@ -3,6 +3,7 @@ import { DialogRoot } from 'radix-vue'
 import { provideDrawerRootContext } from './context'
 import { type DialogProps, useDrawer } from './controls'
 import { watch } from 'vue'
+import { useScrollLock } from '@vueuse/core'
 
 const open = defineModel<boolean>('open', {
   default: false
@@ -27,6 +28,8 @@ const {
   nested,
   dismissible
 } = provideDrawerRootContext(useDrawer())
+
+const preventScroll = useScrollLock(document, false)
 
 if (props.snapPoints) {
   snapPoints.value = props.snapPoints
@@ -75,6 +78,9 @@ const handleOpenChange = (o: boolean) => {
 }
 
 watch(open, (o) => handleOpenChange(o), { immediate: true })
+watch([isOpen, hasBeenOpened], ([openValue, hasOpenedValue]) => {
+  preventScroll.value = openValue || hasOpenedValue
+})
 </script>
 
 <template>
