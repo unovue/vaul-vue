@@ -82,7 +82,7 @@ export function useDrawer(): DrawerRootContext {
   const dismissible = ref(true)
   const shouldScaleBackground = ref(false)
   const justReleased = ref(false)
-  const nestedOpenChangeTimer = ref<NodeJS.Timeout | null>(null)
+  const nestedOpenChangeTimer = ref<number | null>(null)
   const nested = ref(false)
 
   const onCloseProp = ref<(() => void) | undefined>(undefined)
@@ -203,12 +203,12 @@ export function useDrawer(): DrawerRootContext {
     isDragging.value = true
     dragStartTime.value = new Date()
 
-    // iOS doesn't trigger mouseUp after scrolling so we need to listen to touched in order to disallow dragging
-    // if (isIOS()) {
-    //   window.addEventListener('touchend', () => (isAllowedToDrag.value = false), { once: true });
-    // }
-    // Ensure we maintain correct pointer capture even when going outside of the drawer
-    ;(event.target as HTMLElement).setPointerCapture(event.pointerId)
+      // iOS doesn't trigger mouseUp after scrolling so we need to listen to touched in order to disallow dragging
+      // if (isIOS()) {
+      //   window.addEventListener('touchend', () => (isAllowedToDrag.value = false), { once: true });
+      // }
+      // Ensure we maintain correct pointer capture even when going outside of the drawer
+      ; (event.target as HTMLElement).setPointerCapture(event.pointerId)
     pointerStartY.value = event.screenY
   }
 
@@ -355,11 +355,11 @@ export function useDrawer(): DrawerRootContext {
     scaleBackground(false)
 
     isVisible.value = false
-    setTimeout(() => {
+    window.setTimeout(() => {
       isOpen.value = false
     }, 300)
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       if (snapPoints.value) {
         activeSnapPoint.value = snapPoints.value[0]
       }
@@ -391,7 +391,7 @@ export function useDrawer(): DrawerRootContext {
       // `justReleased` is needed to prevent the drawer from focusing on an input when the drag ends, as it's not the intent most of the time.
       justReleased.value = true
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         justReleased.value = false
       }, 200)
     }
@@ -493,7 +493,7 @@ export function useDrawer(): DrawerRootContext {
     })
 
     if (!o && drawerRef.value?.$el) {
-      nestedOpenChangeTimer.value = setTimeout(() => {
+      nestedOpenChangeTimer.value = window.setTimeout(() => {
         set(drawerRef.value?.$el, {
           transition: 'none',
           transform: `translate3d(0, ${getTranslateY(drawerRef.value?.$el as HTMLElement)}px, 0)`

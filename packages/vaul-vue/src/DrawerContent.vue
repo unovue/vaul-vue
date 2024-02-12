@@ -15,7 +15,7 @@ const snapPointHeight = computed(() => {
   return '0'
 })
 
-const handlePointerDownOutside = (event: PointerEvent) => {
+const handlePointerDownOutside = (event: Event) => {
   if (!dismissible.value && dismissible.value !== undefined) {
     event.preventDefault()
     return
@@ -35,16 +35,9 @@ watch(
 </script>
 
 <template>
-  <DialogContent
-    vaul-drawer=""
-    :vaul-drawer-visible="isVisible ? 'true' : 'false'"
-    ref="drawerRef"
-    :style="[attrs.style, { '--snap-point-height': snapPointHeight }]"
-    @pointerdown="onPress"
-    @pointermove="onDrag"
-    @pointerup="onRelease"
-    @pointer-down-outside="handlePointerDownOutside"
-  >
+  <DialogContent vaul-drawer="" :vaul-drawer-visible="isVisible ? 'true' : 'false'" ref="drawerRef"
+    :style="[attrs.style, { '--snap-point-height': snapPointHeight }]" @pointerdown="onPress" @pointermove="onDrag"
+    @pointerup="onRelease" @pointer-down-outside="handlePointerDownOutside">
     <slot />
   </DialogContent>
 </template>
