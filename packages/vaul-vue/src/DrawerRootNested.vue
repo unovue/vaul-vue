@@ -1,35 +1,38 @@
 <script setup lang="ts">
 import DrawerRoot from './DrawerRoot.vue'
-import { type DialogProps } from './controls'
+import { type DialogEmits, type DialogProps } from './controls'
 import { injectDrawerRootContext } from './context'
 
-const { onNestedDrag, onNestedOpenChange, onNestedRelease } = injectDrawerRootContext()
-
 const props = defineProps<DialogProps>()
+const emits = defineEmits<DialogEmits>()
+
+const { onNestedDrag, onNestedOpenChange, onNestedRelease } = injectDrawerRootContext()
 const onClose = () => {
   onNestedOpenChange(false)
+  emits('close')
 }
 
-const onDrag = (e: PointerEvent, p: number) => {
-  onNestedDrag(e, p)
-  props.onDrag?.(e, p)
+const onDrag = (p: number) => {
+  onNestedDrag(p)
+  emits('drag', p)
 }
 
 const onOpenChange = (o: boolean) => {
   if (o) {
     onNestedOpenChange(o)
   }
-  props.onOpenChange?.(o)
+  emits('update:open', o)
 }
 </script>
 
 <template>
   <DrawerRoot
+    v-bind="props"
     nested
-    :onClose="onClose"
-    :onDrag="onDrag"
-    :onOpenChange="onOpenChange"
-    :onRelease="onNestedRelease"
+    @close="onClose"
+    @drag="onDrag"
+    @release="onNestedRelease"
+    @update:open="onOpenChange"
   >
     <slot />
   </DrawerRoot>

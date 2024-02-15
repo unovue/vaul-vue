@@ -1,84 +1,74 @@
 <script setup lang="ts">
 import { DialogRoot } from 'radix-vue'
 import { provideDrawerRootContext } from './context'
-import { type DialogProps, useDrawer } from './controls'
-import { watch } from 'vue'
+import { type DialogEmits, type DialogProps, useDrawer } from './controls'
+import { toRefs } from 'vue'
 
-const open = defineModel<boolean>('open', {
-  default: false
-})
+const props = toRefs(
+  withDefaults(defineProps<DialogProps>(), {
+    open: undefined,
+    fixed: undefined,
+    dismissible: true,
+    activeSnapPoint: undefined,
+    snapPoints: undefined,
+    shouldScaleBackground: undefined,
+    closeThreshold: undefined,
+    fadeFromIndex: undefined,
+    nested: false,
+    modal: true,
+    scrollLockTimeout: undefined
+  })
+)
 
-const props = withDefaults(defineProps<DialogProps>(), {
-  dismissible: undefined
-})
+const emit = defineEmits<DialogEmits>()
 
-const {
-  isOpen,
-  hasBeenOpened,
-  snapPoints,
-  activeSnapPoint,
-  closeDrawer,
-  shouldScaleBackground,
-  fadeFromIndex,
-  onCloseProp,
-  onOpenChangeProp,
-  onDragProp,
-  onReleaseProp,
-  nested,
-  dismissible
-} = provideDrawerRootContext(useDrawer())
-
-if (props.snapPoints) {
-  snapPoints.value = props.snapPoints
-  activeSnapPoint.value = props.snapPoints[0]
+const emitHandlers = {
+  emitDrag: (percentageDragged: number) => emit('drag', percentageDragged),
+  emitRelease: (open: boolean) => emit('release', open),
+  emitClose: () => emit('close'),
+  emitOpenChange: (open: boolean) => emit('update:open', open)
 }
 
-if (props.onClose) {
-  onCloseProp.value = props.onClose
-}
+const { isOpen, closeDrawer, hasBeenOpened, modal } = provideDrawerRootContext(
+  useDrawer({ ...props, ...emitHandlers })
+)
 
-if (props.shouldScaleBackground) {
-  shouldScaleBackground.value = props.shouldScaleBackground
-}
-
-fadeFromIndex.value = props.fadeFromIndex ?? (snapPoints.value && snapPoints.value.length - 1)
-
-if (props.onOpenChange) {
-  onOpenChangeProp.value = props.onOpenChange
-}
-
-if (props.onDrag) {
-  onDragProp.value = props.onDrag
-}
-
-if (props.onRelease) {
-  onReleaseProp.value = props.onRelease
-}
-
-if (props.nested) {
-  nested.value = props.nested
-}
-
-dismissible.value = props.dismissible ?? dismissible.value
+// if (props.snapPoints) {
+//   snapPoints.value = props.snapPoints
+//   activeSnapPoint.value = props.snapPoints[0]
+// }
+//
+// if (props.shouldScaleBackground) {
+//   shouldScaleBackground.value = props.shouldScaleBackground
+// }
+//
+// fadeFromIndex.value = props.fadeFromIndex ?? (snapPoints.value && snapPoints.value.length - 1)
+//
+// if (props.nested) {
+//   nested.value = props.nested
+// }
+//
+// dismissible.value = props.dismissible ?? dismissible.value
 
 const handleOpenChange = (o: boolean) => {
+  // if (props.open !== undefined) {
+  //   emit('update:open', o)
+  //   return
+  // }
+
   if (!o) {
     closeDrawer()
-    open.value = false
   } else {
     hasBeenOpened.value = true
-    isOpen.value = o
-
-    // manage external / controlled open state
-    open.value = o
+    isOpen.value = true
   }
 }
-
-watch(open, (o) => handleOpenChange(o), { immediate: true })
+//
+// watch(open, (o) => handleOpenChange(o), { immediate: true })
 </script>
 
 <template>
-  <DialogRoot @update:open="handleOpenChange" :open="isOpen">
+  <DialogRoot :open="isOpen" @update:open="handleOpenChange" :modal="modal">
     <slot />
   </DialogRoot>
 </template>

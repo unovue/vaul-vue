@@ -9,7 +9,7 @@ interface BodyPosition {
 
 interface PositionFixedOptions {
   isOpen: Ref<boolean>
-  modal: boolean
+  modal: Ref<boolean>
   nested: Ref<boolean>
   hasBeenOpened: Ref<boolean>
 }

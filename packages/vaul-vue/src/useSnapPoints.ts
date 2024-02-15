@@ -3,7 +3,7 @@ import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
 import { type ComponentPublicInstance, computed, type Ref, watch } from 'vue'
 
 type useSnapPointsProps = {
-  activeSnapPoint: Ref<number | string | null>
+  activeSnapPoint: Ref<number | string | null | undefined>
   snapPoints: Ref<(number | string)[] | undefined>
   fadeFromIndex: Ref<number | undefined>
   drawerRef: Ref<ComponentPublicInstance | null>

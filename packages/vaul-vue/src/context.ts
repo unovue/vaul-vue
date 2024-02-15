@@ -3,15 +3,17 @@ import { createContext } from './shared/createContext'
 
 export interface DrawerRootContext {
   isOpen: Ref<boolean>
+  modal: Ref<boolean>
   hasBeenOpened: Ref<boolean>
   isVisible: Ref<boolean>
   drawerRef: Ref<ComponentPublicInstance | null>
   overlayRef: Ref<ComponentPublicInstance | null>
   isDragging: Ref<boolean>
-  dragStartTime: Ref<Date>
+  dragStartTime: Ref<Date | null>
   isAllowedToDrag: Ref<boolean>
   snapPoints: Ref<(number | string)[] | undefined>
-  activeSnapPoint: Ref<number | string | null>
+  keyboardIsOpen: Ref<boolean>
+  activeSnapPoint: Ref<number | string | null | undefined>
   pointerStartY: Ref<number>
   dismissible: Ref<boolean>
   drawerHeightRef: Ref<number>
@@ -23,13 +25,13 @@ export interface DrawerRootContext {
   shouldFade: Ref<boolean>
   fadeFromIndex: Ref<number | undefined>
   shouldScaleBackground: Ref<boolean>
-  onNestedDrag: (event: PointerEvent, percentageDragged: number) => void
-  onNestedRelease: (event: PointerEvent, o: boolean) => void
+  onNestedDrag: (percentageDragged: number) => void
+  onNestedRelease: (o: boolean) => void
   onNestedOpenChange: (o: boolean) => void
-  onCloseProp: Ref<(() => void) | undefined>
-  onOpenChangeProp: Ref<((open: boolean) => void) | undefined>
-  onDragProp: Ref<((event: PointerEvent, percentageDragged: number) => void) | undefined>
-  onReleaseProp: Ref<((event: PointerEvent, open: boolean) => void) | undefined>
+  emitClose: () => void
+  emitDrag: (percentageDragged: number) => void
+  emitRelease: (open: boolean) => void
+  emitOpenChange: (o: boolean) => void
   nested: Ref<boolean>
 }
 

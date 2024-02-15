@@ -3,8 +3,20 @@ import { computed, useAttrs, watch } from 'vue'
 import { DialogContent } from 'radix-vue'
 import { injectDrawerRootContext } from './context'
 
-const { isOpen, isVisible, snapPointsOffset, drawerRef, onPress, onDrag, onRelease, dismissible } =
-  injectDrawerRootContext()
+const {
+  isOpen,
+  isVisible,
+  snapPointsOffset,
+  drawerRef,
+  onPress,
+  onDrag,
+  onRelease,
+  modal,
+  emitOpenChange,
+  dismissible,
+  keyboardIsOpen,
+  closeDrawer
+} = injectDrawerRootContext()
 
 const attrs = useAttrs()
 
@@ -16,10 +28,20 @@ const snapPointHeight = computed(() => {
 })
 
 const handlePointerDownOutside = (event: Event) => {
-  if (!dismissible.value && dismissible.value !== undefined) {
+  if (!modal.value || event.defaultPrevented) {
     event.preventDefault()
     return
   }
+  if (keyboardIsOpen.value) {
+    keyboardIsOpen.value = false
+  }
+  event.preventDefault()
+  emitOpenChange(false)
+  if (!dismissible.value && dismissible.value !== undefined) {
+    return ''
+  }
+
+  closeDrawer()
 }
 
 watch(
