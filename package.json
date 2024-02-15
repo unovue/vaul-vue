@@ -9,7 +9,8 @@
     "eslint:fix": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "test": "pnpm -r test",
     "release": "pnpm -r release && changeset publish",
-    "build-package": "pnpm --filter vaul-vue build-only"
+    "build:package": "pnpm --filter vaul-vue build-only",
+    "build:playground": "pnpm build:package && pnpm --filter playground build"
   },
   "packageManager": "pnpm@8.14.1",
   "devDependencies": {
