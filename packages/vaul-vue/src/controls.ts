@@ -6,17 +6,17 @@ import { usePositionFixed } from './usePositionFixed'
 import type { Ref } from 'vue'
 import type { DrawerRootContext } from './context'
 
-const CLOSE_THRESHOLD = 0.25
+export const CLOSE_THRESHOLD = 0.25
 
-const SCROLL_LOCK_TIMEOUT = 100
+export const SCROLL_LOCK_TIMEOUT = 100
 
-const BORDER_RADIUS = 8
+export const BORDER_RADIUS = 8
 
-const NESTED_DISPLACEMENT = 16
+export const NESTED_DISPLACEMENT = 16
 
-const WINDOW_TOP_OFFSET = 26
+export const WINDOW_TOP_OFFSET = 26
 
-const DRAG_CLASS = 'vaul-dragging'
+export const DRAG_CLASS = 'vaul-dragging'
 
 export interface WithFadeFromProps {
   snapPoints: (number | string)[]
@@ -37,11 +37,23 @@ export type DialogProps = {
   dismissible?: boolean
   modal?: boolean
   open?: boolean
+  defaultOpen?: boolean
   nested?: boolean
 } & (WithFadeFromProps | WithoutFadeFromProps)
 
-export type DialogModel = {
-  open: Ref<boolean>
+export type UseDrawerProps = {
+  open: Readonly<Ref<boolean>>
+  openProp: Ref<boolean | undefined>
+  snapPoints: Ref<(number | string)[] | undefined>
+  dismissible: Ref<boolean>
+  nested: Ref<boolean>
+  fixed: Ref<boolean | undefined>
+  modal: Ref<boolean>
+  shouldScaleBackground: Ref<boolean | undefined>
+  activeSnapPoint: Ref<number | string | null | undefined>
+  fadeFromIndex: Ref<number | undefined>
+  closeThreshold: Ref<number>
+  scrollLockTimeout: Ref<number>
 }
 
 export type DialogEmits = {
@@ -84,11 +96,24 @@ const usePropOrDefaultRef = <T>(
   defaultRef: Ref<T>
 ): Ref<T> => (prop && !!prop.value ? (prop as Ref<T>) : defaultRef)
 
-export function useDrawer(
-  props: ToRefs<DialogProps> & DialogModel & DialogEmitHandlers
-): DrawerRootContext {
-  const { emitDrag, emitRelease, emitClose, emitOpenChange } = props
-  const isOpen = usePropOrDefaultRef(props.open, ref(false))
+export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRootContext {
+  const {
+    emitDrag,
+    emitRelease,
+    emitClose,
+    emitOpenChange,
+    open: isOpen,
+    openProp,
+    dismissible,
+    nested,
+    fixed,
+    modal,
+    shouldScaleBackground,
+    scrollLockTimeout,
+    closeThreshold,
+    activeSnapPoint: activeSnapPointProp,
+    fadeFromIndex
+  } = props
   const hasBeenOpened = ref(false)
   const isVisible = ref(false)
   const isDragging = ref(false)
@@ -117,12 +142,6 @@ export function useDrawer(
     props.snapPoints,
     ref<(number | string)[] | undefined>(undefined)
   )
-  const dismissible = usePropOrDefaultRef(props.dismissible, ref(true))
-  const nested = usePropOrDefaultRef(props.nested, ref(false))
-
-  const fixed = usePropOrDefaultRef(props.fixed, ref(false))
-  const modal = usePropOrDefaultRef(props.modal, ref(true))
-  const shouldScaleBackground = usePropOrDefaultRef(props.shouldScaleBackground, ref(true))
 
   // const onCloseProp = ref<(() => void) | undefined>(undefined)
   // const onOpenChangeProp = ref<((open: boolean) => void) | undefined>(undefined)
@@ -131,14 +150,9 @@ export function useDrawer(
   // )
   // const onReleaseProp = ref<((event: PointerEvent, open: boolean) => void) | undefined>(undefined)
 
-  const scrollLockTimeout = usePropOrDefaultRef(props.scrollLockTimeout, ref(SCROLL_LOCK_TIMEOUT))
-  const closeThreshold = usePropOrDefaultRef(props.closeThreshold, ref(CLOSE_THRESHOLD))
-
-  const activeSnapPointProp = usePropOrDefaultRef(props.activeSnapPoint, ref(null))
-  const fadeFromIndex = usePropOrDefaultRef(
-    props.fadeFromIndex,
-    ref(snapPoints.value && snapPoints.value.length - 1)
-  )
+  // const fadeFromIndex = ref(
+  //   props.fadeFromIndex ?? (snapPoints.value && snapPoints.value.length - 1)
+  // )
 
   const onSnapPointChange = () => {
     // Change openTime ref when we reach the last snap point to prevent dragging for 500ms incase it's scrollable.
@@ -381,7 +395,7 @@ export function useDrawer(
   function closeDrawer() {
     if (!drawerRef.value) return
 
-    emitClose()
+    // emitClose()
     set(drawerRef.value.$el, {
       transform: `translate3d(0, 100%, 0)`,
       transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`
@@ -396,7 +410,8 @@ export function useDrawer(
 
     isVisible.value = false
     window.setTimeout(() => {
-      isOpen.value = false
+      emitOpenChange(false)
+      // isOpen.value = false
     }, 300)
 
     window.setTimeout(() => {
@@ -480,7 +495,7 @@ export function useDrawer(
       openTime.value = new Date()
       scaleBackground(true)
     }
-    isOpen.value = open
+    emitOpenChange(open)
   })
 
   function scaleBackground(open: boolean) {
@@ -571,6 +586,7 @@ export function useDrawer(
 
   return {
     isOpen,
+    openProp,
     modal,
     keyboardIsOpen,
     hasBeenOpened,

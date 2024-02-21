@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, useAttrs, watch } from 'vue'
+import { computed, onMounted, useAttrs, watch } from 'vue'
 import { DialogContent } from 'radix-vue'
 import { injectDrawerRootContext } from './context'
 
 const {
   isOpen,
+  openProp,
   isVisible,
   snapPointsOffset,
   drawerRef,
@@ -36,9 +37,9 @@ const handlePointerDownOutside = (event: Event) => {
     keyboardIsOpen.value = false
   }
   event.preventDefault()
-  emitOpenChange(false)
-  if (!dismissible.value && dismissible.value !== undefined) {
-    return ''
+
+  if (!dismissible.value || openProp.value !== undefined) {
+    return
   }
 
   closeDrawer()

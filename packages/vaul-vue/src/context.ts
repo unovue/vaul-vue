@@ -3,6 +3,7 @@ import { createContext } from './shared/createContext'
 
 export interface DrawerRootContext {
   isOpen: Ref<boolean>
+  openProp: Ref<boolean | undefined>
   modal: Ref<boolean>
   hasBeenOpened: Ref<boolean>
   isVisible: Ref<boolean>
@@ -24,7 +25,7 @@ export interface DrawerRootContext {
   closeDrawer: () => void
   shouldFade: Ref<boolean>
   fadeFromIndex: Ref<number | undefined>
-  shouldScaleBackground: Ref<boolean>
+  shouldScaleBackground: Ref<boolean | undefined>
   onNestedDrag: (percentageDragged: number) => void
   onNestedRelease: (o: boolean) => void
   onNestedOpenChange: (o: boolean) => void
