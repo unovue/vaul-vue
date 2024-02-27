@@ -69,7 +69,11 @@ function handleOpenChange(o: boolean) {
 </script>
 
 <template>
-  <DialogRoot :open="open" :modal="modal" @update:open="handleOpenChange">
+  <DialogRoot
+    :open="open"
+    :modal="modal"
+    @update:open="handleOpenChange"
+  >
     <slot />
   </DialogRoot>
 </template>
@@ -120,7 +124,6 @@ function handleOpenChange(o: boolean) {
 /* This will allow us to not animate via animation, but still benefit from delaying unmount via Radix. */
 @keyframes fake-animation {
   from {}
-
   to {}
 }
 

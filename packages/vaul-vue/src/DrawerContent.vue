@@ -43,22 +43,28 @@ function handlePointerDownOutside(event: Event) {
 }
 
 watch(
-  () => isOpen.value,
-  (isOpen) => {
-    if (isOpen) {
+  isOpen,
+  (open) => {
+    if (open) {
       setTimeout(() => {
         isVisible.value = true
       }, 1)
     }
   },
+  { immediate: true },
 )
 </script>
 
 <template>
   <DialogContent
-    ref="drawerRef" vaul-drawer="" :vaul-drawer-visible="isVisible ? 'true' : 'false'"
-    :style="[attrs.style, { '--snap-point-height': snapPointHeight }]" @pointerdown="onPress" @pointermove="onDrag"
-    @pointerup="onRelease" @pointer-down-outside="handlePointerDownOutside"
+    ref="drawerRef"
+    vaul-drawer=""
+    :vaul-drawer-visible="isVisible ? 'true' : 'false'"
+    :style="[attrs.style, { '--snap-point-height': snapPointHeight }]"
+    @pointerdown="onPress"
+    @pointermove="onDrag"
+    @pointerup="onRelease"
+    @pointer-down-outside="handlePointerDownOutside"
   >
     <slot />
   </DialogContent>
