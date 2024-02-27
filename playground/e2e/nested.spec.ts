@@ -15,6 +15,6 @@ test.describe('Nested tests', () => {
     await page.getByTestId('nested-close').click()
     await page.waitForTimeout(ANIMATION_DURATION)
     await expect(page.getByTestId('nested-content')).not.toBeVisible()
-    await await expect(page.getByTestId('content')).toBeVisible()
+    await expect(page.getByTestId('content')).toBeVisible()
   })
 })
