@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { DialogRoot } from 'radix-vue'
+import { useVModel } from '@vueuse/core'
+import { type WritableComputedRef, computed, toRefs } from 'vue'
 import { provideDrawerRootContext } from './context'
 import {
   CLOSE_THRESHOLD,
   type DialogEmits,
   type DialogProps,
   SCROLL_LOCK_TIMEOUT,
-  useDrawer
+  useDrawer,
 } from './controls'
-import { useVModel } from '@vueuse/core'
-import { toRefs, computed, type WritableComputedRef } from 'vue'
 
 const props = withDefaults(defineProps<DialogProps>(), {
   open: undefined,
@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
   fadeFromIndex: undefined,
   nested: false,
   modal: true,
-  scrollLockTimeout: SCROLL_LOCK_TIMEOUT
+  scrollLockTimeout: SCROLL_LOCK_TIMEOUT,
 })
 
 const emit = defineEmits<DialogEmits>()
@@ -31,13 +31,12 @@ const fadeFromIndex = computed(() => props.fadeFromIndex ?? (props.snapPoints &&
 
 const open = useVModel(props, 'open', emit, {
   defaultValue: props.defaultOpen,
-  passive: (props.open === undefined) as false
+  passive: (props.open === undefined) as false,
 }) as WritableComputedRef<boolean>
 
 const activeSnapPoint = useVModel(props, 'activeSnapPoint', emit, {
-  passive: (props.activeSnapPoint === undefined) as false
+  passive: (props.activeSnapPoint === undefined) as false,
 })
-
 
 const emitHandlers = {
   emitDrag: (percentageDragged: number) => emit('drag', percentageDragged),
@@ -45,7 +44,7 @@ const emitHandlers = {
   emitClose: () => emit('close'),
   emitOpenChange: (o: boolean) => {
     open.value = o
-  }
+  },
 }
 
 const { closeDrawer, hasBeenOpened, modal } = provideDrawerRootContext(
@@ -54,14 +53,15 @@ const { closeDrawer, hasBeenOpened, modal } = provideDrawerRootContext(
     ...toRefs(props),
     activeSnapPoint,
     fadeFromIndex,
-    open
-  })
+    open,
+  }),
 )
 
-const handleOpenChange = (o: boolean) => {
+function handleOpenChange(o: boolean) {
   if (!o) {
     closeDrawer()
-  } else {
+  }
+  else {
     hasBeenOpened.value = true
     open.value = o
   }
@@ -69,7 +69,7 @@ const handleOpenChange = (o: boolean) => {
 </script>
 
 <template>
-  <DialogRoot :open="open" @update:open="handleOpenChange" :modal="modal">
+  <DialogRoot :open="open" :modal="modal" @update:open="handleOpenChange">
     <slot />
   </DialogRoot>
 </template>

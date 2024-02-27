@@ -5,7 +5,7 @@ import {
   DrawerPortal,
   DrawerRoot,
   DrawerTitle,
-  DrawerTrigger
+  DrawerTrigger,
 } from 'vaul-vue'
 </script>
 
@@ -13,7 +13,9 @@ import {
   <div class="w-screen h-screen bg-white p-8 flex justify-center items-center" vaul-drawer-wrapper>
     <DrawerRoot should-scale-background>
       <DrawerTrigger as-child>
-        <button data-testid="trigger" class="text-2xl">Open Drawer</button>
+        <button data-testid="trigger" class="text-2xl">
+          Open Drawer
+        </button>
       </DrawerTrigger>
       <DrawerPortal>
         <DrawerOverlay data-testid="overlay" class="fixed inset-0 bg-black/40" />
@@ -24,7 +26,9 @@ import {
           <div class="p-4 bg-white rounded-t-[10px] flex-1">
             <div class="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
             <div class="max-w-md mx-auto">
-              <DrawerTitle class="font-medium mb-4">Unstyled drawer for Vue.</DrawerTitle>
+              <DrawerTitle class="font-medium mb-4">
+                Unstyled drawer for Vue.
+              </DrawerTitle>
             </div>
             <p class="text-zinc-600 mb-2">
               This component can be used as a replacement for a Dialog on mobile and tablet devices.

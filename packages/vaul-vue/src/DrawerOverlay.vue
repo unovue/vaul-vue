@@ -2,6 +2,7 @@
 import { DialogOverlay } from 'radix-vue'
 import { computed } from 'vue'
 import { injectDrawerRootContext } from './context'
+
 const { overlayRef, snapPoints, isVisible, isOpen, shouldFade } = injectDrawerRootContext()
 
 const hasSnapPoints = computed(() => snapPoints && (snapPoints.value?.length ?? 0) > 0)

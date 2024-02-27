@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, useAttrs, watch } from 'vue'
+import { computed, useAttrs, watch } from 'vue'
 import { DialogContent } from 'radix-vue'
 import { injectDrawerRootContext } from './context'
 
@@ -15,30 +15,30 @@ const {
   emitOpenChange,
   dismissible,
   keyboardIsOpen,
-  closeDrawer
+  closeDrawer,
 } = injectDrawerRootContext()
 
 const attrs = useAttrs()
 
 const snapPointHeight = computed(() => {
-  if (snapPointsOffset.value && snapPointsOffset.value.length > 0) {
+  if (snapPointsOffset.value && snapPointsOffset.value.length > 0)
     return `${snapPointsOffset.value[0]}px`
-  }
+
   return '0'
 })
 
-const handlePointerDownOutside = (event: Event) => {
+function handlePointerDownOutside(event: Event) {
   if (!modal.value || event.defaultPrevented) {
     event.preventDefault()
     return
   }
-  if (keyboardIsOpen.value) {
+  if (keyboardIsOpen.value)
     keyboardIsOpen.value = false
-  }
+
   event.preventDefault()
-  if (!dismissible.value) {
+  if (!dismissible.value)
     return
-  }
+
   closeDrawer()
 }
 
@@ -50,14 +50,16 @@ watch(
         isVisible.value = true
       }, 1)
     }
-  }
+  },
 )
 </script>
 
 <template>
-  <DialogContent vaul-drawer="" :vaul-drawer-visible="isVisible ? 'true' : 'false'" ref="drawerRef"
+  <DialogContent
+    ref="drawerRef" vaul-drawer="" :vaul-drawer-visible="isVisible ? 'true' : 'false'"
     :style="[attrs.style, { '--snap-point-height': snapPointHeight }]" @pointerdown="onPress" @pointermove="onDrag"
-    @pointerup="onRelease" @pointer-down-outside="handlePointerDownOutside">
+    @pointerup="onRelease" @pointer-down-outside="handlePointerDownOutside"
+  >
     <slot />
   </DialogContent>
 </template>

@@ -3,79 +3,21 @@ on:
   push:
     branches-ignore:
       - main
+
 jobs:
-  sherif:
-    name: Monorepo Sherif
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
-
-      - name: Run sherif
-        run: pnpm dlx sherif@latest
-
-  lint:
-    name: Lint and Format
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Lint
-        run: pnpm run eslint:check
-
-      - name: Format
-        run: pnpm run prettier:check
-
   tests:
-    name: Tests
+    name: Playwright Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build package
-        run: pnpm run build-package
-
-      - name: Install Playwright browsers
-        run: pnpm dlx playwright install --with-deps
-
-      - name: Run tests
-        run: pnpm test
-
+          node-version: 20
+      - run: npm install -g pnpm@8.6
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm build:package
+      - run: npx playwright install --with-deps
+      - run: pnpm test || exit 1
       - uses: actions/upload-artifact@v3
         if: always()
         with:

@@ -1,9 +1,9 @@
 import {
-  DialogTitle as DrawerTitle,
+  DialogClose as DrawerClose,
   DialogDescription as DrawerDescription,
-  DialogTrigger as DrawerTrigger,
   DialogPortal as DrawerPortal,
-  DialogClose as DrawerClose
+  DialogTitle as DrawerTitle,
+  DialogTrigger as DrawerTrigger,
 } from 'radix-vue'
 import DrawerRoot from './DrawerRoot.vue'
 import DrawerRootNested from './DrawerRootNested.vue'
@@ -19,5 +19,5 @@ export {
   DrawerRoot,
   DrawerRootNested,
   DrawerOverlay,
-  DrawerContent
+  DrawerContent,
 }

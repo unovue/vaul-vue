@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted, watch, type Ref } from 'vue'
+import { type Ref, onMounted, onUnmounted, ref, watch } from 'vue'
 
 interface BodyPosition {
   position: string
@@ -27,7 +27,7 @@ export function usePositionFixed(options: PositionFixedOptions) {
         position: document.body.style.position,
         top: document.body.style.top,
         left: document.body.style.left,
-        height: document.body.style.height
+        height: document.body.style.height,
       }
 
       const { scrollX, innerHeight } = window
@@ -41,9 +41,8 @@ export function usePositionFixed(options: PositionFixedOptions) {
       setTimeout(() => {
         requestAnimationFrame(() => {
           const bottomBarHeight = innerHeight - window.innerHeight
-          if (bottomBarHeight && scrollPos.value >= innerHeight) {
+          if (bottomBarHeight && scrollPos.value >= innerHeight)
             document.body.style.top = `-${scrollPos.value + bottomBarHeight}px`
-          }
         })
       }, 300)
     }
@@ -51,8 +50,8 @@ export function usePositionFixed(options: PositionFixedOptions) {
 
   function restorePositionSetting(): void {
     if (previousBodyPosition !== null) {
-      const y = -parseInt(document.body.style.top, 10)
-      const x = -parseInt(document.body.style.left, 10)
+      const y = -Number.parseInt(document.body.style.top, 10)
+      const x = -Number.parseInt(document.body.style.left, 10)
 
       Object.assign(document.body.style, previousBodyPosition)
 
@@ -83,7 +82,8 @@ export function usePositionFixed(options: PositionFixedOptions) {
   })
 
   watch([isOpen, hasBeenOpened, activeUrl], () => {
-    if (nested.value || !hasBeenOpened.value) return
+    if (nested.value || !hasBeenOpened.value)
+      return
     if (isOpen.value) {
       setPositionFixed()
 
@@ -92,7 +92,8 @@ export function usePositionFixed(options: PositionFixedOptions) {
           restorePositionSetting()
         }, 500)
       }
-    } else {
+    }
+    else {
       restorePositionSetting()
     }
   })

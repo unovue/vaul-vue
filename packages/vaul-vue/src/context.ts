@@ -35,5 +35,5 @@ export interface DrawerRootContext {
   nested: Ref<boolean>
 }
 
-export const [injectDrawerRootContext, provideDrawerRootContext] =
-  createContext<DrawerRootContext>('DrawerRoot')
+export const [injectDrawerRootContext, provideDrawerRootContext]
+  = createContext<DrawerRootContext>('DrawerRoot')
