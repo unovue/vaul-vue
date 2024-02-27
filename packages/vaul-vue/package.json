@@ -36,7 +36,8 @@
     "release": "pnpm run build-only"
   },
   "dependencies": {
-    "radix-vue": "^1.2.5",
+    "@vueuse/core": "^10.8.0",
+    "radix-vue": "^1.4.9",
     "vue": "^3.4.5"
   },
   "devDependencies": {
