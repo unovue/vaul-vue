@@ -28,8 +28,8 @@ export function set(el?: Element | HTMLElement | null, styles?: Style, ignoreCac
       return
     }
 
-    originalStyles[key] = (el.style as any)[key]
-    ;(el.style as any)[key] = value
+    originalStyles[key] = (el.style as any)[key];
+    (el.style as any)[key] = value
   })
 
   if (ignoreCache) return
@@ -46,10 +46,10 @@ export function reset(el: Element | HTMLElement | null, prop?: string) {
   }
 
   if (prop) {
-    ;(el.style as any)[prop] = originalStyles[prop]
+    ; (el.style as any)[prop] = originalStyles[prop]
   } else {
     Object.entries(originalStyles).forEach(([key, value]) => {
-      ;(el.style as any)[key] = value
+      ; (el.style as any)[key] = value
     })
   }
 }

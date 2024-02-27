@@ -82,7 +82,7 @@ export function usePositionFixed(options: PositionFixedOptions) {
     })
   })
 
-  watch([() => isOpen.value, () => hasBeenOpened.value, () => activeUrl.value], () => {
+  watch([isOpen, hasBeenOpened, activeUrl], () => {
     if (nested.value || !hasBeenOpened.value) return
     if (isOpen.value) {
       setPositionFixed()

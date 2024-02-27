@@ -1,6 +1,6 @@
 import { set } from './helpers'
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
-import { type ComponentPublicInstance, computed, type Ref, watch } from 'vue'
+import { type ComponentPublicInstance, computed, type Ref, watch, ref, nextTick } from 'vue'
 
 type useSnapPointsProps = {
   activeSnapPoint: Ref<number | string | null | undefined>
@@ -8,7 +8,7 @@ type useSnapPointsProps = {
   fadeFromIndex: Ref<number | undefined>
   drawerRef: Ref<ComponentPublicInstance | null>
   overlayRef: Ref<ComponentPublicInstance | null>
-  onSnapPointChange(activeSnapPointIndex: number): void
+  onSnapPointChange(activeSnapPointIndex: number, snapPointsOffset: number[]): void
 }
 
 export function useSnapPoints({
@@ -70,10 +70,14 @@ export function useSnapPoints({
   const snapToPoint = (height: number) => {
     const newSnapPointIndex =
       snapPointsOffset.value?.findIndex((snapPointHeight) => snapPointHeight === height) ?? null
-    onSnapPointChange(newSnapPointIndex)
-    set(drawerRef.value?.$el, {
-      transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-      transform: `translate3d(0, ${height}px, 0)`
+
+    // nextTick to allow el to be mounted before setting it.
+    nextTick(() => {
+      onSnapPointChange(newSnapPointIndex, snapPointsOffset.value)
+      set(drawerRef.value?.$el, {
+        transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
+        transform: `translate3d(0, ${height}px, 0)`
+      })
     })
 
     if (
@@ -101,10 +105,11 @@ export function useSnapPoints({
     () => {
       if (activeSnapPoint.value) {
         const newIndex =
-          snapPoints.value?.findIndex((snapPoint) => snapPoint === activeSnapPoint.value) ?? null
+          snapPoints.value?.findIndex((snapPoint) => snapPoint === activeSnapPoint.value) ?? -1
+
         if (
           snapPointsOffset.value &&
-          newIndex !== null &&
+          newIndex !== -1 &&
           typeof snapPointsOffset.value[newIndex] === 'number'
         ) {
           snapToPoint(snapPointsOffset.value[newIndex])
@@ -218,9 +223,9 @@ export function useSnapPoints({
     // Get the distance from overlaySnapPoint to the one before or vice-versa to calculate the opacity percentage accordingly
     const snapPointDistance = isOverlaySnapPoint
       ? snapPointsOffset.value[targetSnapPointIndex] -
-        snapPointsOffset.value[targetSnapPointIndex - 1]
+      snapPointsOffset.value[targetSnapPointIndex - 1]
       : snapPointsOffset.value[targetSnapPointIndex + 1] -
-        snapPointsOffset.value[targetSnapPointIndex]
+      snapPointsOffset.value[targetSnapPointIndex]
 
     const percentageDragged = absDraggedDistance / Math.abs(snapPointDistance)
 
@@ -233,7 +238,6 @@ export function useSnapPoints({
 
   return {
     isLastSnapPoint,
-    activeSnapPoint,
     shouldFade,
     getPercentageDragged,
     activeSnapPointIndex,

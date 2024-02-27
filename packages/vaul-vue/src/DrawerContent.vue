@@ -5,7 +5,6 @@ import { injectDrawerRootContext } from './context'
 
 const {
   isOpen,
-  openProp,
   isVisible,
   snapPointsOffset,
   drawerRef,
@@ -37,11 +36,9 @@ const handlePointerDownOutside = (event: Event) => {
     keyboardIsOpen.value = false
   }
   event.preventDefault()
-
-  if (!dismissible.value || openProp.value !== undefined) {
+  if (!dismissible.value) {
     return
   }
-
   closeDrawer()
 }
 

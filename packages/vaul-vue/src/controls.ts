@@ -1,4 +1,4 @@
-import { computed, ref, watch, type ComponentPublicInstance, type ToRefs } from 'vue'
+import { computed, ref, watch, type ComponentPublicInstance } from 'vue'
 import { set, reset, getTranslateY, dampenValue } from './helpers'
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
 import { useSnapPoints } from './useSnapPoints'
@@ -42,8 +42,7 @@ export type DialogProps = {
 } & (WithFadeFromProps | WithoutFadeFromProps)
 
 export type UseDrawerProps = {
-  open: Readonly<Ref<boolean>>
-  openProp: Ref<boolean | undefined>
+  open: Ref<boolean>
   snapPoints: Ref<(number | string)[] | undefined>
   dismissible: Ref<boolean>
   nested: Ref<boolean>
@@ -61,6 +60,7 @@ export type DialogEmits = {
   (e: 'release', open: boolean): void
   (e: 'close'): void
   (e: 'update:open', open: boolean): void
+  (e: 'update:activeSnapPoint', val: string | number): void
 }
 
 export type DialogEmitHandlers = {
@@ -103,7 +103,6 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     emitClose,
     emitOpenChange,
     open: isOpen,
-    openProp,
     dismissible,
     nested,
     fixed,
@@ -111,9 +110,10 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     shouldScaleBackground,
     scrollLockTimeout,
     closeThreshold,
-    activeSnapPoint: activeSnapPointProp,
+    activeSnapPoint,
     fadeFromIndex
   } = props
+
   const hasBeenOpened = ref(false)
   const isVisible = ref(false)
   const isDragging = ref(false)
@@ -154,14 +154,8 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
   //   props.fadeFromIndex ?? (snapPoints.value && snapPoints.value.length - 1)
   // )
 
-  const onSnapPointChange = () => {
-    // Change openTime ref when we reach the last snap point to prevent dragging for 500ms incase it's scrollable.
-    if (snapPoints.value && activeSnapPointIndex.value === snapPointsOffset.value.length - 1)
-      openTime.value = new Date()
-  }
 
   const {
-    activeSnapPoint,
     activeSnapPointIndex,
     onRelease: onReleaseSnapPoints,
     snapPointsOffset,
@@ -170,12 +164,19 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     getPercentageDragged: getSnapPointsPercentageDragged
   } = useSnapPoints({
     snapPoints,
-    activeSnapPoint: activeSnapPointProp,
+    activeSnapPoint,
     drawerRef,
     fadeFromIndex,
     overlayRef,
     onSnapPointChange
   })
+
+  function onSnapPointChange(activeSnapPointIndex: number, snapPointsOffset: number[]) {
+    // Change openTime ref when we reach the last snap point to prevent dragging for 500ms incase it's scrollable.
+    if (snapPoints.value && activeSnapPointIndex === snapPointsOffset.length - 1)
+      openTime.value = new Date()
+  }
+
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { restorePositionSetting } = usePositionFixed({
@@ -407,6 +408,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     })
 
     scaleBackground(false)
+    restorePositionSetting()
 
     isVisible.value = false
     window.setTimeout(() => {
@@ -500,7 +502,6 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
 
   function scaleBackground(open: boolean) {
     const wrapper = document.querySelector('[vaul-drawer-wrapper]')
-
     if (!wrapper || !shouldScaleBackground.value) return
 
     if (open) {
@@ -586,7 +587,6 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
 
   return {
     isOpen,
-    openProp,
     modal,
     keyboardIsOpen,
     hasBeenOpened,

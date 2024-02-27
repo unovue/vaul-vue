@@ -9,7 +9,7 @@ import {
   useDrawer
 } from './controls'
 import { useVModel } from '@vueuse/core'
-import { type Ref, toRef, toRefs, watch } from 'vue'
+import { toRefs, computed, type WritableComputedRef } from 'vue'
 
 const props = withDefaults(defineProps<DialogProps>(), {
   open: undefined,
@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
   snapPoints: undefined,
   shouldScaleBackground: undefined,
   closeThreshold: CLOSE_THRESHOLD,
-  fadeFromIndex: (props) => props.snapPoints && props.snapPoints.length - 1,
+  fadeFromIndex: undefined,
   nested: false,
   modal: true,
   scrollLockTimeout: SCROLL_LOCK_TIMEOUT
@@ -27,10 +27,17 @@ const props = withDefaults(defineProps<DialogProps>(), {
 
 const emit = defineEmits<DialogEmits>()
 
+const fadeFromIndex = computed(() => props.fadeFromIndex ?? (props.snapPoints && props.snapPoints.length - 1))
+
 const open = useVModel(props, 'open', emit, {
   defaultValue: props.defaultOpen,
   passive: (props.open === undefined) as false
-}) as Ref<boolean>
+}) as WritableComputedRef<boolean>
+
+const activeSnapPoint = useVModel(props, 'activeSnapPoint', emit, {
+  passive: (props.activeSnapPoint === undefined) as false
+})
+
 
 const emitHandlers = {
   emitDrag: (percentageDragged: number) => emit('drag', percentageDragged),
@@ -45,7 +52,8 @@ const { closeDrawer, hasBeenOpened, modal } = provideDrawerRootContext(
   useDrawer({
     ...emitHandlers,
     ...toRefs(props),
-    openProp: toRef(props.open),
+    activeSnapPoint,
+    fadeFromIndex,
     open
   })
 )
@@ -101,9 +109,7 @@ const handleOpenChange = (o: boolean) => {
   height: 200%;
 }
 
-[vaul-overlay][vaul-snap-points='true']:not([vaul-snap-points-overlay='true']):not(
-    [data-state='closed']
-  ) {
+[vaul-overlay][vaul-snap-points='true']:not([vaul-snap-points-overlay='true']):not([data-state='closed']) {
   opacity: 0;
 }
 
@@ -113,10 +119,9 @@ const handleOpenChange = (o: boolean) => {
 
 /* This will allow us to not animate via animation, but still benefit from delaying unmount via Radix. */
 @keyframes fake-animation {
-  from {
-  }
-  to {
-  }
+  from {}
+
+  to {}
 }
 
 @media (hover: hover) and (pointer: fine) {

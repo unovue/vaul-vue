@@ -1,9 +1,8 @@
 import type { ComponentPublicInstance, Ref } from 'vue'
-import { createContext } from './shared/createContext'
+import { createContext } from 'radix-vue'
 
 export interface DrawerRootContext {
   isOpen: Ref<boolean>
-  openProp: Ref<boolean | undefined>
   modal: Ref<boolean>
   hasBeenOpened: Ref<boolean>
   isVisible: Ref<boolean>
