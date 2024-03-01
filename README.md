@@ -21,7 +21,7 @@ yarn add vaul-vue
 
 ```vue
 <script setup lang="ts">
-import { DrawerRoot, DrawerTrigger, DrawerOverlay, DrawerContent, DrawerPortal } from 'vaul-vue'
+import { DrawerContent, DrawerOverlay, DrawerPortal, DrawerRoot, DrawerTrigger } from 'vaul-vue'
 </script>
 
 <template>

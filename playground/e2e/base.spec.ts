@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { ANIMATION_DURATION } from './constants'
 import { openDrawer } from './helpers'
 
@@ -40,21 +40,21 @@ test.describe('Base tests', () => {
     await expect(page.getByTestId('content')).not.toBeVisible()
   })
 
-  //   test('should close when dragged down', async ({ page }) => {
-  //     await openDrawer(page);
-  //     await page.hover('[vaul-drawer]');
-  //     await page.mouse.down();
-  //     await page.mouse.move(0, 800);
-  //     await page.mouse.up();
-  //     await page.waitForTimeout(ANIMATION_DURATION);
-  //     await expect(page.getByTestId('content')).not.toBeVisible();
-  //   });
+  test('should close when dragged down', async ({ page }) => {
+    await openDrawer(page)
+    await page.hover('[vaul-drawer]')
+    await page.mouse.down()
+    await page.mouse.move(0, 500)
+    await page.mouse.up()
+    await page.waitForTimeout(ANIMATION_DURATION)
+    await expect(page.getByTestId('content')).not.toBeVisible()
+  })
 
   test('should not close when dragged up', async ({ page }) => {
     await openDrawer(page)
     await page.hover('[vaul-drawer]')
     await page.mouse.down()
-    await page.mouse.move(0, -800)
+    await page.mouse.move(0, -500)
     await page.mouse.up()
     await page.waitForTimeout(ANIMATION_DURATION)
     await expect(page.getByTestId('content')).toBeVisible()

@@ -1,25 +1,22 @@
 {
+  "type": "module",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
+  "packageManager": "pnpm@8.14.1",
   "scripts": {
-    "prettier:check": "prettier --check .",
-    "prettier:fix": "prettier --write .",
-    "eslint:check": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
-    "eslint:fix": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "pnpm -r test",
     "release": "pnpm -r release && changeset publish",
     "build:package": "pnpm --filter vaul-vue build-only",
     "build:playground": "pnpm build:package && pnpm --filter playground build"
   },
-  "packageManager": "pnpm@8.14.1",
   "devDependencies": {
+    "@antfu/eslint-config": "^2.6.4",
     "@changesets/cli": "^2.27.1",
+    "@playwright/test": "^1.41.2",
     "@rushstack/eslint-patch": "^1.3.3",
-    "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",
-    "eslint": "^8.49.0",
-    "eslint-plugin-vue": "^9.17.0",
-    "prettier": "^3.0.3"
+    "eslint": "^8.56.0"
   }
 }

@@ -11,19 +11,19 @@ export default defineConfig({
     cssInjectedByJsPlugin(),
     dts({
       tsconfigPath: 'tsconfig.build.json',
-      cleanVueFileName: true
-    })
+      cleanVueFileName: true,
+    }),
   ],
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src')
-    }
+      '@': resolve(__dirname, 'src'),
+    },
   },
   build: {
     lib: {
       name: 'vaul-vue',
       fileName: 'index',
-      entry: resolve(__dirname, 'src/index.ts')
+      entry: resolve(__dirname, 'src/index.ts'),
     },
     outDir: 'dist',
     rollupOptions: {
@@ -34,13 +34,14 @@ export default defineConfig({
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
-          vue: 'Vue'
+          vue: 'Vue',
         },
         assetFileNames: (chunkInfo) => {
-          if (chunkInfo.name === 'style.css') return 'index.css'
+          if (chunkInfo.name === 'style.css')
+            return 'index.css'
           return chunkInfo.name as string
-        }
-      }
-    }
-  }
+        },
+      },
+    },
+  },
 })

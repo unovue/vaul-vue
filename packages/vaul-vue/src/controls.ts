@@ -1,22 +1,22 @@
-import { computed, ref, watch, type ComponentPublicInstance } from 'vue'
-import { set, reset, getTranslateY, dampenValue } from './helpers'
+import { computed, ref, watch } from 'vue'
+import type { ComponentPublicInstance, Ref } from 'vue'
+import { dampenValue, getTranslateY, reset, set } from './helpers'
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
 import { useSnapPoints } from './useSnapPoints'
 import { usePositionFixed } from './usePositionFixed'
-import type { Ref } from 'vue'
 import type { DrawerRootContext } from './context'
 
-const CLOSE_THRESHOLD = 0.25
+export const CLOSE_THRESHOLD = 0.25
 
-const SCROLL_LOCK_TIMEOUT = 100
+export const SCROLL_LOCK_TIMEOUT = 100
 
-const BORDER_RADIUS = 8
+export const BORDER_RADIUS = 8
 
-const NESTED_DISPLACEMENT = 16
+export const NESTED_DISPLACEMENT = 16
 
-const WINDOW_TOP_OFFSET = 26
+export const WINDOW_TOP_OFFSET = 26
 
-const DRAG_CLASS = 'vaul-dragging'
+export const DRAG_CLASS = 'vaul-dragging'
 
 export interface WithFadeFromProps {
   snapPoints: (number | string)[]
@@ -30,21 +30,47 @@ export interface WithoutFadeFromProps {
 
 export type DialogProps = {
   activeSnapPoint?: number | string | null
-  // open?: boolean // declared in defineModel on DrawerRoot
   closeThreshold?: number
-  onOpenChange?: (open: boolean) => void
   shouldScaleBackground?: boolean
   scrollLockTimeout?: number
   fixed?: boolean
   dismissible?: boolean
-  onDrag?: (event: PointerEvent, percentageDragged: number) => void
-  onRelease?: (event: PointerEvent, open: boolean) => void
   modal?: boolean
+  open?: boolean
+  defaultOpen?: boolean
   nested?: boolean
-  onClose?: () => void
 } & (WithFadeFromProps | WithoutFadeFromProps)
 
-export type Drawer = {
+export interface UseDrawerProps {
+  open: Ref<boolean>
+  snapPoints: Ref<(number | string)[] | undefined>
+  dismissible: Ref<boolean>
+  nested: Ref<boolean>
+  fixed: Ref<boolean | undefined>
+  modal: Ref<boolean>
+  shouldScaleBackground: Ref<boolean | undefined>
+  activeSnapPoint: Ref<number | string | null | undefined>
+  fadeFromIndex: Ref<number | undefined>
+  closeThreshold: Ref<number>
+  scrollLockTimeout: Ref<number>
+}
+
+export interface DialogEmits {
+  (e: 'drag', percentageDragged: number): void
+  (e: 'release', open: boolean): void
+  (e: 'close'): void
+  (e: 'update:open', open: boolean): void
+  (e: 'update:activeSnapPoint', val: string | number): void
+}
+
+export interface DialogEmitHandlers {
+  emitDrag: (percentageDragged: number) => void
+  emitRelease: (open: boolean) => void
+  emitClose: () => void
+  emitOpenChange: (open: boolean) => void
+}
+
+export interface Drawer {
   isOpen: Ref<boolean>
   hasBeenOpened: Ref<boolean>
   isVisible: Ref<boolean>
@@ -65,102 +91,125 @@ export type Drawer = {
   closeDrawer: () => void
 }
 
-export function useDrawer(): DrawerRootContext {
-  const isOpen = ref(false)
+function usePropOrDefaultRef<T>(prop: Ref<T | undefined> | undefined, defaultRef: Ref<T>): Ref<T> {
+  return prop && !!prop.value ? (prop as Ref<T>) : defaultRef
+}
+
+export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRootContext {
+  const {
+    emitDrag,
+    emitRelease,
+    emitClose,
+    emitOpenChange,
+    open: isOpen,
+    dismissible,
+    nested,
+    fixed,
+    modal,
+    shouldScaleBackground,
+    scrollLockTimeout,
+    closeThreshold,
+    activeSnapPoint,
+    fadeFromIndex,
+  } = props
+
   const hasBeenOpened = ref(false)
   const isVisible = ref(false)
   const isDragging = ref(false)
-  const dragStartTime = ref(new Date())
-  const dragEndTime = ref(new Date()) // TODO: should initialize as null?
+  const justReleased = ref(false)
+
+  const overlayRef = ref<ComponentPublicInstance | null>(null)
+
   const openTime = ref<Date | null>(null)
+  const dragStartTime = ref<Date | null>(null)
+  const dragEndTime = ref<Date | null>(null)
   const lastTimeDragPrevented = ref<Date | null>(null)
   const isAllowedToDrag = ref(true)
-  const drawerRef = ref<ComponentPublicInstance | null>(null)
-  const overlayRef = ref<ComponentPublicInstance | null>(null)
-  const snapPoints = ref<(number | string)[] | undefined>(undefined)
-  const pointerStartY = ref(0)
-  const dismissible = ref(true)
-  const shouldScaleBackground = ref(false)
-  const justReleased = ref(false)
+
   const nestedOpenChangeTimer = ref<number | null>(null)
-  const nested = ref(false)
 
-  const onCloseProp = ref<(() => void) | undefined>(undefined)
-  const onOpenChangeProp = ref<((open: boolean) => void) | undefined>(undefined)
-  const onDragProp = ref<((event: PointerEvent, percentageDragged: number) => void) | undefined>(
-    undefined
+  const pointerStartY = ref(0)
+  const keyboardIsOpen = ref(false)
+
+  const previousDiffFromInitial = ref(0)
+
+  const drawerRef = ref<ComponentPublicInstance | null>(null)
+  const initialDrawerHeight = ref(0)
+  const drawerHeightRef = computed(() => drawerRef.value?.$el.getBoundingClientRect().height || 0)
+
+  const snapPoints = usePropOrDefaultRef(
+    props.snapPoints,
+    ref<(number | string)[] | undefined>(undefined),
   )
-  const onReleaseProp = ref<((event: PointerEvent, open: boolean) => void) | undefined>(undefined)
 
-  const scrollLockTimeout = ref(SCROLL_LOCK_TIMEOUT)
-  const closeThreshold = ref(CLOSE_THRESHOLD)
+  // const onCloseProp = ref<(() => void) | undefined>(undefined)
+  // const onOpenChangeProp = ref<((open: boolean) => void) | undefined>(undefined)
+  // const onDragProp = ref<((event: PointerEvent, percentageDragged: number) => void) | undefined>(
+  //   undefined
+  // )
+  // const onReleaseProp = ref<((event: PointerEvent, open: boolean) => void) | undefined>(undefined)
 
-  const activeSnapPointProp = ref(null)
-  const fadeFromIndex = ref(0)
-
-  const onSnapPointChange = () => {
-    // Change openTime ref when we reach the last snap point to prevent dragging for 500ms incase it's scrollable.
-    if (snapPoints.value && activeSnapPointIndex.value === snapPointsOffset.value.length - 1)
-      openTime.value = new Date()
-  }
+  // const fadeFromIndex = ref(
+  //   props.fadeFromIndex ?? (snapPoints.value && snapPoints.value.length - 1)
+  // )
 
   const {
-    activeSnapPoint,
     activeSnapPointIndex,
     onRelease: onReleaseSnapPoints,
     snapPointsOffset,
     onDrag: onDragSnapPoints,
     shouldFade,
-    getPercentageDragged: getSnapPointsPercentageDragged
+    getPercentageDragged: getSnapPointsPercentageDragged,
   } = useSnapPoints({
     snapPoints,
-    activeSnapPoint: activeSnapPointProp,
+    activeSnapPoint,
     drawerRef,
     fadeFromIndex,
     overlayRef,
-    onSnapPointChange
+    onSnapPointChange,
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  function onSnapPointChange(activeSnapPointIndex: number, snapPointsOffset: number[]) {
+    // Change openTime ref when we reach the last snap point to prevent dragging for 500ms incase it's scrollable.
+    if (snapPoints.value && activeSnapPointIndex === snapPointsOffset.length - 1)
+      openTime.value = new Date()
+  }
+
   const { restorePositionSetting } = usePositionFixed({
     isOpen,
-    modal: true,
+    modal,
     nested,
-    hasBeenOpened
+    hasBeenOpened,
   })
-
-  const drawerHeightRef = computed(() => drawerRef.value?.$el.getBoundingClientRect().height || 0)
 
   function getScale() {
     return (window.innerWidth - WINDOW_TOP_OFFSET) / window.innerWidth
   }
 
   function shouldDrag(el: EventTarget | null, isDraggingDown: boolean) {
-    if (!el) return false
+    if (!el)
+      return false
     let element = el as HTMLElement
     const highlightedText = window.getSelection()?.toString()
     const swipeAmount = drawerRef.value ? getTranslateY(drawerRef.value.$el) : null
     const date = new Date()
 
     // Allow scrolling when animating
-    if (openTime.value && date.getTime() - openTime.value.getTime() < 500) {
+    if (openTime.value && date.getTime() - openTime.value.getTime() < 500)
       return false
-    }
 
-    if (swipeAmount && swipeAmount > 0) {
+    if (swipeAmount && swipeAmount > 0)
       return true
-    }
 
     // Don't drag if there's highlighted text
-    if (highlightedText && highlightedText.length > 0) {
+    if (highlightedText && highlightedText.length > 0)
       return false
-    }
 
     // Disallow dragging if drawer was scrolled within `scrollLockTimeout`
     if (
-      lastTimeDragPrevented.value &&
-      date.getTime() - lastTimeDragPrevented.value.getTime() < scrollLockTimeout.value &&
-      swipeAmount === 0
+      lastTimeDragPrevented.value
+      && date.getTime() - lastTimeDragPrevented.value.getTime() < scrollLockTimeout.value
+      && swipeAmount === 0
     ) {
       lastTimeDragPrevented.value = date
       return false
@@ -184,9 +233,8 @@ export function useDrawer(): DrawerRootContext {
           return false
         }
 
-        if (element.getAttribute('role') === 'dialog') {
+        if (element.getAttribute('role') === 'dialog')
           return true
-        }
       }
 
       // Move up to the parent element
@@ -198,17 +246,19 @@ export function useDrawer(): DrawerRootContext {
   }
 
   function onPress(event: PointerEvent) {
-    if (!dismissible.value && !snapPoints.value) return
-    if (drawerRef.value && !drawerRef.value.$el.contains(event.target as Node)) return
+    if (!dismissible.value && !snapPoints.value)
+      return
+    if (drawerRef.value && !drawerRef.value.$el.contains(event.target as Node))
+      return
     isDragging.value = true
     dragStartTime.value = new Date()
 
-      // iOS doesn't trigger mouseUp after scrolling so we need to listen to touched in order to disallow dragging
-      // if (isIOS()) {
-      //   window.addEventListener('touchend', () => (isAllowedToDrag.value = false), { once: true });
-      // }
-      // Ensure we maintain correct pointer capture even when going outside of the drawer
-      ; (event.target as HTMLElement).setPointerCapture(event.pointerId)
+    // iOS doesn't trigger mouseUp after scrolling so we need to listen to touched in order to disallow dragging
+    // if (isIOS()) {
+    //   window.addEventListener('touchend', () => (isAllowedToDrag.value = false), { once: true });
+    // }
+    // Ensure we maintain correct pointer capture even when going outside of the drawer
+    ; (event.target as HTMLElement).setPointerCapture(event.pointerId)
     pointerStartY.value = event.screenY
   }
 
@@ -219,30 +269,31 @@ export function useDrawer(): DrawerRootContext {
       const isDraggingDown = draggedDistance > 0
 
       // Disallow dragging down to close when first snap point is the active one and dismissible prop is set to false.
-      if (snapPoints.value && activeSnapPointIndex.value === 0 && !dismissible.value) return
+      if (snapPoints.value && activeSnapPointIndex.value === 0 && !dismissible.value)
+        return
 
-      if (!isAllowedToDrag.value && !shouldDrag(event.target, isDraggingDown)) return
+      if (!isAllowedToDrag.value && !shouldDrag(event.target, isDraggingDown))
+        return
       drawerRef?.value?.$el.classList.add(DRAG_CLASS)
       // If shouldDrag gave true once after pressing down on the drawer, we set isAllowedToDrag to true and it will remain true until we let go, there's no reason to disable dragging mid way, ever, and that's the solution to it
       isAllowedToDrag.value = true
       set(drawerRef.value?.$el, {
-        transition: 'none'
+        transition: 'none',
       })
 
       set(overlayRef.value?.$el, {
-        transition: 'none'
+        transition: 'none',
       })
 
-      if (snapPoints.value) {
+      if (snapPoints.value)
         onDragSnapPoints({ draggedDistance })
-      }
 
       // Run this only if snapPoints are not defined or if we are at the last snap point (highest one)
       if (isDraggingDown && !snapPoints.value) {
         const dampenedDraggedDistance = dampenValue(draggedDistance)
 
         set(drawerRef.value?.$el, {
-          transform: `translate3d(0, ${Math.min(dampenedDraggedDistance * -1, 0)}px, 0)`
+          transform: `translate3d(0, ${Math.min(dampenedDraggedDistance * -1, 0)}px, 0)`,
         })
         return
       }
@@ -254,28 +305,27 @@ export function useDrawer(): DrawerRootContext {
       let percentageDragged = absDraggedDistance / drawerHeightRef.value
       const snapPointPercentageDragged = getSnapPointsPercentageDragged(
         absDraggedDistance,
-        isDraggingDown
+        isDraggingDown,
       )
 
-      if (snapPointPercentageDragged !== null) {
+      if (snapPointPercentageDragged !== null)
         percentageDragged = snapPointPercentageDragged
-      }
 
       const opacityValue = 1 - percentageDragged
 
       if (
-        shouldFade.value ||
-        (fadeFromIndex.value && activeSnapPointIndex.value === fadeFromIndex.value - 1)
+        shouldFade.value
+        || (fadeFromIndex.value && activeSnapPointIndex.value === fadeFromIndex.value - 1)
       ) {
-        onDragProp.value?.(event, percentageDragged)
+        emitDrag(percentageDragged)
 
         set(
           overlayRef.value?.$el,
           {
             opacity: `${opacityValue}`,
-            transition: 'none'
+            transition: 'none',
           },
-          true
+          true,
         )
       }
 
@@ -291,33 +341,34 @@ export function useDrawer(): DrawerRootContext {
           {
             borderRadius: `${borderRadiusValue}px`,
             transform: `scale(${scaleValue}) translate3d(0, ${translateYValue}px, 0)`,
-            transition: 'none'
+            transition: 'none',
           },
-          true
+          true,
         )
       }
 
       if (!snapPoints.value) {
         set(drawerRef.value?.$el, {
-          transform: `translate3d(0, ${absDraggedDistance}px, 0)`
+          transform: `translate3d(0, ${absDraggedDistance}px, 0)`,
         })
       }
     }
   }
 
   function resetDrawer() {
-    if (!drawerRef.value) return
+    if (!drawerRef.value)
+      return
     const wrapper = document.querySelector('[vaul-drawer-wrapper]')
     const currentSwipeAmount = getTranslateY(drawerRef.value.$el)
 
     set(drawerRef.value.$el, {
       transform: 'translate3d(0, 0, 0)',
-      transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`
+      transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
     })
 
     set(overlayRef.value?.$el, {
       transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-      opacity: '1'
+      opacity: '1',
     })
 
     // Don't reset background if swiped upwards
@@ -331,43 +382,46 @@ export function useDrawer(): DrawerRootContext {
           transformOrigin: 'top',
           transitionProperty: 'transform, border-radius',
           transitionDuration: `${TRANSITIONS.DURATION}s`,
-          transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`
+          transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
         },
-        true
+        true,
       )
     }
   }
 
   function closeDrawer() {
-    if (!drawerRef.value) return
+    if (!drawerRef.value)
+      return
 
-    onCloseProp.value?.()
+    // emitClose()
     set(drawerRef.value.$el, {
       transform: `translate3d(0, 100%, 0)`,
-      transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`
+      transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
     })
 
     set(overlayRef.value?.$el, {
       opacity: '0',
-      transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`
+      transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
     })
 
     scaleBackground(false)
+    restorePositionSetting()
 
     isVisible.value = false
     window.setTimeout(() => {
-      isOpen.value = false
+      emitOpenChange(false)
+      // isOpen.value = false
     }, 300)
 
     window.setTimeout(() => {
-      if (snapPoints.value) {
+      if (snapPoints.value)
         activeSnapPoint.value = snapPoints.value[0]
-      }
     }, TRANSITIONS.DURATION * 1000) // seconds to ms
   }
 
   function onRelease(event: PointerEvent) {
-    if (!isDragging.value || !drawerRef.value) return
+    if (!isDragging.value || !drawerRef.value)
+      return
     // TODO use-prevent-scroll
     // if (isAllowedToDrag.value && isInput(event.target as HTMLElement)) {
     //   // If we were just dragging, prevent focusing on inputs etc. on release
@@ -379,9 +433,11 @@ export function useDrawer(): DrawerRootContext {
     dragEndTime.value = new Date()
     const swipeAmount = getTranslateY(drawerRef.value.$el)
 
-    if (!shouldDrag(event.target, false) || !swipeAmount || Number.isNaN(swipeAmount)) return
+    if (!shouldDrag(event.target, false) || !swipeAmount || Number.isNaN(swipeAmount))
+      return
 
-    if (dragStartTime.value === null) return
+    if (dragStartTime.value === null)
+      return
 
     const timeTaken = dragEndTime.value.getTime() - dragStartTime.value.getTime()
     const distMoved = pointerStartY.value - event.screenY
@@ -401,37 +457,37 @@ export function useDrawer(): DrawerRootContext {
         draggedDistance: distMoved,
         closeDrawer,
         velocity,
-        dismissible: dismissible.value
+        dismissible: dismissible.value,
       })
-      onReleaseProp.value?.(event, true)
+      emitRelease(true)
       return
     }
 
     // Moved upwards, don't do anything
     if (distMoved > 0) {
       resetDrawer()
-      onReleaseProp.value?.(event, true)
+      emitRelease(true)
       return
     }
 
     if (velocity > VELOCITY_THRESHOLD) {
       closeDrawer()
-      onReleaseProp.value?.(event, false)
+      emitRelease(false)
       return
     }
 
     const visibleDrawerHeight = Math.min(
       drawerRef.value.$el.getBoundingClientRect().height ?? 0,
-      window.innerHeight
+      window.innerHeight,
     )
 
     if (swipeAmount >= visibleDrawerHeight * closeThreshold.value) {
       closeDrawer()
-      onReleaseProp.value?.(event, false)
+      emitRelease(false)
       return
     }
 
-    onReleaseProp.value?.(event, true)
+    emitRelease(true)
     resetDrawer()
   }
 
@@ -440,21 +496,21 @@ export function useDrawer(): DrawerRootContext {
       openTime.value = new Date()
       scaleBackground(true)
     }
-    onOpenChangeProp.value?.(open)
+    emitOpenChange(open)
   })
 
   function scaleBackground(open: boolean) {
     const wrapper = document.querySelector('[vaul-drawer-wrapper]')
-
-    if (!wrapper || !shouldScaleBackground.value) return
+    if (!wrapper || !shouldScaleBackground.value)
+      return
 
     if (open) {
       set(
         document.body,
         {
-          background: 'black'
+          background: 'black',
         },
-        true
+        true,
       )
 
       set(wrapper, {
@@ -464,9 +520,10 @@ export function useDrawer(): DrawerRootContext {
         transformOrigin: 'top',
         transitionProperty: 'transform, border-radius',
         transitionDuration: `${TRANSITIONS.DURATION}s`,
-        transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`
+        transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
       })
-    } else {
+    }
+    else {
       // Exit
       reset(wrapper, 'overflow')
       reset(wrapper, 'transform')
@@ -474,7 +531,7 @@ export function useDrawer(): DrawerRootContext {
       set(wrapper, {
         transitionProperty: 'transform, border-radius',
         transitionDuration: `${TRANSITIONS.DURATION}s`,
-        transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`
+        transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
       })
     }
   }
@@ -483,53 +540,56 @@ export function useDrawer(): DrawerRootContext {
     const scale = o ? (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth : 1
     const y = o ? -NESTED_DISPLACEMENT : 0
 
-    if (nestedOpenChangeTimer.value) {
+    if (nestedOpenChangeTimer.value)
       window.clearTimeout(nestedOpenChangeTimer.value)
-    }
 
     set(drawerRef.value?.$el, {
       transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-      transform: `scale(${scale}) translate3d(0, ${y}px, 0)`
+      transform: `scale(${scale}) translate3d(0, ${y}px, 0)`,
     })
 
     if (!o && drawerRef.value?.$el) {
       nestedOpenChangeTimer.value = window.setTimeout(() => {
         set(drawerRef.value?.$el, {
           transition: 'none',
-          transform: `translate3d(0, ${getTranslateY(drawerRef.value?.$el as HTMLElement)}px, 0)`
+          transform: `translate3d(0, ${getTranslateY(drawerRef.value?.$el as HTMLElement)}px, 0)`,
         })
       }, 500)
     }
   }
 
-  function onNestedDrag(event: PointerEvent, percentageDragged: number) {
-    if (percentageDragged < 0) return
+  function onNestedDrag(percentageDragged: number) {
+    if (percentageDragged < 0)
+      return
+
     const initialScale = (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth
     const newScale = initialScale + percentageDragged * (1 - initialScale)
     const newY = -NESTED_DISPLACEMENT + percentageDragged * NESTED_DISPLACEMENT
 
     set(drawerRef.value?.$el, {
       transform: `scale(${newScale}) translate3d(0, ${newY}px, 0)`,
-      transition: 'none'
+      transition: 'none',
     })
   }
 
-  function onNestedRelease(event: PointerEvent, o: boolean) {
+  function onNestedRelease(o: boolean) {
     const scale = o ? (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth : 1
     const y = o ? -NESTED_DISPLACEMENT : 0
 
     if (o) {
       set(drawerRef.value?.$el, {
         transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(
-          ','
+          ',',
         )})`,
-        transform: `scale(${scale}) translate3d(0, ${y}px, 0)`
+        transform: `scale(${scale}) translate3d(0, ${y}px, 0)`,
       })
     }
   }
 
   return {
     isOpen,
+    modal,
+    keyboardIsOpen,
     hasBeenOpened,
     isVisible,
     drawerRef,
@@ -553,10 +613,10 @@ export function useDrawer(): DrawerRootContext {
     onNestedDrag,
     onNestedRelease,
     onNestedOpenChange,
-    onCloseProp,
-    onOpenChangeProp,
-    onDragProp,
-    onReleaseProp,
-    nested
+    emitClose,
+    emitDrag,
+    emitRelease,
+    emitOpenChange,
+    nested,
   }
 }

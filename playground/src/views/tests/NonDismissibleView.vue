@@ -5,11 +5,11 @@ import {
   DrawerPortal,
   DrawerRoot,
   DrawerTitle,
-  DrawerTrigger
+  DrawerTrigger,
 } from 'vaul-vue'
 import { ref } from 'vue'
 
-const open = ref<boolean>(false)
+const open = ref < boolean > (false)
 </script>
 
 <template>
@@ -19,7 +19,9 @@ const open = ref<boolean>(false)
   >
     <DrawerRoot v-model:open="open" :dismissible="false">
       <DrawerTrigger as-child>
-        <button data-testid="trigger" class="text-2xl">Open Drawer</button>
+        <button data-testid="trigger" class="text-2xl">
+          Open Drawer
+        </button>
       </DrawerTrigger>
       <DrawerPortal>
         <DrawerOverlay data-testid="overlay" class="fixed inset-0 bg-black/40" />
@@ -30,7 +32,9 @@ const open = ref<boolean>(false)
           <div class="p-4 bg-white rounded-t-[10px] flex-1">
             <div class="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
             <div class="max-w-md mx-auto">
-              <DrawerTitle class="font-medium mb-4">Unstyled drawer for Vue.</DrawerTitle>
+              <DrawerTitle class="font-medium mb-4">
+                Unstyled drawer for Vue.
+              </DrawerTitle>
             </div>
             <p class="text-zinc-600 mb-2">
               This component can be used as a replacement for a Dialog on mobile and tablet devices.
@@ -39,8 +43,8 @@ const open = ref<boolean>(false)
           <button
             type="button"
             data-testid="dismiss-button"
-            @click="() => (open = false)"
             class="rounded-md mb-6 w-full bg-gray-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+            @click="() => (open = false)"
           >
             Click to close
           </button>

@@ -5,46 +5,46 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: () => import('../views/HomeView.vue')
+      component: () => import('../views/HomeView.vue'),
     },
     {
       path: '/test',
       children: [
         {
           path: 'controlled',
-          component: () => import('../views/tests/ControlledView.vue')
+          component: () => import('../views/tests/ControlledView.vue'),
         },
         {
           path: 'initial-snap',
-          component: () => import('../views/tests/InitialSnapView.vue')
+          component: () => import('../views/tests/InitialSnapView.vue'),
         },
         {
           path: 'nested-drawer',
-          component: () => import('../views/tests/NestedDrawerView.vue')
+          component: () => import('../views/tests/NestedDrawerView.vue'),
         },
         {
           path: 'non-dismissible',
-          component: () => import('../views/tests/NonDismissibleView.vue')
+          component: () => import('../views/tests/NonDismissibleView.vue'),
         },
         {
           path: 'scrollable-with-inputs',
-          component: () => import('../views/tests/ScrollableWithInputsView.vue')
+          component: () => import('../views/tests/ScrollableWithInputsView.vue'),
         },
         {
           path: 'without-scaled-background',
-          component: () => import('../views/tests/WithoutScaledBackgroundView.vue')
+          component: () => import('../views/tests/WithoutScaledBackgroundView.vue'),
         },
         {
           path: 'with-scaled-background',
-          component: () => import('../views/tests/WithScaledBackgroundView.vue')
+          component: () => import('../views/tests/WithScaledBackgroundView.vue'),
         },
         {
           path: 'with-snap-points',
-          component: () => import('../views/tests/WithSnapPointsView.vue')
-        }
-      ]
-    }
-  ]
+          component: () => import('../views/tests/WithSnapPointsView.vue'),
+        },
+      ],
+    },
+  ],
 })
 
 export default router

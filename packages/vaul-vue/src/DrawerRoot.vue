@@ -1,84 +1,79 @@
 <script setup lang="ts">
 import { DialogRoot } from 'radix-vue'
+import { useVModel } from '@vueuse/core'
+import { type WritableComputedRef, computed, toRefs } from 'vue'
 import { provideDrawerRootContext } from './context'
-import { type DialogProps, useDrawer } from './controls'
-import { watch } from 'vue'
-
-const open = defineModel<boolean>('open', {
-  default: false
-})
+import {
+  CLOSE_THRESHOLD,
+  type DialogEmits,
+  type DialogProps,
+  SCROLL_LOCK_TIMEOUT,
+  useDrawer,
+} from './controls'
 
 const props = withDefaults(defineProps<DialogProps>(), {
-  dismissible: undefined
+  open: undefined,
+  fixed: undefined,
+  dismissible: true,
+  activeSnapPoint: undefined,
+  snapPoints: undefined,
+  shouldScaleBackground: undefined,
+  closeThreshold: CLOSE_THRESHOLD,
+  fadeFromIndex: undefined,
+  nested: false,
+  modal: true,
+  scrollLockTimeout: SCROLL_LOCK_TIMEOUT,
 })
 
-const {
-  isOpen,
-  hasBeenOpened,
-  snapPoints,
-  activeSnapPoint,
-  closeDrawer,
-  shouldScaleBackground,
-  fadeFromIndex,
-  onCloseProp,
-  onOpenChangeProp,
-  onDragProp,
-  onReleaseProp,
-  nested,
-  dismissible
-} = provideDrawerRootContext(useDrawer())
+const emit = defineEmits<DialogEmits>()
 
-if (props.snapPoints) {
-  snapPoints.value = props.snapPoints
-  activeSnapPoint.value = props.snapPoints[0]
+const fadeFromIndex = computed(() => props.fadeFromIndex ?? (props.snapPoints && props.snapPoints.length - 1))
+
+const open = useVModel(props, 'open', emit, {
+  defaultValue: props.defaultOpen,
+  passive: (props.open === undefined) as false,
+}) as WritableComputedRef<boolean>
+
+const activeSnapPoint = useVModel(props, 'activeSnapPoint', emit, {
+  passive: (props.activeSnapPoint === undefined) as false,
+})
+
+const emitHandlers = {
+  emitDrag: (percentageDragged: number) => emit('drag', percentageDragged),
+  emitRelease: (open: boolean) => emit('release', open),
+  emitClose: () => emit('close'),
+  emitOpenChange: (o: boolean) => {
+    open.value = o
+  },
 }
 
-if (props.onClose) {
-  onCloseProp.value = props.onClose
-}
+const { closeDrawer, hasBeenOpened, modal } = provideDrawerRootContext(
+  useDrawer({
+    ...emitHandlers,
+    ...toRefs(props),
+    activeSnapPoint,
+    fadeFromIndex,
+    open,
+  }),
+)
 
-if (props.shouldScaleBackground) {
-  shouldScaleBackground.value = props.shouldScaleBackground
-}
-
-fadeFromIndex.value = props.fadeFromIndex ?? (snapPoints.value && snapPoints.value.length - 1)
-
-if (props.onOpenChange) {
-  onOpenChangeProp.value = props.onOpenChange
-}
-
-if (props.onDrag) {
-  onDragProp.value = props.onDrag
-}
-
-if (props.onRelease) {
-  onReleaseProp.value = props.onRelease
-}
-
-if (props.nested) {
-  nested.value = props.nested
-}
-
-dismissible.value = props.dismissible ?? dismissible.value
-
-const handleOpenChange = (o: boolean) => {
+function handleOpenChange(o: boolean) {
   if (!o) {
     closeDrawer()
-    open.value = false
-  } else {
+  }
+  else {
     hasBeenOpened.value = true
-    isOpen.value = o
-
-    // manage external / controlled open state
     open.value = o
   }
 }
-
-watch(open, (o) => handleOpenChange(o), { immediate: true })
 </script>
 
 <template>
-  <DialogRoot @update:open="handleOpenChange" :open="isOpen">
+  <DialogRoot
+    :open="open"
+    :modal="modal"
+    @update:open="handleOpenChange"
+  >
     <slot />
   </DialogRoot>
 </template>
@@ -118,9 +113,7 @@ watch(open, (o) => handleOpenChange(o), { immediate: true })
   height: 200%;
 }
 
-[vaul-overlay][vaul-snap-points='true']:not([vaul-snap-points-overlay='true']):not(
-    [data-state='closed']
-  ) {
+[vaul-overlay][vaul-snap-points='true']:not([vaul-snap-points-overlay='true']):not([data-state='closed']) {
   opacity: 0;
 }
 
@@ -130,10 +123,8 @@ watch(open, (o) => handleOpenChange(o), { immediate: true })
 
 /* This will allow us to not animate via animation, but still benefit from delaying unmount via Radix. */
 @keyframes fake-animation {
-  from {
-  }
-  to {
-  }
+  from {}
+  to {}
 }
 
 @media (hover: hover) and (pointer: fine) {
