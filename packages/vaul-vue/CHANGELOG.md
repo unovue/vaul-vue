@@ -1,5 +1,15 @@
 # vaul-vue
 
+## 0.1.0
+
+### Minor Changes
+
+- 6e40283: General DX improvements to bring package inline with Vue standards
+
+### Patch Changes
+
+- 771f420: Add readme from root to package release
+
 ## 0.0.3
 
 ### Patch Changes
