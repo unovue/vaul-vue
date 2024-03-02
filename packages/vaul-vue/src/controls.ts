@@ -28,7 +28,7 @@ export interface WithoutFadeFromProps {
   fadeFromIndex?: never
 }
 
-export type DialogProps = {
+export type DrawerRootProps = {
   activeSnapPoint?: number | string | null
   closeThreshold?: number
   shouldScaleBackground?: boolean
@@ -55,7 +55,7 @@ export interface UseDrawerProps {
   scrollLockTimeout: Ref<number>
 }
 
-export interface DialogEmits {
+export interface DrawerRootEmits {
   (e: 'drag', percentageDragged: number): void
   (e: 'release', open: boolean): void
   (e: 'close'): void

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useAttrs, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { DialogContent } from 'radix-vue'
 import { injectDrawerRootContext } from './context'
 
@@ -17,8 +17,6 @@ const {
   keyboardIsOpen,
   closeDrawer,
 } = injectDrawerRootContext()
-
-const attrs = useAttrs()
 
 const snapPointHeight = computed(() => {
   if (snapPointsOffset.value && snapPointsOffset.value.length > 0)
@@ -60,7 +58,7 @@ watch(
     ref="drawerRef"
     vaul-drawer=""
     :vaul-drawer-visible="isVisible ? 'true' : 'false'"
-    :style="[attrs.style, { '--snap-point-height': snapPointHeight }]"
+    :style="{ '--snap-point-height': snapPointHeight }"
     @pointerdown="onPress"
     @pointermove="onDrag"
     @pointerup="onRelease"

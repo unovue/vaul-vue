@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useForwardPropsEmits } from 'radix-vue'
 import DrawerRoot from './DrawerRoot.vue'
-import type { DialogEmits, DialogProps } from './controls'
+import type { DrawerRootEmits, DrawerRootProps } from './controls'
 import { injectDrawerRootContext } from './context'
 
-const props = defineProps<DialogProps>()
-const emits = defineEmits<DialogEmits>()
+const props = defineProps<DrawerRootProps>()
+const emits = defineEmits<DrawerRootEmits>()
 
 const { onNestedDrag, onNestedOpenChange, onNestedRelease } = injectDrawerRootContext()
 function onClose() {

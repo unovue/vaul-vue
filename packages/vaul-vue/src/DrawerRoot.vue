@@ -5,13 +5,13 @@ import { type WritableComputedRef, computed, toRefs } from 'vue'
 import { provideDrawerRootContext } from './context'
 import {
   CLOSE_THRESHOLD,
-  type DialogEmits,
-  type DialogProps,
+  type DrawerRootEmits,
+  type DrawerRootProps,
   SCROLL_LOCK_TIMEOUT,
   useDrawer,
 } from './controls'
 
-const props = withDefaults(defineProps<DialogProps>(), {
+const props = withDefaults(defineProps<DrawerRootProps>(), {
   open: undefined,
   fixed: undefined,
   dismissible: true,
@@ -25,7 +25,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
   scrollLockTimeout: SCROLL_LOCK_TIMEOUT,
 })
 
-const emit = defineEmits<DialogEmits>()
+const emit = defineEmits<DrawerRootEmits>()
 
 const fadeFromIndex = computed(() => props.fadeFromIndex ?? (props.snapPoints && props.snapPoints.length - 1))
 
