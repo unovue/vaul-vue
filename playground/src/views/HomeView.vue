@@ -28,7 +28,7 @@ import BackgroundTexture from '@/components/BackgroundTexture.vue'
         <div class="flex gap-4 justify-center mt-6">
           <DemoDrawer />
           <a
-            href="https://github.com/unovue/vaul-vue" target="_blank"
+            href="https://github.com/radix-vue/vaul-vue" target="_blank"
             class="font-semibold text-sm px-4 py-2.5 hover:bg-gray-100 rounded-full"
           > GitHub <span
             aria-hidden="true"
