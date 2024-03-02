@@ -1,11 +1,5 @@
 # vaul-vue
 
-## 0.1.0
-
-### Minor Changes
-
-- a75df19: General DX improvements to bring package inline with Vue standards
-
 ## 0.0.3
 
 ### Patch Changes
