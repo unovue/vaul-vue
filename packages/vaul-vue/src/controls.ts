@@ -525,7 +525,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     }
     else {
       // Exit
-      remove(document.body, 'background', true)
+      remove(document.body, 'background')
       reset(wrapper, 'overflow')
       reset(wrapper, 'transform')
       reset(wrapper, 'borderRadius')
