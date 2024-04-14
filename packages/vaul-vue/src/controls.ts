@@ -101,7 +101,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     emitRelease,
     emitClose,
     emitOpenChange,
-    open: isOpen,
+    open,
     dismissible,
     nested,
     fixed,
@@ -113,6 +113,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     fadeFromIndex,
   } = props
 
+  const isOpen = ref(open.value)
   const hasBeenOpened = ref(false)
   const isVisible = ref(false)
   const isDragging = ref(false)
@@ -410,7 +411,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     isVisible.value = false
     window.setTimeout(() => {
       emitOpenChange(false)
-      // isOpen.value = false
+      isOpen.value = false
     }, 300)
 
     window.setTimeout(() => {
@@ -491,13 +492,17 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     resetDrawer()
   }
 
-  watch(isOpen, (open) => {
-    if (open) {
+  watch(open, (o) => {
+    if (o) {
       openTime.value = new Date()
       scaleBackground(true)
+      isOpen.value = o
     }
-    emitOpenChange(open)
-  })
+    else {
+      closeDrawer()
+    }
+    emitOpenChange(o)
+  }, { immediate: true })
 
   function scaleBackground(open: boolean) {
     const wrapper = document.querySelector('[vaul-drawer-wrapper]')

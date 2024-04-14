@@ -47,7 +47,7 @@ const emitHandlers = {
   },
 }
 
-const { closeDrawer, hasBeenOpened, modal } = provideDrawerRootContext(
+const { closeDrawer, hasBeenOpened, modal, isOpen } = provideDrawerRootContext(
   useDrawer({
     ...emitHandlers,
     ...toRefs(props),
@@ -70,7 +70,7 @@ function handleOpenChange(o: boolean) {
 
 <template>
   <DialogRoot
-    :open="open"
+    :open="isOpen"
     :modal="modal"
     @update:open="handleOpenChange"
   >
