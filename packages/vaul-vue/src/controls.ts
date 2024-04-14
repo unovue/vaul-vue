@@ -113,7 +113,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     fadeFromIndex,
   } = props
 
-  const isOpen = ref(open.value)
+  const isOpen = ref(open.value ?? false)
   const hasBeenOpened = ref(false)
   const isVisible = ref(false)
   const isDragging = ref(false)
@@ -373,7 +373,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     })
 
     // Don't reset background if swiped upwards
-    if (shouldScaleBackground.value && currentSwipeAmount && currentSwipeAmount > 0 && isOpen) {
+    if (shouldScaleBackground.value && currentSwipeAmount && currentSwipeAmount > 0 && isOpen.value) {
       set(
         wrapper,
         {
@@ -408,9 +408,8 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     scaleBackground(false)
     restorePositionSetting()
 
-    isVisible.value = false
     window.setTimeout(() => {
-      emitOpenChange(false)
+      isVisible.value = false
       isOpen.value = false
     }, 300)
 
@@ -492,16 +491,22 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     resetDrawer()
   }
 
-  watch(open, (o) => {
+  watch(isOpen, (o) => {
     if (o) {
       openTime.value = new Date()
       scaleBackground(true)
+    }
+    emitOpenChange(o)
+  }, { immediate: true })
+
+  watch(open, (o) => {
+    if (o) {
       isOpen.value = o
+      hasBeenOpened.value = true
     }
     else {
       closeDrawer()
     }
-    emitOpenChange(o)
   }, { immediate: true })
 
   function scaleBackground(open: boolean) {
@@ -592,6 +597,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
   }
 
   return {
+    open,
     isOpen,
     modal,
     keyboardIsOpen,

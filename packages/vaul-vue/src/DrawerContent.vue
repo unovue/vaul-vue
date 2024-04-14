@@ -4,6 +4,7 @@ import { DialogContent } from 'radix-vue'
 import { injectDrawerRootContext } from './context'
 
 const {
+  open,
   isOpen,
   isVisible,
   snapPointsOffset,
@@ -34,7 +35,10 @@ function handlePointerDownOutside(event: Event) {
     keyboardIsOpen.value = false
 
   event.preventDefault()
-  if (!dismissible.value)
+
+  if (dismissible.value)
+    emitOpenChange(false)
+  if (!dismissible.value || open.value !== undefined)
     return
 
   closeDrawer()
@@ -63,6 +67,10 @@ watch(
     @pointermove="onDrag"
     @pointerup="onRelease"
     @pointer-down-outside="handlePointerDownOutside"
+    @escape-key-down="(event) => {
+      if (!dismissible)
+        event.preventDefault()
+    }"
   >
     <slot />
   </DialogContent>
