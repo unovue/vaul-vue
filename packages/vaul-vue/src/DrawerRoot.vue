@@ -74,7 +74,6 @@ function handleOpenChange(o: boolean) {
 </script>
 
 <template>
-  {{ isOpen }}
   <DialogRoot
     :open="isOpen"
     :modal="modal"
