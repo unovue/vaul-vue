@@ -501,7 +501,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
 
   watchEffect(() => {
     if (!isOpen.value && shouldScaleBackground.value) {
-      setTimeout(() => {
+      window.setTimeout(() => {
         reset(document.body)
       }, 200)
     }
