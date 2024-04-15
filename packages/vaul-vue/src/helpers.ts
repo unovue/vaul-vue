@@ -40,21 +40,6 @@ export function set(el?: Element | HTMLElement | null, styles?: Style, ignoreCac
   cache.set(el, originalStyles)
 }
 
-export function remove(el: Element | HTMLElement | null, prop: string) {
-  if (!el || !(el instanceof HTMLElement))
-    return
-
-  const originalStyles = cache.get(el)
-
-  // Delete from cache if it exists
-  if (originalStyles) {
-    delete originalStyles[prop]
-    cache.set(el, originalStyles)
-  }
-
-  el.style.removeProperty(prop)
-}
-
 export function reset(el: Element | HTMLElement | null, prop?: string) {
   if (!el || !(el instanceof HTMLElement))
     return
