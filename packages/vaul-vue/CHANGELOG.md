@@ -1,5 +1,11 @@
 # vaul-vue
 
+## 0.1.2
+
+### Patch Changes
+
+- 49733ea: fix: ssr build issue
+
 ## 0.1.1
 
 ### Patch Changes
