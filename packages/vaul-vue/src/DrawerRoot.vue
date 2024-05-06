@@ -13,6 +13,7 @@ import {
 
 const props = withDefaults(defineProps<DrawerRootProps>(), {
   open: undefined,
+  defaultOpen: undefined,
   fixed: undefined,
   dismissible: true,
   activeSnapPoint: undefined,
@@ -43,11 +44,11 @@ const emitHandlers = {
   emitRelease: (open: boolean) => emit('release', open),
   emitClose: () => emit('close'),
   emitOpenChange: (o: boolean) => {
-    open.value = o
+    emit('update:open', o)
   },
 }
 
-const { closeDrawer, hasBeenOpened, modal } = provideDrawerRootContext(
+const { closeDrawer, hasBeenOpened, modal, isOpen } = provideDrawerRootContext(
   useDrawer({
     ...emitHandlers,
     ...toRefs(props),
@@ -58,19 +59,23 @@ const { closeDrawer, hasBeenOpened, modal } = provideDrawerRootContext(
 )
 
 function handleOpenChange(o: boolean) {
+  if (open.value !== undefined) {
+    emitHandlers.emitOpenChange(o)
+    return
+  }
   if (!o) {
     closeDrawer()
   }
   else {
     hasBeenOpened.value = true
-    open.value = o
+    isOpen.value = o
   }
 }
 </script>
 
 <template>
   <DialogRoot
-    :open="open"
+    :open="isOpen"
     :modal="modal"
     @update:open="handleOpenChange"
   >

@@ -2,6 +2,7 @@ import type { ComponentPublicInstance, Ref } from 'vue'
 import { createContext } from 'radix-vue'
 
 export interface DrawerRootContext {
+  open: Ref<boolean>
   isOpen: Ref<boolean>
   modal: Ref<boolean>
   hasBeenOpened: Ref<boolean>
