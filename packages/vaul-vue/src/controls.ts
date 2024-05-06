@@ -1,5 +1,6 @@
 import { computed, ref, watch, watchEffect } from 'vue'
 import type { ComponentPublicInstance, Ref } from 'vue'
+import { isClient } from '@vueuse/core'
 import { dampenValue, getTranslateY, reset, set } from './helpers'
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
 import { useSnapPoints } from './useSnapPoints'
@@ -195,9 +196,8 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     const swipeAmount = drawerRef.value ? getTranslateY(drawerRef.value.$el) : null
     const date = new Date()
 
-    if (element.hasAttribute('data-vaul-no-drag') || element.closest('[data-vaul-no-drag]')) {
-      return false;
-    }
+    if (element.hasAttribute('data-vaul-no-drag') || element.closest('[data-vaul-no-drag]'))
+      return false
 
     // Allow scrolling when animating
     if (openTime.value && date.getTime() - openTime.value.getTime() < 500)
@@ -424,13 +424,13 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
   }
 
   watchEffect(() => {
-    if (!isOpen.value && shouldScaleBackground.value) {
+    if (!isOpen.value && shouldScaleBackground.value && isClient) {
       // Can't use `onAnimationEnd` as the component will be invisible by then
       const id = setTimeout(() => {
-        reset(document.body);
-      }, 200);
+        reset(document.body)
+      }, 200)
 
-      return () => clearTimeout(id);
+      return () => clearTimeout(id)
     }
   })
 
@@ -533,7 +533,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
       // setting original styles initially
       set(document.body, {
         background: document.body.style.backgroundColor || document.body.style.background,
-      });
+      })
       // setting body styles, with cache ignored, so that we can get correct original styles in reset
       set(
         document.body,
