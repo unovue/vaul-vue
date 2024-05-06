@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import type { ComponentPublicInstance, Ref } from 'vue'
 import { dampenValue, getTranslateY, reset, set } from './helpers'
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
@@ -423,6 +423,17 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     }, TRANSITIONS.DURATION * 1000) // seconds to ms
   }
 
+  watchEffect(() => {
+    if (!isOpen.value && shouldScaleBackground.value) {
+      // Can't use `onAnimationEnd` as the component will be invisible by then
+      const id = setTimeout(() => {
+        reset(document.body);
+      }, 200);
+
+      return () => clearTimeout(id);
+    }
+  })
+
   function onRelease(event: PointerEvent) {
     if (!isDragging.value || !drawerRef.value)
       return
@@ -519,6 +530,11 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
       return
 
     if (open) {
+      // setting original styles initially
+      set(document.body, {
+        background: document.body.style.backgroundColor || document.body.style.background,
+      });
+      // setting body styles, with cache ignored, so that we can get correct original styles in reset
       set(
         document.body,
         {
