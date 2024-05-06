@@ -1,4 +1,4 @@
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { ComponentPublicInstance, Ref } from 'vue'
 import { dampenValue, getTranslateY, reset, set } from './helpers'
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
@@ -499,25 +499,12 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     emitOpenChange(open)
   })
 
-  watchEffect(() => {
-    if (!isOpen.value && shouldScaleBackground.value) {
-      window.setTimeout(() => {
-        reset(document.body)
-      }, 200)
-    }
-  })
-
   function scaleBackground(open: boolean) {
     const wrapper = document.querySelector('[vaul-drawer-wrapper]')
     if (!wrapper || !shouldScaleBackground.value)
       return
 
     if (open) {
-      // setting original styles initially
-      set(document.body, {
-        background: document.body.style.backgroundColor || document.body.style.background,
-      })
-
       set(
         document.body,
         {
