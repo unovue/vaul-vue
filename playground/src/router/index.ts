@@ -15,6 +15,10 @@ const router = createRouter({
           component: () => import('../views/tests/ControlledView.vue'),
         },
         {
+          path: 'no-drag-element',
+          component: () => import('../views/tests/NoDragElementView.vue'),
+        },
+        {
           path: 'initial-snap',
           component: () => import('../views/tests/InitialSnapView.vue'),
         },

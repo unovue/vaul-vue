@@ -195,6 +195,10 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     const swipeAmount = drawerRef.value ? getTranslateY(drawerRef.value.$el) : null
     const date = new Date()
 
+    if (element.hasAttribute('data-vaul-no-drag') || element.closest('[data-vaul-no-drag]')) {
+      return false;
+    }
+
     // Allow scrolling when animating
     if (openTime.value && date.getTime() - openTime.value.getTime() < 500)
       return false
