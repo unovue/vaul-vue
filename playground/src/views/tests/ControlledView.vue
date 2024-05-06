@@ -10,8 +10,8 @@ import {
 } from 'vaul-vue'
 import { ref } from 'vue'
 
-const open = ref < boolean > (false)
-const fullyControlled = ref < boolean > (false)
+const open = ref<boolean>(false)
+const fullyControlled = ref<boolean>(false)
 </script>
 
 <template>
