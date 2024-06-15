@@ -28,6 +28,12 @@ const props = withDefaults(defineProps<DrawerRootProps>(), {
 
 const emit = defineEmits<DrawerRootEmits>()
 
+const slots = defineSlots<{
+  default: (props: {
+    open: typeof isOpen.value
+  }) => any
+}>()
+
 const fadeFromIndex = computed(() => props.fadeFromIndex ?? (props.snapPoints && props.snapPoints.length - 1))
 
 const open = useVModel(props, 'open', emit, {
@@ -71,6 +77,10 @@ function handleOpenChange(o: boolean) {
     isOpen.value = o
   }
 }
+
+defineExpose({
+  open: isOpen,
+})
 </script>
 
 <template>
@@ -79,7 +89,7 @@ function handleOpenChange(o: boolean) {
     :modal="modal"
     @update:open="handleOpenChange"
   >
-    <slot />
+    <slot :open="isOpen" />
   </DialogRoot>
 </template>
 
