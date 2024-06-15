@@ -274,7 +274,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
       const isDraggingDown = draggedDistance > 0
 
       // Disallow dragging down to close when first snap point is the active one and dismissible prop is set to false.
-      if (snapPoints.value && activeSnapPointIndex.value === 0 && !dismissible.value)
+      if (snapPoints.value && activeSnapPointIndex.value === 0 && !dismissible.value && !isDraggingDown)
         return
 
       if (!isAllowedToDrag.value && !shouldDrag(event.target, isDraggingDown))
