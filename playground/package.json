@@ -13,6 +13,7 @@
     "test": "pnpm run test:e2e"
   },
   "dependencies": {
+    "radix-vue": "^1.8.3",
     "vaul-vue": "workspace:*",
     "vue": "^3.4.5",
     "vue-router": "4"
