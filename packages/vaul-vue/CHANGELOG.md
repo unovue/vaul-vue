@@ -1,5 +1,12 @@
 # vaul-vue
 
+## 0.1.3
+
+### Patch Changes
+
+- 2dd8e2c: Allow for Upward Dragging in Scenario Involving Snap Points and Dismissible Prop
+- 12ab3e8: feat: expose `open` value
+
 ## 0.1.2
 
 ### Patch Changes
