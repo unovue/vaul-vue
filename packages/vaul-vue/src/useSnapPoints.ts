@@ -1,6 +1,7 @@
 import { type ComponentPublicInstance, type Ref, computed, nextTick, watch } from 'vue'
-import { set } from './helpers'
+import { isVertical, set } from './helpers'
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
+import type { DrawerDirection } from './types'
 
 interface useSnapPointsProps {
   activeSnapPoint: Ref<number | string | null | undefined>
@@ -9,6 +10,7 @@ interface useSnapPointsProps {
   drawerRef: Ref<ComponentPublicInstance | null>
   overlayRef: Ref<ComponentPublicInstance | null>
   onSnapPointChange: (activeSnapPointIndex: number, snapPointsOffset: number[]) => void
+  direction: Ref<DrawerDirection>
 }
 
 export function useSnapPoints({
@@ -18,6 +20,7 @@ export function useSnapPoints({
   overlayRef,
   fadeFromIndex,
   onSnapPointChange,
+  direction,
 }: useSnapPointsProps) {
   const isLastSnapPoint = computed(
     () =>
@@ -50,12 +53,20 @@ export function useSnapPoints({
         if (isPx)
           snapPointAsNumber = Number.parseInt(snapPoint, 10)
 
-        const height = isPx ? snapPointAsNumber : hasWindow ? snapPoint * window.innerHeight : 0
+        if (isVertical(direction.value)) {
+          const height = isPx ? snapPointAsNumber : hasWindow ? snapPoint * window.innerHeight : 0
+
+          if (hasWindow)
+            return direction.value === 'bottom' ? window.innerHeight - height : -window.innerHeight + height
+
+          return height
+        }
+        const width = isPx ? snapPointAsNumber : hasWindow ? snapPoint * window.innerWidth : 0
 
         if (hasWindow)
-          return window.innerHeight - height
+          return direction.value === 'right' ? window.innerWidth - width : -window.innerWidth + width
 
-        return height
+        return width
       }) ?? [],
   )
 
@@ -65,16 +76,15 @@ export function useSnapPoints({
       : null,
   )
 
-  const snapToPoint = (height: number) => {
-    const newSnapPointIndex
-      = snapPointsOffset.value?.findIndex(snapPointHeight => snapPointHeight === height) ?? null
+  const snapToPoint = (dimension: number) => {
+    const newSnapPointIndex = snapPointsOffset.value?.findIndex(snapPointDim => snapPointDim === dimension) ?? null
 
     // nextTick to allow el to be mounted before setting it.
     nextTick(() => {
       onSnapPointChange(newSnapPointIndex, snapPointsOffset.value)
       set(drawerRef.value?.$el, {
         transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-        transform: `translate3d(0, ${height}px, 0)`,
+        transform: isVertical(direction.value) ? `translate3d(0, ${dimension}px, 0)` : `translate3d(${dimension}px, 0, 0)`,
       })
     })
 
@@ -133,7 +143,10 @@ export function useSnapPoints({
     if (fadeFromIndex === undefined)
       return
 
-    const currentPosition = (activeSnapPointOffset.value ?? 0) - draggedDistance
+    const currentPosition
+    = direction.value === 'bottom' || direction.value === 'right'
+      ? (activeSnapPointOffset.value ?? 0) - draggedDistance
+      : (activeSnapPointOffset.value ?? 0) + draggedDistance
     const isOverlaySnapPoint = activeSnapPointIndex.value === (fadeFromIndex.value ?? 0) - 1
     const isFirst = activeSnapPointIndex.value === 0
     const hasDraggedUp = draggedDistance > 0
@@ -164,7 +177,8 @@ export function useSnapPoints({
       return Math.abs(curr - currentPosition) < Math.abs(prev - currentPosition) ? curr : prev
     })
 
-    if (velocity > VELOCITY_THRESHOLD && Math.abs(draggedDistance) < window.innerHeight * 0.4) {
+    const dim = isVertical(direction.value) ? window.innerHeight : window.innerWidth
+    if (velocity > VELOCITY_THRESHOLD && Math.abs(draggedDistance) < dim * 0.4) {
       const dragDirection = hasDraggedUp ? 1 : -1 // 1 = up, -1 = down
 
       // Don't do anything if we swipe upwards while being on the last snap point
@@ -189,10 +203,20 @@ export function useSnapPoints({
   function onDrag({ draggedDistance }: { draggedDistance: number }) {
     if (activeSnapPointOffset.value === null)
       return
-    const newYValue = activeSnapPointOffset.value - draggedDistance
+    const newValue
+    = direction.value === 'bottom' || direction.value === 'right'
+      ? (activeSnapPointOffset.value ?? 0) - draggedDistance
+      : (activeSnapPointOffset.value ?? 0) + draggedDistance
+
+    // Don't do anything if we exceed the last(biggest) snap point
+    if ((direction.value === 'bottom' || direction.value === 'right') && newValue < snapPointsOffset.value[snapPointsOffset.value.length - 1])
+      return
+
+    if ((direction.value === 'top' || direction.value === 'left') && newValue > snapPointsOffset.value[snapPointsOffset.value.length - 1])
+      return
 
     set(drawerRef.value?.$el, {
-      transform: `translate3d(0, ${newYValue}px, 0)`,
+      transform: isVertical(direction.value) ? `translate3d(0, ${newValue}px, 0)` : `translate3d(${newValue}px, 0, 0)`,
     })
   }
 

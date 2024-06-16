@@ -3,7 +3,7 @@ import { DrawerContent, DrawerOverlay, DrawerPortal, DrawerRoot, DrawerTrigger }
 </script>
 
 <template>
-  <DrawerRoot should-scale-background>
+  <DrawerRoot should-scale-background direction="left">
     <DrawerTrigger
       class="rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
     >

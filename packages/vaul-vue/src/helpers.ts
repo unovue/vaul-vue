@@ -1,3 +1,5 @@
+import type { DrawerDirection } from './types'
+
 interface Style {
   [key: string]: string
 }
@@ -58,18 +60,34 @@ export function reset(el: Element | HTMLElement | null, prop?: string) {
   }
 }
 
-export function getTranslateY(element: HTMLElement): number | null {
+export function getTranslate(element: HTMLElement, direction: DrawerDirection): number | null {
   const style = window.getComputedStyle(element)
   const transform
     // @ts-expect-error some custom style only exist in certain browser
     = style.transform || style.webkitTransform || style.mozTransform
   let mat = transform.match(/^matrix3d\((.+)\)$/)
-  if (mat)
-    return Number.parseFloat(mat[1].split(', ')[13])
+  if (mat) {
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/matrix3d
+    return Number.parseFloat(mat[1].split(', ')[isVertical(direction) ? 13 : 12])
+  }
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/matrix
   mat = transform.match(/^matrix\((.+)\)$/)
-  return mat ? Number.parseFloat(mat[1].split(', ')[5]) : null
+  return mat ? Number.parseFloat(mat[1].split(', ')[isVertical(direction) ? 5 : 4]) : null
 }
 
 export function dampenValue(v: number) {
   return 8 * (Math.log(v + 1) - 2)
+}
+
+export function isVertical(direction: DrawerDirection) {
+  switch (direction) {
+    case 'top':
+    case 'bottom':
+      return true
+    case 'left':
+    case 'right':
+      return false
+    default:
+      return direction satisfies never
+  }
 }
