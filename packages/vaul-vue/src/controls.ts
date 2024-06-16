@@ -1,4 +1,4 @@
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, onUnmounted, ref, watch, watchEffect } from 'vue'
 import type { ComponentPublicInstance, Ref } from 'vue'
 import { isClient } from '@vueuse/core'
 import { dampenValue, getTranslateY, reset, set } from './helpers'
@@ -410,7 +410,6 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     })
 
     scaleBackground(false)
-    restorePositionSetting()
 
     window.setTimeout(() => {
       isVisible.value = false
@@ -432,6 +431,11 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
 
       return () => clearTimeout(id)
     }
+  })
+
+  onUnmounted(() => {
+    scaleBackground(false)
+    restorePositionSetting()
   })
 
   function onRelease(event: PointerEvent) {
