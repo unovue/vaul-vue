@@ -1,5 +1,12 @@
 # vaul-vue
 
+## 0.2.0
+
+### Minor Changes
+
+- e1cfb98: fix: not restoring position when unmounted
+- 76e23aa: feat: Direction
+
 ## 0.1.3
 
 ### Patch Changes
