@@ -1,5 +1,6 @@
 import type { ComponentPublicInstance, Ref } from 'vue'
 import { createContext } from 'radix-vue'
+import type { DrawerDirection } from './types'
 
 export interface DrawerRootContext {
   open: Ref<boolean>
@@ -15,10 +16,11 @@ export interface DrawerRootContext {
   snapPoints: Ref<(number | string)[] | undefined>
   keyboardIsOpen: Ref<boolean>
   activeSnapPoint: Ref<number | string | null | undefined>
-  pointerStartY: Ref<number>
+  pointerStart: Ref<number>
   dismissible: Ref<boolean>
   drawerHeightRef: Ref<number>
   snapPointsOffset: Ref<number[]>
+  direction: Ref<DrawerDirection>
   onPress: (event: PointerEvent) => void
   onDrag: (event: PointerEvent) => void
   onRelease: (event: PointerEvent) => void

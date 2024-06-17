@@ -1,11 +1,12 @@
 import { computed, onUnmounted, ref, watch, watchEffect } from 'vue'
 import type { ComponentPublicInstance, Ref } from 'vue'
 import { isClient } from '@vueuse/core'
-import { dampenValue, getTranslateY, reset, set } from './helpers'
+import { dampenValue, getTranslate, isVertical, reset, set } from './helpers'
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
 import { useSnapPoints } from './useSnapPoints'
 import { usePositionFixed } from './usePositionFixed'
 import type { DrawerRootContext } from './context'
+import type { DrawerDirection } from './types'
 
 export const CLOSE_THRESHOLD = 0.25
 
@@ -40,6 +41,7 @@ export type DrawerRootProps = {
   open?: boolean
   defaultOpen?: boolean
   nested?: boolean
+  direction?: DrawerDirection
 } & (WithFadeFromProps | WithoutFadeFromProps)
 
 export interface UseDrawerProps {
@@ -54,6 +56,7 @@ export interface UseDrawerProps {
   fadeFromIndex: Ref<number | undefined>
   closeThreshold: Ref<number>
   scrollLockTimeout: Ref<number>
+  direction: Ref<DrawerDirection>
 }
 
 export interface DrawerRootEmits {
@@ -82,7 +85,7 @@ export interface Drawer {
   isAllowedToDrag: Ref<boolean>
   snapPoints: Ref<(number | string)[] | undefined>
   activeSnapPoint: Ref<number | string | null>
-  pointerStartY: Ref<number>
+  pointerStart: Ref<number>
   dismissible: Ref<boolean>
   drawerHeightRef: Ref<number>
   snapPointsOffset: Ref<number[]>
@@ -112,6 +115,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     closeThreshold,
     activeSnapPoint,
     fadeFromIndex,
+    direction,
   } = props
 
   const isOpen = ref(open.value ?? false)
@@ -130,7 +134,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
 
   const nestedOpenChangeTimer = ref<number | null>(null)
 
-  const pointerStartY = ref(0)
+  const pointerStart = ref(0)
   const keyboardIsOpen = ref(false)
 
   const previousDiffFromInitial = ref(0)
@@ -169,6 +173,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     fadeFromIndex,
     overlayRef,
     onSnapPointChange,
+    direction,
   })
 
   function onSnapPointChange(activeSnapPointIndex: number, snapPointsOffset: number[]) {
@@ -188,23 +193,28 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     return (window.innerWidth - WINDOW_TOP_OFFSET) / window.innerWidth
   }
 
-  function shouldDrag(el: EventTarget | null, isDraggingDown: boolean) {
+  function shouldDrag(el: EventTarget | null, isDraggingInDirection: boolean) {
     if (!el)
       return false
     let element = el as HTMLElement
     const highlightedText = window.getSelection()?.toString()
-    const swipeAmount = drawerRef.value ? getTranslateY(drawerRef.value.$el) : null
+    const swipeAmount = drawerRef.value ? getTranslate(drawerRef.value.$el, direction.value) : null
     const date = new Date()
 
     if (element.hasAttribute('data-vaul-no-drag') || element.closest('[data-vaul-no-drag]'))
       return false
 
+    if (direction.value === 'right' || direction.value === 'left')
+      return true
+
     // Allow scrolling when animating
     if (openTime.value && date.getTime() - openTime.value.getTime() < 500)
       return false
 
-    if (swipeAmount && swipeAmount > 0)
-      return true
+    if (swipeAmount !== null) {
+      if (direction.value === 'bottom' ? swipeAmount > 0 : swipeAmount < 0)
+        return true
+    }
 
     // Don't drag if there's highlighted text
     if (highlightedText && highlightedText.length > 0)
@@ -220,7 +230,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
       return false
     }
 
-    if (isDraggingDown) {
+    if (isDraggingInDirection) {
       lastTimeDragPrevented.value = date
 
       // We are dragging down so we should allow scrolling
@@ -258,26 +268,44 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     isDragging.value = true
     dragStartTime.value = new Date()
 
-    // iOS doesn't trigger mouseUp after scrolling so we need to listen to touched in order to disallow dragging
-    // if (isIOS()) {
-    //   window.addEventListener('touchend', () => (isAllowedToDrag.value = false), { once: true });
-    // }
-    // Ensure we maintain correct pointer capture even when going outside of the drawer
-    ; (event.target as HTMLElement).setPointerCapture(event.pointerId)
-    pointerStartY.value = event.screenY
+    ;(event.target as HTMLElement).setPointerCapture(event.pointerId)
+    pointerStart.value = isVertical(direction.value) ? event.clientY : event.clientX
   }
 
   function onDrag(event: PointerEvent) {
+    if (!drawerRef.value)
+      return
+
     // We need to know how much of the drawer has been dragged in percentages so that we can transform background accordingly
     if (isDragging.value) {
-      const draggedDistance = pointerStartY.value - event.screenY
-      const isDraggingDown = draggedDistance > 0
+      const directionMultiplier = direction.value === 'bottom' || direction.value === 'right' ? 1 : -1
+      const draggedDistance
+        = (pointerStart.value - (isVertical(direction.value) ? event.clientY : event.clientX)) * directionMultiplier
+      const isDraggingInDirection = draggedDistance > 0
+
+      // Pre condition for disallowing dragging in the close direction.
+      const noCloseSnapPointsPreCondition = snapPoints.value && !dismissible.value && !isDraggingInDirection
 
       // Disallow dragging down to close when first snap point is the active one and dismissible prop is set to false.
-      if (snapPoints.value && activeSnapPointIndex.value === 0 && !dismissible.value && !isDraggingDown)
+      if (noCloseSnapPointsPreCondition && activeSnapPointIndex.value === 0)
         return
 
-      if (!isAllowedToDrag.value && !shouldDrag(event.target, isDraggingDown))
+      // We need to capture last time when drag with scroll was triggered and have a timeout between
+      const absDraggedDistance = Math.abs(draggedDistance)
+      const wrapper = document.querySelector('[vaul-drawer-wrapper]')
+
+      // Calculate the percentage dragged, where 1 is the closed position
+      let percentageDragged = absDraggedDistance / drawerHeightRef.value
+      const snapPointPercentageDragged = getSnapPointsPercentageDragged(absDraggedDistance, isDraggingInDirection)
+
+      if (snapPointPercentageDragged !== null)
+        percentageDragged = snapPointPercentageDragged
+
+      // Disallow close dragging beyond the smallest snap point.
+      if (noCloseSnapPointsPreCondition && percentageDragged >= 1)
+        return
+
+      if (!isAllowedToDrag.value && !shouldDrag(event.target, isDraggingInDirection))
         return
       drawerRef?.value?.$el.classList.add(DRAG_CLASS)
       // If shouldDrag gave true once after pressing down on the drawer, we set isAllowedToDrag to true and it will remain true until we let go, there's no reason to disable dragging mid way, ever, and that's the solution to it
@@ -294,27 +322,17 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
         onDragSnapPoints({ draggedDistance })
 
       // Run this only if snapPoints are not defined or if we are at the last snap point (highest one)
-      if (isDraggingDown && !snapPoints.value) {
+      if (isDraggingInDirection && !snapPoints.value) {
         const dampenedDraggedDistance = dampenValue(draggedDistance)
 
+        const translateValue = Math.min(dampenedDraggedDistance * -1, 0) * directionMultiplier
         set(drawerRef.value?.$el, {
-          transform: `translate3d(0, ${Math.min(dampenedDraggedDistance * -1, 0)}px, 0)`,
+          transform: isVertical(direction.value)
+            ? `translate3d(0, ${translateValue}px, 0)`
+            : `translate3d(${translateValue}px, 0, 0)`,
         })
         return
       }
-
-      // We need to capture last time when drag with scroll was triggered and have a timeout between
-      const absDraggedDistance = Math.abs(draggedDistance)
-      const wrapper = document.querySelector('[vaul-drawer-wrapper]')
-
-      let percentageDragged = absDraggedDistance / drawerHeightRef.value
-      const snapPointPercentageDragged = getSnapPointsPercentageDragged(
-        absDraggedDistance,
-        isDraggingDown,
-      )
-
-      if (snapPointPercentageDragged !== null)
-        percentageDragged = snapPointPercentageDragged
 
       const opacityValue = 1 - percentageDragged
 
@@ -339,13 +357,15 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
         const scaleValue = Math.min(getScale() + percentageDragged * (1 - getScale()), 1)
         const borderRadiusValue = 8 - percentageDragged * 8
 
-        const translateYValue = Math.max(0, 14 - percentageDragged * 14)
+        const translateValue = Math.max(0, 14 - percentageDragged * 14)
 
         set(
           wrapper,
           {
             borderRadius: `${borderRadiusValue}px`,
-            transform: `scale(${scaleValue}) translate3d(0, ${translateYValue}px, 0)`,
+            transform: isVertical(direction.value)
+              ? `scale(${scaleValue}) translate3d(0, ${translateValue}px, 0)`
+              : `scale(${scaleValue}) translate3d(${translateValue}px, 0, 0)`,
             transition: 'none',
           },
           true,
@@ -353,8 +373,12 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
       }
 
       if (!snapPoints.value) {
+        const translateValue = absDraggedDistance * directionMultiplier
+
         set(drawerRef.value?.$el, {
-          transform: `translate3d(0, ${absDraggedDistance}px, 0)`,
+          transform: isVertical(direction.value)
+            ? `translate3d(0, ${translateValue}px, 0)`
+            : `translate3d(${translateValue}px, 0, 0)`,
         })
       }
     }
@@ -364,7 +388,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     if (!drawerRef.value)
       return
     const wrapper = document.querySelector('[vaul-drawer-wrapper]')
-    const currentSwipeAmount = getTranslateY(drawerRef.value.$el)
+    const currentSwipeAmount = getTranslate(drawerRef.value.$el, direction.value)
 
     set(drawerRef.value.$el, {
       transform: 'translate3d(0, 0, 0)',
@@ -383,8 +407,15 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
         {
           borderRadius: `${BORDER_RADIUS}px`,
           overflow: 'hidden',
-          transform: `scale(${getScale()}) translate3d(0, calc(env(safe-area-inset-top) + 14px), 0)`,
-          transformOrigin: 'top',
+          ...(isVertical(direction.value)
+            ? {
+                transform: `scale(${getScale()}) translate3d(0, calc(env(safe-area-inset-top) + 14px), 0)`,
+                transformOrigin: 'top',
+              }
+            : {
+                transform: `scale(${getScale()}) translate3d(calc(env(safe-area-inset-top) + 14px), 0, 0)`,
+                transformOrigin: 'left',
+              }),
           transitionProperty: 'transform, border-radius',
           transitionDuration: `${TRANSITIONS.DURATION}s`,
           transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
@@ -400,7 +431,9 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
 
     // emitClose()
     set(drawerRef.value.$el, {
-      transform: `translate3d(0, 100%, 0)`,
+      transform: isVertical(direction.value)
+        ? `translate3d(0, ${direction.value === 'bottom' ? '100%' : '-100%'}, 0)`
+        : `translate3d(${direction.value === 'right' ? '100%' : '-100%'}, 0, 0)`,
       transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
     })
 
@@ -441,16 +474,12 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
   function onRelease(event: PointerEvent) {
     if (!isDragging.value || !drawerRef.value)
       return
-    // TODO use-prevent-scroll
-    // if (isAllowedToDrag.value && isInput(event.target as HTMLElement)) {
-    //   // If we were just dragging, prevent focusing on inputs etc. on release
-    //   (event.target as HTMLInputElement).blur();
-    // }
+
     drawerRef.value.$el.classList.remove(DRAG_CLASS)
     isAllowedToDrag.value = false
     isDragging.value = false
     dragEndTime.value = new Date()
-    const swipeAmount = getTranslateY(drawerRef.value.$el)
+    const swipeAmount = getTranslate(drawerRef.value.$el, direction.value)
 
     if (!shouldDrag(event.target, false) || !swipeAmount || Number.isNaN(swipeAmount))
       return
@@ -459,7 +488,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
       return
 
     const timeTaken = dragEndTime.value.getTime() - dragStartTime.value.getTime()
-    const distMoved = pointerStartY.value - event.screenY
+    const distMoved = pointerStart.value - (isVertical(direction.value) ? event.clientY : event.clientX)
     const velocity = Math.abs(distMoved) / timeTaken
 
     if (velocity > 0.05) {
@@ -472,8 +501,10 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     }
 
     if (snapPoints.value) {
+      const directionMultiplier = direction.value === 'bottom' || direction.value === 'right' ? 1 : -1
+
       onReleaseSnapPoints({
-        draggedDistance: distMoved,
+        draggedDistance: distMoved * directionMultiplier,
         closeDrawer,
         velocity,
         dismissible: dismissible.value,
@@ -483,7 +514,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     }
 
     // Moved upwards, don't do anything
-    if (distMoved > 0) {
+    if (direction.value === 'bottom' || direction.value === 'right' ? distMoved > 0 : distMoved < 0) {
       resetDrawer()
       emitRelease(true)
       return
@@ -550,8 +581,15 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
       set(wrapper, {
         borderRadius: `${BORDER_RADIUS}px`,
         overflow: 'hidden',
-        transform: `scale(${getScale()}) translate3d(0, calc(env(safe-area-inset-top) + 14px), 0)`,
-        transformOrigin: 'top',
+        ...(isVertical(direction.value)
+          ? {
+              transform: `scale(${getScale()}) translate3d(0, calc(env(safe-area-inset-top) + 14px), 0)`,
+              transformOrigin: 'top',
+            }
+          : {
+              transform: `scale(${getScale()}) translate3d(calc(env(safe-area-inset-top) + 14px), 0, 0)`,
+              transformOrigin: 'left',
+            }),
         transitionProperty: 'transform, border-radius',
         transitionDuration: `${TRANSITIONS.DURATION}s`,
         transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
@@ -584,9 +622,12 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
 
     if (!o && drawerRef.value?.$el) {
       nestedOpenChangeTimer.value = window.setTimeout(() => {
+        const translateValue = getTranslate(drawerRef.value?.$el, direction.value)
         set(drawerRef.value?.$el, {
           transition: 'none',
-          transform: `translate3d(0, ${getTranslateY(drawerRef.value?.$el as HTMLElement)}px, 0)`,
+          transform: isVertical(direction.value)
+            ? `translate3d(0, ${translateValue}px, 0)`
+            : `translate3d(${translateValue}px, 0, 0)`,
         })
       }, 500)
     }
@@ -596,26 +637,30 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     if (percentageDragged < 0)
       return
 
-    const initialScale = (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth
+    const initialDim = isVertical(direction.value) ? window.innerHeight : window.innerWidth
+    const initialScale = (initialDim - NESTED_DISPLACEMENT) / initialDim
     const newScale = initialScale + percentageDragged * (1 - initialScale)
-    const newY = -NESTED_DISPLACEMENT + percentageDragged * NESTED_DISPLACEMENT
+    const newTranslate = -NESTED_DISPLACEMENT + percentageDragged * NESTED_DISPLACEMENT
 
     set(drawerRef.value?.$el, {
-      transform: `scale(${newScale}) translate3d(0, ${newY}px, 0)`,
+      transform: isVertical(direction.value)
+        ? `scale(${newScale}) translate3d(0, ${newTranslate}px, 0)`
+        : `scale(${newScale}) translate3d(${newTranslate}px, 0, 0)`,
       transition: 'none',
     })
   }
 
   function onNestedRelease(o: boolean) {
-    const scale = o ? (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth : 1
-    const y = o ? -NESTED_DISPLACEMENT : 0
+    const dim = isVertical(direction.value) ? window.innerHeight : window.innerWidth
+    const scale = o ? (dim - NESTED_DISPLACEMENT) / dim : 1
+    const translate = o ? -NESTED_DISPLACEMENT : 0
 
     if (o) {
       set(drawerRef.value?.$el, {
-        transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(
-          ',',
-        )})`,
-        transform: `scale(${scale}) translate3d(0, ${y}px, 0)`,
+        transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
+        transform: isVertical(direction.value)
+          ? `scale(${scale}) translate3d(0, ${translate}px, 0)`
+          : `scale(${scale}) translate3d(${translate}px, 0, 0)`,
       })
     }
   }
@@ -635,9 +680,10 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     isAllowedToDrag,
     snapPoints,
     activeSnapPoint,
-    pointerStartY,
+    pointerStart,
     dismissible,
     snapPointsOffset,
+    direction,
     shouldFade,
     fadeFromIndex,
     shouldScaleBackground,

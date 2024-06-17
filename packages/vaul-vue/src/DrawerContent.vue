@@ -17,6 +17,7 @@ const {
   dismissible,
   keyboardIsOpen,
   closeDrawer,
+  direction,
 } = injectDrawerRootContext()
 
 const snapPointHeight = computed(() => {
@@ -61,6 +62,7 @@ watch(
   <DialogContent
     ref="drawerRef"
     vaul-drawer=""
+    :vaul-drawer-direction="direction"
     :vaul-drawer-visible="isVisible ? 'true' : 'false'"
     :style="{ '--snap-point-height': snapPointHeight }"
     @pointerdown="onPress"

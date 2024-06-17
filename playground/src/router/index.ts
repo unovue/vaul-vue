@@ -23,6 +23,10 @@ const router = createRouter({
           component: () => import('../views/tests/InitialSnapView.vue'),
         },
         {
+          path: 'direction',
+          component: () => import('../views/tests/DirectionView.vue'),
+        },
+        {
           path: 'nested-drawer',
           component: () => import('../views/tests/NestedDrawerView.vue'),
         },
@@ -46,6 +50,7 @@ const router = createRouter({
           path: 'with-snap-points',
           component: () => import('../views/tests/WithSnapPointsView.vue'),
         },
+
       ],
     },
   ],

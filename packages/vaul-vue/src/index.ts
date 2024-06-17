@@ -8,6 +8,11 @@ export type {
   DrawerRootProps,
 } from './controls'
 
+export type {
+  SnapPoint,
+  DrawerDirection,
+} from './types'
+
 export {
   DrawerRoot,
   DrawerRootNested,
