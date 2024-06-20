@@ -429,7 +429,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     if (!drawerRef.value)
       return
 
-    // emitClose()
+    emitClose()
     set(drawerRef.value.$el, {
       transform: isVertical(direction.value)
         ? `translate3d(0, ${direction.value === 'bottom' ? '100%' : '-100%'}, 0)`
