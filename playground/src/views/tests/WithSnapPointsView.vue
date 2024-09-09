@@ -2,13 +2,13 @@
 import { DrawerContent, DrawerOverlay, DrawerPortal, DrawerRoot, DrawerTrigger } from 'vaul-vue'
 import { computed, ref } from 'vue'
 
-const snapPoints = [0, '148px', '355px', 1]
+const snapPoints = ['148px', '355px', 1]
 
-const snap = ref<number | string | null>(snapPoints[1])
+const snap = ref<number | string | null>(snapPoints[0])
 
 const activeSnapPointIndex = computed(() => snapPoints.indexOf(snap.value as string))
 
-const open = ref<boolean>(true)
+const open = ref<boolean>(false)
 </script>
 
 <template>
