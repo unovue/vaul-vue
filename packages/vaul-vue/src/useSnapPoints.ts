@@ -163,14 +163,14 @@ export function useSnapPoints({
     velocity: number
     dismissible: boolean
   }) {
-    if (fadeFromIndex === undefined)
+    if (fadeFromIndex.value === undefined)
       return
 
     const currentPosition
     = direction.value === 'bottom' || direction.value === 'right'
       ? (activeSnapPointOffset.value ?? 0) - draggedDistance
       : (activeSnapPointOffset.value ?? 0) + draggedDistance
-    const isOverlaySnapPoint = activeSnapPointIndex.value === (fadeFromIndex.value ?? 0) - 1
+    const isOverlaySnapPoint = activeSnapPointIndex.value === fadeFromIndex.value - 1
     const isFirst = activeSnapPointIndex.value === 0
     const hasDraggedUp = draggedDistance > 0
 
@@ -228,8 +228,8 @@ export function useSnapPoints({
       return
     const newValue
     = direction.value === 'bottom' || direction.value === 'right'
-      ? (activeSnapPointOffset.value ?? 0) - draggedDistance
-      : (activeSnapPointOffset.value ?? 0) + draggedDistance
+      ? activeSnapPointOffset.value - draggedDistance
+      : activeSnapPointOffset.value + draggedDistance
 
     // Don't do anything if we exceed the last(biggest) snap point
     if ((direction.value === 'bottom' || direction.value === 'right') && newValue < snapPointsOffset.value[snapPointsOffset.value.length - 1])
@@ -245,16 +245,16 @@ export function useSnapPoints({
 
   function getPercentageDragged(absDraggedDistance: number, isDraggingDown: boolean) {
     if (
-      !snapPoints
+      !snapPoints.value
       || typeof activeSnapPointIndex.value !== 'number'
       || !snapPointsOffset.value
-      || fadeFromIndex === undefined
+      || fadeFromIndex.value === undefined
     )
       return null
 
     // If this is true we are dragging to a snap point that is supposed to have an overlay
-    const isOverlaySnapPoint = activeSnapPointIndex.value === (fadeFromIndex.value ?? 0) - 1
-    const isOverlaySnapPointOrHigher = activeSnapPointIndex.value >= (fadeFromIndex.value ?? 0)
+    const isOverlaySnapPoint = activeSnapPointIndex.value === fadeFromIndex.value - 1
+    const isOverlaySnapPointOrHigher = activeSnapPointIndex.value >= fadeFromIndex.value
 
     if (isOverlaySnapPointOrHigher && isDraggingDown)
       return 0
