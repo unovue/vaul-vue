@@ -1,4 +1,4 @@
-import { type ComponentPublicInstance, type Ref, computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { type ComponentPublicInstance, type Ref, computed, nextTick, watch } from 'vue'
 import { isVertical, set } from './helpers'
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
 import type { DrawerDirection } from './types'
@@ -22,30 +22,6 @@ export function useSnapPoints({
   onSnapPointChange,
   direction,
 }: useSnapPointsProps) {
-  const windowDimensions = ref(typeof window !== 'undefined'
-    ? {
-        innerWidth: window.innerWidth,
-        innerHeight: window.innerHeight,
-      }
-    : undefined)
-
-  function onResize() {
-    windowDimensions.value = {
-      innerWidth: window.innerWidth,
-      innerHeight: window.innerHeight,
-    }
-  }
-
-  onMounted(() => {
-    if (typeof window !== 'undefined')
-      window.addEventListener('resize', onResize)
-  })
-
-  onBeforeUnmount(() => {
-    if (typeof window !== 'undefined')
-      window.removeEventListener('resize', onResize)
-  })
-
   const isLastSnapPoint = computed(
     () =>
       (snapPoints.value
@@ -70,6 +46,7 @@ export function useSnapPoints({
   const snapPointsOffset = computed(
     () =>
       snapPoints.value?.map((snapPoint) => {
+        const hasWindow = typeof window !== 'undefined'
         const isPx = typeof snapPoint === 'string'
         let snapPointAsNumber = 0
 
@@ -77,17 +54,17 @@ export function useSnapPoints({
           snapPointAsNumber = Number.parseInt(snapPoint, 10)
 
         if (isVertical(direction.value)) {
-          const height = isPx ? snapPointAsNumber : windowDimensions.value ? snapPoint * windowDimensions.value.innerHeight : 0
+          const height = isPx ? snapPointAsNumber : hasWindow ? snapPoint * window.innerHeight : 0
 
-          if (windowDimensions.value)
-            return direction.value === 'bottom' ? windowDimensions.value.innerHeight - height : -windowDimensions.value.innerHeight + height
+          if (hasWindow)
+            return direction.value === 'bottom' ? window.innerHeight - height : -window.innerHeight + height
 
           return height
         }
-        const width = isPx ? snapPointAsNumber : windowDimensions.value ? snapPoint * windowDimensions.value.innerWidth : 0
+        const width = isPx ? snapPointAsNumber : hasWindow ? snapPoint * window.innerWidth : 0
 
-        if (windowDimensions.value)
-          return direction.value === 'right' ? windowDimensions.value.innerWidth - width : -windowDimensions.value.innerWidth + width
+        if (hasWindow)
+          return direction.value === 'right' ? window.innerWidth - width : -window.innerWidth + width
 
         return width
       }) ?? [],
