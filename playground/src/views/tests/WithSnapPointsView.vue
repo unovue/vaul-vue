@@ -19,7 +19,7 @@ const open = ref<boolean>(false)
     <div data-testid="active-snap-index">
       {{ activeSnapPointIndex }}
     </div>
-    <DrawerRoot v-model:open="open" :snap-points="snapPoints" :active-snap-point="snap">
+    <DrawerRoot v-model:open="open" v-model:active-snap-point="snap" :snap-points="snapPoints">
       <DrawerTrigger as-child>
         <button data-testid="trigger" class="text-2xl">
           Open Drawer
@@ -97,7 +97,6 @@ const open = ref<boolean>(false)
                 />
               </svg>
             </div>
-            {' '}
             <h1 class="text-2xl mt-2 font-medium">
               The Hidden Details
             </h1>
