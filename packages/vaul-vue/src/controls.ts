@@ -1,12 +1,12 @@
-import { computed, onUnmounted, ref, watch, watchEffect } from 'vue'
 import type { ComponentPublicInstance, Ref } from 'vue'
-import { isClient } from '@vueuse/core'
-import { dampenValue, getTranslate, isVertical, reset, set } from './helpers'
-import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
-import { useSnapPoints } from './useSnapPoints'
-import { usePositionFixed } from './usePositionFixed'
 import type { DrawerRootContext } from './context'
 import type { DrawerDirection } from './types'
+import { isClient } from '@vueuse/core'
+import { computed, onUnmounted, ref, watch, watchEffect } from 'vue'
+import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
+import { dampenValue, getTranslate, isVertical, reset, set } from './helpers'
+import { usePositionFixed } from './usePositionFixed'
+import { useSnapPoints } from './useSnapPoints'
 
 export const CLOSE_THRESHOLD = 0.25
 

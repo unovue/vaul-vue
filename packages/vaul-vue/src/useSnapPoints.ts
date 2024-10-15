@@ -1,7 +1,7 @@
-import { type ComponentPublicInstance, type Ref, computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { isVertical, set } from './helpers'
-import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
 import type { DrawerDirection } from './types'
+import { type ComponentPublicInstance, computed, nextTick, onBeforeUnmount, onMounted, type Ref, ref, watch } from 'vue'
+import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
+import { isVertical, set } from './helpers'
 
 interface useSnapPointsProps {
   activeSnapPoint: Ref<number | string | null | undefined>
@@ -11,6 +11,8 @@ interface useSnapPointsProps {
   overlayRef: Ref<ComponentPublicInstance | null>
   onSnapPointChange: (activeSnapPointIndex: number, snapPointsOffset: number[]) => void
   direction: Ref<DrawerDirection>
+  container?: HTMLElement | null | undefined
+  snapToSequentialPoint?: Ref<boolean>
 }
 
 export function useSnapPoints({
@@ -21,6 +23,8 @@ export function useSnapPoints({
   fadeFromIndex,
   onSnapPointChange,
   direction,
+  container,
+  snapToSequentialPoint,
 }: useSnapPointsProps) {
   const windowDimensions = ref(typeof window !== 'undefined'
     ? {
@@ -49,27 +53,33 @@ export function useSnapPoints({
   const isLastSnapPoint = computed(
     () =>
       (snapPoints.value
-      && activeSnapPoint.value === snapPoints.value[snapPoints.value.length - 1])
-      ?? null,
-  )
-
-  const shouldFade = computed(
-    () =>
-      (snapPoints.value
-      && snapPoints.value.length > 0
-      && (fadeFromIndex?.value || fadeFromIndex?.value === 0)
-      && !Number.isNaN(fadeFromIndex?.value)
-      && snapPoints.value[fadeFromIndex?.value ?? -1] === activeSnapPoint.value)
-      || !snapPoints.value,
+        && activeSnapPoint.value === snapPoints.value[snapPoints.value.length - 1])
+        ?? null,
   )
 
   const activeSnapPointIndex = computed(
     () => snapPoints.value?.findIndex(snapPoint => snapPoint === activeSnapPoint.value) ?? null,
   )
 
+  const shouldFade = computed(
+    () =>
+      (snapPoints.value
+        && snapPoints.value.length > 0
+        && (fadeFromIndex?.value || fadeFromIndex?.value === 0)
+        && !Number.isNaN(fadeFromIndex?.value)
+        && snapPoints.value[fadeFromIndex?.value] === activeSnapPoint.value)
+        || !snapPoints.value,
+  )
+
   const snapPointsOffset = computed(
     () =>
       snapPoints.value?.map((snapPoint) => {
+        const containerSize = container
+          ? { width: container.getBoundingClientRect().width, height: container.getBoundingClientRect().height }
+          : typeof window !== 'undefined'
+            ? { width: window.innerWidth, height: window.innerHeight }
+            : { width: 0, height: 0 }
+
         const isPx = typeof snapPoint === 'string'
         let snapPointAsNumber = 0
 
@@ -77,17 +87,17 @@ export function useSnapPoints({
           snapPointAsNumber = Number.parseInt(snapPoint, 10)
 
         if (isVertical(direction.value)) {
-          const height = isPx ? snapPointAsNumber : windowDimensions.value ? snapPoint * windowDimensions.value.innerHeight : 0
+          const height = isPx ? snapPointAsNumber : windowDimensions.value ? snapPoint * containerSize.height : 0
 
           if (windowDimensions.value)
-            return direction.value === 'bottom' ? windowDimensions.value.innerHeight - height : -windowDimensions.value.innerHeight + height
+            return direction.value === 'bottom' ? containerSize.height - height : -containerSize.height + height
 
           return height
         }
-        const width = isPx ? snapPointAsNumber : windowDimensions.value ? snapPoint * windowDimensions.value.innerWidth : 0
+        const width = isPx ? snapPointAsNumber : windowDimensions.value ? snapPoint * containerSize.width : 0
 
         if (windowDimensions.value)
-          return direction.value === 'right' ? windowDimensions.value.innerWidth - width : -windowDimensions.value.innerWidth + width
+          return direction.value === 'right' ? containerSize.width - width : -containerSize.width + width
 
         return width
       }) ?? [],
@@ -114,7 +124,9 @@ export function useSnapPoints({
     if (
       snapPointsOffset.value
       && newSnapPointIndex !== snapPointsOffset.value.length - 1
-      && newSnapPointIndex !== fadeFromIndex?.value
+      && fadeFromIndex.value !== undefined
+      && newSnapPointIndex !== fadeFromIndex.value
+      && newSnapPointIndex < fadeFromIndex.value
     ) {
       set(overlayRef.value?.$el, {
         transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
@@ -129,11 +141,11 @@ export function useSnapPoints({
     }
 
     activeSnapPoint.value
-      = newSnapPointIndex !== null ? snapPoints.value?.[newSnapPointIndex] ?? null : null
+      = snapPoints.value?.[Math.max(newSnapPointIndex, 0)]
   }
 
   watch(
-    [activeSnapPoint, snapPointsOffset, snapPoints],
+    [activeSnapPoint, snapPoints, snapPointsOffset],
     () => {
       if (activeSnapPoint.value) {
         const newIndex
@@ -143,8 +155,9 @@ export function useSnapPoints({
           snapPointsOffset.value
           && newIndex !== -1
           && typeof snapPointsOffset.value[newIndex] === 'number'
-        )
+        ) {
           snapToPoint(snapPointsOffset.value[newIndex])
+        }
       }
     },
     {
@@ -180,14 +193,14 @@ export function useSnapPoints({
       })
     }
 
-    if (velocity > 2 && !hasDraggedUp) {
+    if (!snapToSequentialPoint?.value && velocity > 2 && !hasDraggedUp) {
       if (dismissible)
         closeDrawer()
       else snapToPoint(snapPointsOffset.value[0]) // snap to initial point
       return
     }
 
-    if (velocity > 2 && hasDraggedUp && snapPointsOffset && snapPoints.value) {
+    if (!snapToSequentialPoint?.value && velocity > 2 && hasDraggedUp && snapPointsOffset.value && snapPoints.value) {
       snapToPoint(snapPointsOffset.value[snapPoints.value.length - 1] as number)
       return
     }
@@ -205,7 +218,7 @@ export function useSnapPoints({
       const dragDirection = hasDraggedUp ? 1 : -1 // 1 = up, -1 = down
 
       // Don't do anything if we swipe upwards while being on the last snap point
-      if (dragDirection > 0 && isLastSnapPoint) {
+      if (dragDirection > 0 && isLastSnapPoint.value && snapPoints.value) {
         snapToPoint(snapPointsOffset.value[(snapPoints.value?.length ?? 0) - 1])
         return
       }
@@ -249,8 +262,9 @@ export function useSnapPoints({
       || typeof activeSnapPointIndex.value !== 'number'
       || !snapPointsOffset.value
       || fadeFromIndex === undefined
-    )
+    ) {
       return null
+    }
 
     // If this is true we are dragging to a snap point that is supposed to have an overlay
     const isOverlaySnapPoint = activeSnapPointIndex.value === (fadeFromIndex.value ?? 0) - 1
@@ -275,7 +289,7 @@ export function useSnapPoints({
       ? snapPointsOffset.value[targetSnapPointIndex]
       - snapPointsOffset.value[targetSnapPointIndex - 1]
       : snapPointsOffset.value[targetSnapPointIndex + 1]
-      - snapPointsOffset.value[targetSnapPointIndex]
+        - snapPointsOffset.value[targetSnapPointIndex]
 
     const percentageDragged = absDraggedDistance / Math.abs(snapPointDistance)
 
@@ -287,6 +301,7 @@ export function useSnapPoints({
 
   return {
     isLastSnapPoint,
+    activeSnapPoint,
     shouldFade,
     getPercentageDragged,
     activeSnapPointIndex,

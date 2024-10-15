@@ -4,3 +4,5 @@ export interface SnapPoint {
 }
 
 export type DrawerDirection = 'top' | 'bottom' | 'left' | 'right'
+
+export type AnyFunction = (...args: any) => any

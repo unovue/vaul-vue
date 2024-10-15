@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { DialogRoot } from 'radix-vue'
 import { useVModel } from '@vueuse/core'
-import { type WritableComputedRef, computed, toRefs } from 'vue'
+import { DialogRoot } from 'radix-vue'
+import { computed, toRefs, type WritableComputedRef } from 'vue'
 import { provideDrawerRootContext } from './context'
 import {
   CLOSE_THRESHOLD,

@@ -1,4 +1,4 @@
-import type { DrawerDirection } from './types'
+import type { AnyFunction, DrawerDirection } from './types'
 
 interface Style {
   [key: string]: string
@@ -60,7 +60,23 @@ export function reset(el: Element | HTMLElement | null, prop?: string) {
   }
 }
 
+export function isVertical(direction: DrawerDirection) {
+  switch (direction) {
+    case 'top':
+    case 'bottom':
+      return true
+    case 'left':
+    case 'right':
+      return false
+    default:
+      return direction satisfies never
+  }
+}
+
 export function getTranslate(element: HTMLElement, direction: DrawerDirection): number | null {
+  if (!element)
+    return null
+
   const style = window.getComputedStyle(element)
   const transform
     // @ts-expect-error some custom style only exist in certain browser
@@ -79,15 +95,26 @@ export function dampenValue(v: number) {
   return 8 * (Math.log(v + 1) - 2)
 }
 
-export function isVertical(direction: DrawerDirection) {
-  switch (direction) {
-    case 'top':
-    case 'bottom':
-      return true
-    case 'left':
-    case 'right':
-      return false
-    default:
-      return direction satisfies never
+export function assignStyle(element: HTMLElement | null | undefined, style: Partial<CSSStyleDeclaration>) {
+  if (!element)
+    return () => {}
+
+  const prevStyle = element.style.cssText
+  Object.assign(element.style, style)
+
+  return () => {
+    element.style.cssText = prevStyle
+  }
+}
+
+/**
+ * Receives functions as arguments and returns a new function that calls all.
+ */
+export function chain<T>(...fns: T[]) {
+  return (...args: T extends AnyFunction ? Parameters<T> : never) => {
+    for (const fn of fns) {
+      if (typeof fn === 'function')
+        fn(...args)
+    }
   }
 }
