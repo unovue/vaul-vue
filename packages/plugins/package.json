@@ -1,0 +1,26 @@
+{
+  "name": "plugins",
+  "type": "module",
+  "version": "1.9.9",
+  "description": "Nuxt module for Vaul Vue",
+  "license": "MIT",
+  "keywords": [
+    "vaul",
+    "vaul-vue",
+    "nuxt-module",
+    "nuxt",
+    "nuxt3"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "unbuild",
+    "stub": "unbuild --stub"
+  },
+  "dependencies": {
+    "@nuxt/kit": "^3.12.2",
+    "@nuxt/schema": "^3.12.2",
+    "unbuild": "^2.0.0",
+    "unplugin-vue-components": "^0.27.2",
+    "vaul-vue": "link:../vaul-vue"
+  }
+}
