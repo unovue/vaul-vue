@@ -18,7 +18,7 @@ export default function (options: ResolverOptions = {}): ComponentResolver {
     resolve: (name: string) => {
       if (name.toLowerCase().startsWith(prefix.toLowerCase())) {
         const componentName = name.substring(prefix.length)
-        if (Object.values(components).flat().includes(componentName)) {
+        if (components.includes(componentName)) {
           return {
             name: componentName,
             from: 'vaul-vue',
