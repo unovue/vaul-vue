@@ -8,7 +8,7 @@
     "lint:fix": "eslint . --fix",
     "test": "pnpm -r test",
     "release": "pnpm -r release && changeset publish",
-    "build:package": "pnpm --filter vaul-vue build-only",
+    "build:package": "pnpm --filter vaul-vue build-only && pnpm run --filter plugins build",
     "build:playground": "pnpm build:package && pnpm --filter playground build"
   },
   "devDependencies": {
