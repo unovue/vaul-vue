@@ -36,6 +36,7 @@ export interface DrawerRootContext {
   emitRelease: (open: boolean) => void
   emitOpenChange: (o: boolean) => void
   nested: Ref<boolean>
+  handleOnly: Ref<boolean>
 }
 
 export const [injectDrawerRootContext, provideDrawerRootContext]

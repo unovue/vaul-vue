@@ -42,6 +42,7 @@ export type DrawerRootProps = {
   defaultOpen?: boolean
   nested?: boolean
   direction?: DrawerDirection
+  handleOnly?: boolean
 } & (WithFadeFromProps | WithoutFadeFromProps)
 
 export interface UseDrawerProps {
@@ -57,6 +58,7 @@ export interface UseDrawerProps {
   closeThreshold: Ref<number>
   scrollLockTimeout: Ref<number>
   direction: Ref<DrawerDirection>
+  handleOnly: Ref<boolean>
 }
 
 export interface DrawerRootEmits {
@@ -116,6 +118,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     activeSnapPoint,
     fadeFromIndex,
     direction,
+    handleOnly,
   } = props
 
   const isOpen = ref(open.value ?? false)
@@ -699,5 +702,6 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     emitRelease,
     emitOpenChange,
     nested,
+    handleOnly,
   }
 }
