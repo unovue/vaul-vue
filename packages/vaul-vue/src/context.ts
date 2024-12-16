@@ -1,5 +1,5 @@
 import type { ComponentPublicInstance, Ref } from 'vue'
-import { createContext } from 'radix-vue'
+import { createContext } from 'reka-ui'
 import type { DrawerDirection } from './types'
 
 export interface DrawerRootContext {

@@ -36,12 +36,12 @@
     "release": "pnpm run build-only"
   },
   "peerDependencies": {
-    "radix-vue": "^1.4.0",
+    "reka-ui": "^1.0.0-alpha.7",
     "vue": "^3.3.0"
   },
   "dependencies": {
     "@vueuse/core": "^10.8.0",
-    "radix-vue": "^1.4.9",
+    "reka-ui": "^1.0.0-alpha.7",
     "vue": "^3.4.5"
   },
   "devDependencies": {
