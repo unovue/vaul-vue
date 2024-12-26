@@ -456,10 +456,12 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
   }
 
   watchEffect(() => {
+    const wrapper = document.querySelector('[vaul-drawer-wrapper]') ?? document.body
+
     if (!isOpen.value && shouldScaleBackground.value && isClient) {
       // Can't use `onAnimationEnd` as the component will be invisible by then
       const id = setTimeout(() => {
-        reset(document.body)
+        reset(wrapper)
       }, 200)
 
       return () => clearTimeout(id)
@@ -560,25 +562,16 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
   }, { immediate: true })
 
   function scaleBackground(open: boolean) {
-    const wrapper = document.querySelector('[vaul-drawer-wrapper]')
+    const wrapper = document.querySelector<HTMLElement>('[vaul-drawer-wrapper]') ?? document.body
+    const backgroundPropertyName = wrapper.style.backgroundColor ? 'backgroundColor' : 'background'
+
     if (!wrapper || !shouldScaleBackground.value)
       return
 
     if (open) {
       // setting original styles initially
-      set(document.body, {
-        background: document.body.style.backgroundColor || document.body.style.background,
-      })
-      // setting body styles, with cache ignored, so that we can get correct original styles in reset
-      set(
-        document.body,
-        {
-          background: 'black',
-        },
-        true,
-      )
-
       set(wrapper, {
+        [backgroundPropertyName]: wrapper.style[backgroundPropertyName],
         borderRadius: `${BORDER_RADIUS}px`,
         overflow: 'hidden',
         ...(isVertical(direction.value)
@@ -594,12 +587,21 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
         transitionDuration: `${TRANSITIONS.DURATION}s`,
         transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
       })
+      // setting body styles, with cache ignored, so that we can get correct original styles in reset
+      set(
+        wrapper,
+        {
+          [backgroundPropertyName]: 'black',
+        },
+        true,
+      )
     }
     else {
       // Exit
       reset(wrapper, 'overflow')
       reset(wrapper, 'transform')
       reset(wrapper, 'borderRadius')
+      reset(wrapper, backgroundPropertyName)
       set(wrapper, {
         transitionProperty: 'transform, border-radius',
         transitionDuration: `${TRANSITIONS.DURATION}s`,
