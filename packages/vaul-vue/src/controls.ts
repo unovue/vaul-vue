@@ -569,14 +569,6 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
       set(document.body, {
         background: document.body.style.backgroundColor || document.body.style.background,
       })
-      // setting body styles, with cache ignored, so that we can get correct original styles in reset
-      set(
-        document.body,
-        {
-          background: 'black',
-        },
-        true,
-      )
 
       set(wrapper, {
         borderRadius: `${BORDER_RADIUS}px`,
