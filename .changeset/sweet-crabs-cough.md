@@ -2,4 +2,4 @@
 "vaul-vue": patch
 ---
 
-fix snap points handling
+adjust snapPoints on window resize
