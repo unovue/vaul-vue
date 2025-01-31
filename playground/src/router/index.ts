@@ -43,6 +43,10 @@ const router = createRouter({
           component: () => import('../views/tests/WithoutScaledBackgroundView.vue'),
         },
         {
+          path: 'with-handle',
+          component: () => import('../views/tests/WithHandleView.vue'),
+        },
+        {
           path: 'with-scaled-background',
           component: () => import('../views/tests/WithScaledBackgroundView.vue'),
         },
