@@ -285,10 +285,10 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
       const isDraggingInDirection = draggedDistance > 0
 
       // Pre condition for disallowing dragging in the close direction.
-      const noCloseSnapPointsPreCondition = snapPoints.value && !dismissible.value && !isDraggingInDirection
+      const noCloseSnapPointsPreCondition = snapPoints.value && !dismissible.value && !isDraggingInDirection && activeSnapPointIndex.value === 0
 
       // Disallow dragging down to close when first snap point is the active one and dismissible prop is set to false.
-      if (noCloseSnapPointsPreCondition && activeSnapPointIndex.value === 0)
+      if (noCloseSnapPointsPreCondition)
         return
 
       // We need to capture last time when drag with scroll was triggered and have a timeout between
