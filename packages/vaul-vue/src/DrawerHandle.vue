@@ -77,12 +77,12 @@ function handleCancelInteraction() {
 function handlePointerDown(event: PointerEvent) {
   if (handleOnly.value)
     onPress(event)
+  handleStartInteraction()
 }
 
 function handleOnDrag(event: PointerEvent) {
   if (handleOnly.value)
     onDrag(event)
-  handleStartInteraction()
 }
 </script>
 
