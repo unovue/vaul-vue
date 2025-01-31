@@ -67,6 +67,7 @@ export interface DrawerRootEmits {
   (e: 'close'): void
   (e: 'update:open', open: boolean): void
   (e: 'update:activeSnapPoint', val: string | number): void
+  (e: 'animationEnd', open: boolean): void
 }
 
 export interface DialogEmitHandlers {
