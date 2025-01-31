@@ -10,6 +10,7 @@ export interface DrawerRootContext {
   isVisible: Ref<boolean>
   drawerRef: Ref<ComponentPublicInstance | null>
   overlayRef: Ref<ComponentPublicInstance | null>
+  handleRef: Ref<ComponentPublicInstance | null>
   isDragging: Ref<boolean>
   dragStartTime: Ref<Date | null>
   isAllowedToDrag: Ref<boolean>
