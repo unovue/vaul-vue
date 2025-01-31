@@ -2,13 +2,13 @@
 import { DrawerContent, DrawerOverlay, DrawerPortal, DrawerRoot, DrawerTrigger } from 'vaul-vue'
 import { computed, ref } from 'vue'
 
-const snapPoints = [0, '148px', '355px', 1]
+const snapPoints = ['148px', '355px', 1]
 
-const snap = ref<number | string | null>(snapPoints[1])
+const snap = ref<number | string | null>(snapPoints[0])
 
 const activeSnapPointIndex = computed(() => snapPoints.indexOf(snap.value as string))
 
-const open = ref<boolean>(true)
+const open = ref<boolean>(false)
 </script>
 
 <template>
@@ -19,7 +19,7 @@ const open = ref<boolean>(true)
     <div data-testid="active-snap-index">
       {{ activeSnapPointIndex }}
     </div>
-    <DrawerRoot v-model:open="open" :snap-points="snapPoints" :active-snap-point="snap">
+    <DrawerRoot v-model:open="open" v-model:active-snap-point="snap" :snap-points="snapPoints">
       <DrawerTrigger as-child>
         <button data-testid="trigger" class="text-2xl">
           Open Drawer
@@ -97,7 +97,6 @@ const open = ref<boolean>(true)
                 />
               </svg>
             </div>
-            {' '}
             <h1 class="text-2xl mt-2 font-medium">
               The Hidden Details
             </h1>
