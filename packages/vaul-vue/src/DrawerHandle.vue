@@ -57,7 +57,9 @@ function handleCycleSnapPoints() {
   if (currentSnapIndex === -1)
     return // activeSnapPoint not found in snapPoints
 
-  activeSnapPoint.value = snapPoints.value[currentSnapIndex + 1]
+  const nextSnapPointIndex = isLastSnapPoint ? 0 : currentSnapIndex + 1
+
+  activeSnapPoint.value = snapPoints.value[nextSnapPointIndex]
 }
 
 function handleStartInteraction() {
