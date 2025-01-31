@@ -1,5 +1,11 @@
 # vaul-vue
 
+## 0.3.0-next.1
+
+### Patch Changes
+
+- 6f906b7: chore: update readme
+
 ## 0.3.0-next.0
 
 ### Minor Changes
