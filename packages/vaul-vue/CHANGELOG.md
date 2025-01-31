@@ -1,5 +1,11 @@
 # vaul-vue
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- migrate from Radix Vue to Reka UI
+
 ## 0.2.1
 
 ### Patch Changes
