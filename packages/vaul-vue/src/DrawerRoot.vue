@@ -10,6 +10,7 @@ import {
   SCROLL_LOCK_TIMEOUT,
   useDrawer,
 } from './controls'
+import { TRANSITIONS } from './constants'
 
 const props = withDefaults(defineProps<DrawerRootProps>(), {
   open: undefined,
@@ -52,6 +53,10 @@ const emitHandlers = {
   emitClose: () => emit('close'),
   emitOpenChange: (o: boolean) => {
     emit('update:open', o)
+
+    setTimeout(() => {
+      emit('animationEnd', o)
+    }, TRANSITIONS.DURATION * 1000)
   },
 }
 
