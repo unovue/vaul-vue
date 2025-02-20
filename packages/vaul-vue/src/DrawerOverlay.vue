@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DialogOverlay } from 'radix-vue'
+import { DialogOverlay } from 'reka-ui'
 import { computed } from 'vue'
 import { injectDrawerRootContext } from './context'
 
