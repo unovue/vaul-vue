@@ -176,32 +176,3 @@ const activeSnapPointIndex = computed(() => snapPoints.indexOf(snap.value as str
     </DrawerRoot>
   </div>
 </template>
-
-<style scoped>
-[data-vaul-handle] {
-  display: block;
-  position: relative;
-  opacity: .7;
-  background: #e2e2e4;
-  margin-left: auto;
-  margin-right: auto;
-  height: 5px;
-  width: 32px;
-  border-radius: 1rem;
-  touch-action: pan-y;
-}
-
-[data-vaul-handle]:active, [data-vaul-handle]:hover {
-  opacity: 1;
-}
-
-[data-vaul-handle-hitarea] {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%,-50%);
-  width: max(100%, 2.75rem);
-  height: max(100%, 2.75rem);
-  touch-action: inherit;
-}
-</style>
