@@ -1,7 +1,7 @@
 {
   "name": "vaul-vue",
   "type": "module",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "repository": "https://github.com/Elliot-Alexander/vaul-vue",
   "keywords": [
     "vue",
@@ -36,12 +36,12 @@
     "release": "pnpm run build-only"
   },
   "peerDependencies": {
-    "radix-vue": "^1.4.0",
+    "reka-ui": "^2.0.0",
     "vue": "^3.3.0"
   },
   "dependencies": {
     "@vueuse/core": "^10.8.0",
-    "radix-vue": "^1.4.9",
+    "reka-ui": "^2.0.0",
     "vue": "^3.4.5"
   },
   "devDependencies": {

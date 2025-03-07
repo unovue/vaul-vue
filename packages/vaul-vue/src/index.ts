@@ -37,4 +37,4 @@ export {
 
   DialogTrigger as DrawerTrigger,
   type DialogTriggerProps as DrawerTriggerProps,
-} from 'radix-vue'
+} from 'reka-ui'

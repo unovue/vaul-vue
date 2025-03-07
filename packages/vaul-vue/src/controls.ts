@@ -138,7 +138,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
   const dragStartTime = ref<Date | null>(null)
   const dragEndTime = ref<Date | null>(null)
   const lastTimeDragPrevented = ref<Date | null>(null)
-  const isAllowedToDrag = ref(true)
+  const isAllowedToDrag = ref(false)
 
   const nestedOpenChangeTimer = ref<number | null>(null)
 

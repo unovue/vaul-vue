@@ -1,5 +1,27 @@
 # vaul-vue
 
+## 0.3.0
+
+### Minor Changes
+
+- cde0d37: migrate from Radix Vue to Reka UI
+
+### Patch Changes
+
+- cde0d37: chore: update readme
+
+## 0.3.0-next.1
+
+### Patch Changes
+
+- 6f906b7: chore: update readme
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- migrate from Radix Vue to Reka UI
+
 ## 0.2.1
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 # Vaul Vue
 
 Vaul Vue is an unstyled drawer component for Vue that can be used as a Dialog replacement on tablet and mobile devices.
-It uses [Radix Vue's Dialog primitive](https://www.radix-vue.com/components/dialog.html) under the hood and is a feature complete port of [Emil Kowalski's Vaul library](https://github.com/emilkowalski/vaul) (built for React).
+It uses [Reka UI's Dialog primitive](https://www.reka-ui.com/docs/components/dialog) under the hood and is a feature complete port of [Emil Kowalski's Vaul library](https://github.com/emilkowalski/vaul) (built for React).
 
 ## Installation
 
@@ -42,4 +42,4 @@ import { DrawerContent, DrawerOverlay, DrawerPortal, DrawerRoot, DrawerTrigger }
 All credits go to these open-source works and resources
 
 - Major credits go to [Emil Kowalski](https://emilkowal.ski/) for the original [Vaul library](https://github.com/emilkowalski/vaul).
-- [Radix Vue](https://www.radix-vue.com/) for the Dialog primitive used under the hood.
+- [Reka UI](https://www.reka-ui.com/) for the Dialog primitive used under the hood.

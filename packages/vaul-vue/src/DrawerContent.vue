@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
-import { DialogContent } from 'radix-vue'
+import { DialogContent } from 'reka-ui'
 import { injectDrawerRootContext } from './context'
 
 const {
