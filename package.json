@@ -8,6 +8,7 @@
     "lint:fix": "eslint . --fix",
     "test": "pnpm -r test",
     "release": "pnpm -r release && changeset publish",
+    "dev:build": "pnpm --filter vaul-vue dev",
     "build:package": "pnpm --filter vaul-vue build-only",
     "build:playground": "pnpm build:package && pnpm --filter playground build"
   },
