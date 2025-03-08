@@ -9,7 +9,7 @@ const { overlayRef, hasSnapPoints, isOpen, shouldFade } = injectDrawerRootContex
 <template>
   <DialogOverlay
     ref="overlayRef"
-    vaul-overlay=""
+    data-vaul-overlay=""
     :data-vaul-snap-points="isOpen && hasSnapPoints ? 'true' : 'false'"
     :data-vaul-snap-points-overlay="isOpen && shouldFade ? 'true' : 'false'"
   />
