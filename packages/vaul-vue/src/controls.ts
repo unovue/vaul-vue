@@ -42,6 +42,7 @@ export type DrawerRootProps = {
   defaultOpen?: boolean
   nested?: boolean
   direction?: DrawerDirection
+  handleOnly?: boolean
 } & (WithFadeFromProps | WithoutFadeFromProps)
 
 export interface UseDrawerProps {
@@ -57,6 +58,7 @@ export interface UseDrawerProps {
   closeThreshold: Ref<number>
   scrollLockTimeout: Ref<number>
   direction: Ref<DrawerDirection>
+  handleOnly: Ref<boolean>
 }
 
 export interface DrawerRootEmits {
@@ -96,6 +98,10 @@ export interface Drawer {
   closeDrawer: () => void
 }
 
+export interface DrawerHandleProps {
+  preventCycle?: boolean
+}
+
 function usePropOrDefaultRef<T>(prop: Ref<T | undefined> | undefined, defaultRef: Ref<T>): Ref<T> {
   return prop && !!prop.value ? (prop as Ref<T>) : defaultRef
 }
@@ -117,6 +123,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     activeSnapPoint,
     fadeFromIndex,
     direction,
+    handleOnly,
   } = props
 
   const isOpen = ref(open.value ?? false)
@@ -131,7 +138,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
   const dragStartTime = ref<Date | null>(null)
   const dragEndTime = ref<Date | null>(null)
   const lastTimeDragPrevented = ref<Date | null>(null)
-  const isAllowedToDrag = ref(true)
+  const isAllowedToDrag = ref(false)
 
   const nestedOpenChangeTimer = ref<number | null>(null)
 
@@ -148,6 +155,8 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     props.snapPoints,
     ref<(number | string)[] | undefined>(undefined),
   )
+
+  const handleRef = ref<ComponentPublicInstance | null>(null)
 
   // const onCloseProp = ref<(() => void) | undefined>(undefined)
   // const onOpenChangeProp = ref<((open: boolean) => void) | undefined>(undefined)
@@ -676,6 +685,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     drawerRef,
     drawerHeightRef,
     overlayRef,
+    handleRef,
     isDragging,
     dragStartTime,
     isAllowedToDrag,
@@ -700,5 +710,6 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     emitRelease,
     emitOpenChange,
     nested,
+    handleOnly,
   }
 }

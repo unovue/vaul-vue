@@ -2,6 +2,7 @@ import DrawerRoot from './DrawerRoot.vue'
 import DrawerRootNested from './DrawerRootNested.vue'
 import DrawerOverlay from './DrawerOverlay.vue'
 import DrawerContent from './DrawerContent.vue'
+import DrawerHandle from './DrawerHandle.vue'
 
 export type {
   DrawerRootEmits,
@@ -18,6 +19,7 @@ export {
   DrawerRootNested,
   DrawerOverlay,
   DrawerContent,
+  DrawerHandle,
 }
 
 export {

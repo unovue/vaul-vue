@@ -18,6 +18,7 @@ const {
   keyboardIsOpen,
   closeDrawer,
   direction,
+  handleOnly,
 } = injectDrawerRootContext()
 
 const snapPointHeight = computed(() => {
@@ -45,6 +46,20 @@ function handlePointerDownOutside(event: Event) {
   closeDrawer()
 }
 
+function handlePointerDown(event: PointerEvent) {
+  if (handleOnly.value)
+    return
+
+  onPress(event)
+}
+
+function handleOnDrag(event: PointerEvent) {
+  if (handleOnly.value)
+    return
+
+  onDrag(event)
+}
+
 watch(
   isOpen,
   (open) => {
@@ -65,10 +80,11 @@ watch(
     :vaul-drawer-direction="direction"
     :vaul-drawer-visible="isVisible ? 'true' : 'false'"
     :style="{ '--snap-point-height': snapPointHeight }"
-    @pointerdown="onPress"
-    @pointermove="onDrag"
+    @pointerdown="handlePointerDown"
+    @pointermove="handleOnDrag"
     @pointerup="onRelease"
     @pointer-down-outside="handlePointerDownOutside"
+    @open-auto-focus.prevent
     @escape-key-down="(event) => {
       if (!dismissible)
         event.preventDefault()
