@@ -72,11 +72,12 @@ const { closeDrawer, hasBeenOpened, modal, isOpen } = provideDrawerRootContext(
 )
 
 function handleOpenChange(o: boolean) {
-  isOpen.value = o
   if (open.value !== undefined) {
     emitHandlers.emitOpenChange(o)
     return
   }
+  isOpen.value = o
+
   if (o) {
     hasBeenOpened.value = true
   }

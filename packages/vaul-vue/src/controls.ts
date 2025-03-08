@@ -471,6 +471,14 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     }
   })
 
+  watch(open, () => {
+    // reflect controlled `open` state
+    isOpen.value = open.value
+    if (!open.value) {
+      closeDrawer()
+    }
+  })
+
   onUnmounted(() => {
     restorePositionSetting()
   })

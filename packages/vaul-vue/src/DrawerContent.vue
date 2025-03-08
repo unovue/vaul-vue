@@ -45,10 +45,6 @@ function handlePointerDownOutside(event: Event) {
 
   if (dismissible.value)
     emitOpenChange(false)
-  if (!dismissible.value || open.value !== undefined)
-    return
-
-  closeDrawer()
 }
 
 function handlePointerDown(event: PointerEvent) {
