@@ -15,9 +15,8 @@ import { DrawerContent, DrawerHandle, DrawerOverlay, DrawerPortal, DrawerRoot, D
         class="bg-gray-100 flex flex-col rounded-t-[10px] h-full mt-24 max-h-[96%] fixed bottom-0 left-0 right-0"
       >
         <div class="p-4 bg-white rounded-t-[10px] flex-1">
-          <DrawerHandle>
-            <div class="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-8" />
-          </DrawerHandle>
+          <DrawerHandle data-testid="handle" class="mb-8 mt-2" />
+
           <div class="max-w-md mx-auto">
             <h2 id="radix-:R3emdaH1:" class="font-medium mb-4">
               Drawer for Vue.

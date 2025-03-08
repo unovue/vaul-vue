@@ -20,20 +20,18 @@ const activeSnapPointIndex = computed(() => snapPoints.indexOf(snap.value as str
 </script>
 
 <template>
-  <div
-    class="w-screen h-screen bg-white p-8 flex justify-center items-center"
-  >
+  <div class="w-screen h-screen bg-white p-8 flex justify-center items-center">
     <div data-testid="active-snap-index">
       {{ activeSnapPointIndex }}
     </div>
-    <DrawerRoot v-model:active-snap-point="snap" open :snap-points="snapPoints">
+    <DrawerRoot v-model:active-snap-point="snap" default-open :snap-points="snapPoints">
       <DrawerTrigger as-child>
-        <button data-testid="trigger" class="text-2xl">
+        <button data-testid="trigger">
           Open Drawer
         </button>
       </DrawerTrigger>
+      <DrawerOverlay class="fixed inset-0 bg-black/40" />
       <DrawerPortal>
-        <DrawerOverlay class="fixed inset-0 bg-black/40" />
         <DrawerContent
           data-testid="content"
           class="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]"
@@ -41,7 +39,7 @@ const activeSnapPointIndex = computed(() => snapPoints.indexOf(snap.value as str
           <DrawerHandle data-testid="handle" class="mb-8 mt-2" />
           <div
             class="flex flex-col max-w-md mx-auto w-full p-4 pt-5"
-            :class="{
+            :class=" {
               'overflow-y-auto': snap === 1,
               'overflow-hidden': snap !== 1,
             }"
@@ -144,7 +142,7 @@ const activeSnapPointIndex = computed(() => snapPoints.indexOf(snap.value as str
               <figure>
                 <blockquote class="font-serif">
                   “I especially loved the hidden details video. That was so useful, learned a lot by just reading it.
-                  Can&rsquo;t wait for more course content!”
+                  Can't wait for more course content!”
                 </blockquote>
                 <figcaption>
                   <span class="text-sm text-gray-600 mt-2 block">Yvonne Ray, Frontend Developer</span>
