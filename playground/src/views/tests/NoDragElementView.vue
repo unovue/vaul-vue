@@ -5,7 +5,7 @@ import { DrawerContent, DrawerOverlay, DrawerPortal, DrawerRoot, DrawerTrigger }
 <template>
   <div
     class="w-screen h-screen bg-white p-8 flex justify-center items-center"
-    vaul-drawer-wrapper=""
+    data-vaul-drawer-wrapper=""
   >
     <DrawerRoot should-scale-background>
       <DrawerTrigger

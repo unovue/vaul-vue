@@ -15,7 +15,7 @@ const open = ref(false)
 </script>
 
 <template>
-  <div class="w-screen h-screen bg-white p-8 flex justify-center items-center" vaul-drawer-wrapper="">
+  <div class="w-screen h-screen bg-white p-8 flex justify-center items-center" data-vaul-drawer-wrapper="">
     <DrawerRoot should-scale-background>
       <DrawerTrigger as-child>
         <button data-testid="trigger" class="text-2xl">

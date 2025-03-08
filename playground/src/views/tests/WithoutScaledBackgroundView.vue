@@ -16,7 +16,7 @@ const open = ref<boolean>(false)
 <template>
   <div
     class="w-screen h-screen bg-white p-8 flex justify-center items-center"
-    vaul-drawer-wrapper=""
+    data-vaul-drawer-wrapper=""
   >
     <DrawerRoot v-model:open="open">
       <DrawerTrigger as-child>

@@ -4,7 +4,7 @@ import BackgroundTexture from '@/components/BackgroundTexture.vue'
 </script>
 
 <template>
-  <main vaul-drawer-wrapper>
+  <main data-vaul-drawer-wrapper>
     <div class="relative">
       <div
         aria-hidden="true"

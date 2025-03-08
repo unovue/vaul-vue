@@ -12,7 +12,7 @@ const open = ref<boolean>(true)
 </script>
 
 <template>
-  <div class="w-screen h-screen bg-white p-8 flex justify-center items-center" vaul-drawer-wrapper="">
+  <div class="w-screen h-screen bg-white p-8 flex justify-center items-center" data-vaul-drawer-wrapper="">
     <div data-testid="active-snap-index">
       {{ activeSnapPointIndex }}
     </div>

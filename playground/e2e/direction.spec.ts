@@ -10,7 +10,7 @@ test.describe('Direction tests', () => {
 
     test('should close when dragged down', async ({ page }) => {
       await openDrawer(page)
-      await page.hover('[vaul-drawer]')
+      await page.hover('[data-vaul-drawer]')
       await page.mouse.down()
       await page.mouse.move(0, 600)
       await page.mouse.up()
@@ -20,7 +20,7 @@ test.describe('Direction tests', () => {
 
     test('should not close when dragged up', async ({ page }) => {
       await openDrawer(page)
-      await page.hover('[vaul-drawer]')
+      await page.hover('[data-vaul-drawer]')
       await page.mouse.down()
       await page.mouse.move(0, -600)
       await page.mouse.up()
@@ -36,7 +36,7 @@ test.describe('Direction tests', () => {
 
     test('should close when dragged left', async ({ page }) => {
       await openDrawer(page)
-      await page.hover('[vaul-drawer]')
+      await page.hover('[data-vaul-drawer]')
       await page.mouse.down()
       await page.mouse.move(200, 0)
       await page.mouse.up()
@@ -46,7 +46,7 @@ test.describe('Direction tests', () => {
 
     test('should not close when dragged right', async ({ page }) => {
       await openDrawer(page)
-      await page.hover('[vaul-drawer]')
+      await page.hover('[data-vaul-drawer]')
       await page.mouse.down()
       await page.mouse.move(800, 0)
       await page.mouse.up()
@@ -62,7 +62,7 @@ test.describe('Direction tests', () => {
 
     test('should close when dragged right', async ({ page }) => {
       await openDrawer(page)
-      await page.hover('[vaul-drawer]')
+      await page.hover('[data-vaul-drawer]')
       await page.mouse.down()
       await page.mouse.move(1200, 0)
       await page.mouse.up()
@@ -72,7 +72,7 @@ test.describe('Direction tests', () => {
 
     test('should not close when dragged left', async ({ page }) => {
       await openDrawer(page)
-      await page.hover('[vaul-drawer]')
+      await page.hover('[data-vaul-drawer]')
       await page.mouse.down()
       await page.mouse.move(-1200, 0)
       await page.mouse.up()
@@ -88,7 +88,7 @@ test.describe('Direction tests', () => {
 
     test('should close when dragged top', async ({ page }) => {
       await openDrawer(page)
-      await page.hover('[vaul-drawer]')
+      await page.hover('[data-vaul-drawer]')
       await page.mouse.down()
       await page.mouse.move(0, 100)
       await page.mouse.up()
@@ -98,7 +98,7 @@ test.describe('Direction tests', () => {
 
     test('should not close when dragged down', async ({ page }) => {
       await openDrawer(page)
-      await page.hover('[vaul-drawer]')
+      await page.hover('[data-vaul-drawer]')
       await page.mouse.down()
       await page.mouse.move(0, 600)
       await page.mouse.up()
