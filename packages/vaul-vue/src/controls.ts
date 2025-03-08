@@ -2,23 +2,11 @@ import { computed, onUnmounted, ref, watch, watchEffect } from 'vue'
 import type { ComponentPublicInstance, Ref } from 'vue'
 import { isClient } from '@vueuse/core'
 import { dampenValue, getTranslate, isVertical, reset, set } from './helpers'
-import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
+import { BORDER_RADIUS, DRAG_CLASS, NESTED_DISPLACEMENT, TRANSITIONS, VELOCITY_THRESHOLD, WINDOW_TOP_OFFSET } from './constants'
 import { useSnapPoints } from './useSnapPoints'
 import { usePositionFixed } from './usePositionFixed'
 import type { DrawerRootContext } from './context'
 import type { DrawerDirection } from './types'
-
-export const CLOSE_THRESHOLD = 0.25
-
-export const SCROLL_LOCK_TIMEOUT = 100
-
-export const BORDER_RADIUS = 8
-
-export const NESTED_DISPLACEMENT = 16
-
-export const WINDOW_TOP_OFFSET = 26
-
-export const DRAG_CLASS = 'vaul-dragging'
 
 export interface WithFadeFromProps {
   snapPoints: (number | string)[]
@@ -34,6 +22,11 @@ export type DrawerRootProps = {
   activeSnapPoint?: number | string | null
   closeThreshold?: number
   shouldScaleBackground?: boolean
+  /**
+   * When `false` we don't change body's background color when the drawer is open.
+   * @default true
+   */
+  setBackgroundColorOnScale?: boolean
   scrollLockTimeout?: number
   fixed?: boolean
   dismissible?: boolean
@@ -42,8 +35,13 @@ export type DrawerRootProps = {
   defaultOpen?: boolean
   nested?: boolean
   direction?: DrawerDirection
+  /**
+   * When `true` the `body` doesn't get any styles assigned from Vaul
+   */
+  noBodyStyles?: boolean
   handleOnly?: boolean
-} & (WithFadeFromProps | WithoutFadeFromProps)
+  preventScrollRestoration?: boolean
+} & WithFadeFromProps
 
 export interface UseDrawerProps {
   open: Ref<boolean>
@@ -53,11 +51,14 @@ export interface UseDrawerProps {
   fixed: Ref<boolean | undefined>
   modal: Ref<boolean>
   shouldScaleBackground: Ref<boolean | undefined>
+  setBackgroundColorOnScale: Ref<boolean | undefined>
   activeSnapPoint: Ref<number | string | null | undefined>
   fadeFromIndex: Ref<number | undefined>
   closeThreshold: Ref<number>
   scrollLockTimeout: Ref<number>
   direction: Ref<DrawerDirection>
+  noBodyStyles: Ref<boolean>
+  preventScrollRestoration: Ref<boolean>
   handleOnly: Ref<boolean>
 }
 
@@ -80,7 +81,6 @@ export interface DialogEmitHandlers {
 export interface Drawer {
   isOpen: Ref<boolean>
   hasBeenOpened: Ref<boolean>
-  isVisible: Ref<boolean>
   drawerRef: Ref<ComponentPublicInstance | null>
   overlayRef: Ref<ComponentPublicInstance | null>
   isDragging: Ref<boolean>
@@ -118,17 +118,19 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     fixed,
     modal,
     shouldScaleBackground,
+    setBackgroundColorOnScale,
     scrollLockTimeout,
     closeThreshold,
     activeSnapPoint,
     fadeFromIndex,
     direction,
+    noBodyStyles,
     handleOnly,
+    preventScrollRestoration,
   } = props
 
   const isOpen = ref(open.value ?? false)
   const hasBeenOpened = ref(false)
-  const isVisible = ref(false)
   const isDragging = ref(false)
   const justReleased = ref(false)
 
@@ -155,6 +157,8 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     props.snapPoints,
     ref<(number | string)[] | undefined>(undefined),
   )
+
+  const hasSnapPoints = computed(() => snapPoints && (snapPoints.value?.length ?? 0) > 0)
 
   const handleRef = ref<ComponentPublicInstance | null>(null)
 
@@ -197,6 +201,8 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     modal,
     nested,
     hasBeenOpened,
+    noBodyStyles,
+    preventScrollRestoration,
   })
 
   function getScale() {
@@ -302,7 +308,9 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
 
       // We need to capture last time when drag with scroll was triggered and have a timeout between
       const absDraggedDistance = Math.abs(draggedDistance)
-      const wrapper = document.querySelector('[vaul-drawer-wrapper]')
+      const wrapper
+      = (document.querySelector('[data-vaul-drawer-wrapper]') as HTMLElement)
+        || (document.querySelector('[vaul-drawer-wrapper]') as HTMLElement)
 
       // Calculate the percentage dragged, where 1 is the closed position
       let percentageDragged = absDraggedDistance / drawerHeightRef.value
@@ -397,7 +405,10 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
   function resetDrawer() {
     if (!drawerRef.value)
       return
-    const wrapper = document.querySelector('[vaul-drawer-wrapper]')
+    const wrapper
+    = (document.querySelector('[data-vaul-drawer-wrapper]') as HTMLElement)
+      || (document.querySelector('[vaul-drawer-wrapper]') as HTMLElement)
+
     const currentSwipeAmount = getTranslate(drawerRef.value.$el, direction.value)
 
     set(drawerRef.value.$el, {
@@ -435,29 +446,13 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     }
   }
 
-  function closeDrawer() {
+  function closeDrawer(fromWithin?: boolean) {
     if (!drawerRef.value)
       return
 
     emitClose()
-    set(drawerRef.value.$el, {
-      transform: isVertical(direction.value)
-        ? `translate3d(0, ${direction.value === 'bottom' ? '100%' : '-100%'}, 0)`
-        : `translate3d(${direction.value === 'right' ? '100%' : '-100%'}, 0, 0)`,
-      transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-    })
-
-    set(overlayRef.value?.$el, {
-      opacity: '0',
-      transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-    })
-
-    scaleBackground(false)
-
-    window.setTimeout(() => {
-      isVisible.value = false
+    if (!fromWithin)
       isOpen.value = false
-    }, 300)
 
     window.setTimeout(() => {
       if (snapPoints.value)
@@ -477,7 +472,6 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
   })
 
   onUnmounted(() => {
-    scaleBackground(false)
     restorePositionSetting()
   })
 
@@ -554,69 +548,9 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
   watch(isOpen, (o) => {
     if (o) {
       openTime.value = new Date()
-      scaleBackground(true)
     }
     emitOpenChange(o)
   }, { immediate: true })
-
-  watch(open, (o) => {
-    if (o) {
-      isOpen.value = o
-      hasBeenOpened.value = true
-    }
-    else {
-      closeDrawer()
-    }
-  }, { immediate: true })
-
-  function scaleBackground(open: boolean) {
-    const wrapper = document.querySelector('[vaul-drawer-wrapper]')
-    if (!wrapper || !shouldScaleBackground.value)
-      return
-
-    if (open) {
-      // setting original styles initially
-      set(document.body, {
-        background: document.body.style.backgroundColor || document.body.style.background,
-      })
-      // setting body styles, with cache ignored, so that we can get correct original styles in reset
-      set(
-        document.body,
-        {
-          background: 'black',
-        },
-        true,
-      )
-
-      set(wrapper, {
-        borderRadius: `${BORDER_RADIUS}px`,
-        overflow: 'hidden',
-        ...(isVertical(direction.value)
-          ? {
-              transform: `scale(${getScale()}) translate3d(0, calc(env(safe-area-inset-top) + 14px), 0)`,
-              transformOrigin: 'top',
-            }
-          : {
-              transform: `scale(${getScale()}) translate3d(calc(env(safe-area-inset-top) + 14px), 0, 0)`,
-              transformOrigin: 'left',
-            }),
-        transitionProperty: 'transform, border-radius',
-        transitionDuration: `${TRANSITIONS.DURATION}s`,
-        transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-      })
-    }
-    else {
-      // Exit
-      reset(wrapper, 'overflow')
-      reset(wrapper, 'transform')
-      reset(wrapper, 'borderRadius')
-      set(wrapper, {
-        transitionProperty: 'transform, border-radius',
-        transitionDuration: `${TRANSITIONS.DURATION}s`,
-        transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-      })
-    }
-  }
 
   function onNestedOpenChange(o: boolean) {
     const scale = o ? (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth : 1
@@ -681,7 +615,6 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     modal,
     keyboardIsOpen,
     hasBeenOpened,
-    isVisible,
     drawerRef,
     drawerHeightRef,
     overlayRef,
@@ -691,6 +624,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     isAllowedToDrag,
     snapPoints,
     activeSnapPoint,
+    hasSnapPoints,
     pointerStart,
     dismissible,
     snapPointsOffset,
@@ -698,6 +632,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     shouldFade,
     fadeFromIndex,
     shouldScaleBackground,
+    setBackgroundColorOnScale,
     onPress,
     onDrag,
     onRelease,
@@ -711,5 +646,6 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     emitOpenChange,
     nested,
     handleOnly,
+    noBodyStyles,
   }
 }

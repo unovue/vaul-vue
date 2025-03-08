@@ -4,13 +4,11 @@ import { useVModel } from '@vueuse/core'
 import { type WritableComputedRef, computed, toRefs } from 'vue'
 import { provideDrawerRootContext } from './context'
 import {
-  CLOSE_THRESHOLD,
   type DrawerRootEmits,
   type DrawerRootProps,
-  SCROLL_LOCK_TIMEOUT,
   useDrawer,
 } from './controls'
-import { TRANSITIONS } from './constants'
+import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT, TRANSITIONS } from './constants'
 import './style.css'
 
 const props = withDefaults(defineProps<DrawerRootProps>(), {
@@ -21,6 +19,7 @@ const props = withDefaults(defineProps<DrawerRootProps>(), {
   activeSnapPoint: undefined,
   snapPoints: undefined,
   shouldScaleBackground: undefined,
+  setBackgroundColorOnScale: true,
   closeThreshold: CLOSE_THRESHOLD,
   fadeFromIndex: undefined,
   nested: false,
@@ -73,16 +72,16 @@ const { closeDrawer, hasBeenOpened, modal, isOpen } = provideDrawerRootContext(
 )
 
 function handleOpenChange(o: boolean) {
+  isOpen.value = o
   if (open.value !== undefined) {
     emitHandlers.emitOpenChange(o)
     return
   }
-  if (!o) {
-    closeDrawer()
+  if (o) {
+    hasBeenOpened.value = true
   }
   else {
-    hasBeenOpened.value = true
-    isOpen.value = o
+    closeDrawer()
   }
 }
 

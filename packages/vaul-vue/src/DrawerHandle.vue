@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<DrawerHandleProps>(), {
 const LONG_HANDLE_PRESS_TIMEOUT = 250
 const DOUBLE_TAP_TIMEOUT = 120
 
-const { onPress, onDrag, handleRef, handleOnly, isVisible, snapPoints, activeSnapPoint, isDragging, dismissible, closeDrawer }
+const { onPress, onDrag, handleRef, handleOnly, isOpen, snapPoints, activeSnapPoint, isDragging, dismissible, closeDrawer }
     = injectDrawerRootContext()
 
 const closeTimeoutId = ref<number | null>(null)
@@ -91,7 +91,7 @@ function handleOnDrag(event: PointerEvent) {
 <template>
   <div
     ref="handleRef"
-    :data-vaul-drawer-visible="isVisible ? 'true' : 'false'"
+    :data-vaul-drawer-visible="isOpen ? 'true' : 'false'"
     data-vaul-handle=""
     aria-hidden="true"
     @click="handleStartCycle"

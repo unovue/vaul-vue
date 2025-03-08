@@ -3,18 +3,15 @@ import { DialogOverlay } from 'reka-ui'
 import { computed } from 'vue'
 import { injectDrawerRootContext } from './context'
 
-const { overlayRef, snapPoints, isVisible, isOpen, shouldFade } = injectDrawerRootContext()
-
-const hasSnapPoints = computed(() => snapPoints && (snapPoints.value?.length ?? 0) > 0)
+const { overlayRef, hasSnapPoints, isOpen, shouldFade } = injectDrawerRootContext()
 </script>
 
 <template>
   <DialogOverlay
     ref="overlayRef"
-    :vaul-drawer-visible="isVisible ? 'true' : 'false'"
     vaul-overlay=""
-    :vaul-snap-points="isOpen && hasSnapPoints ? 'true' : 'false'"
-    :vaul-snap-points-overlay="isOpen && shouldFade ? 'true' : 'false'"
+    :data-vaul-snap-points="isOpen && hasSnapPoints ? 'true' : 'false'"
+    :data-vaul-snap-points-overlay="isOpen && shouldFade ? 'true' : 'false'"
   />
 </template>
 
