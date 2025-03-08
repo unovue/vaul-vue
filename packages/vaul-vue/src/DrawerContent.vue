@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { DialogContent } from 'reka-ui'
 import { injectDrawerRootContext } from './context'
+import { useScaleBackground } from './useScaleBackground'
 
 const {
   open,
   isOpen,
-  isVisible,
   snapPointsOffset,
+  hasSnapPoints,
   drawerRef,
   onPress,
   onDrag,
@@ -20,6 +21,10 @@ const {
   direction,
   handleOnly,
 } = injectDrawerRootContext()
+
+useScaleBackground()
+
+const delayedSnapPoints = ref(false)
 
 const snapPointHeight = computed(() => {
   if (snapPointsOffset.value && snapPointsOffset.value.length > 0)
@@ -60,25 +65,22 @@ function handleOnDrag(event: PointerEvent) {
   onDrag(event)
 }
 
-watch(
-  isOpen,
-  (open) => {
-    if (open) {
-      setTimeout(() => {
-        isVisible.value = true
-      }, 1)
-    }
-  },
-  { immediate: true },
-)
+watchEffect (() => {
+  if (hasSnapPoints.value) {
+    window.requestAnimationFrame(() => {
+      delayedSnapPoints.value = true
+    })
+  }
+})
 </script>
 
 <template>
   <DialogContent
     ref="drawerRef"
-    vaul-drawer=""
-    :vaul-drawer-direction="direction"
-    :vaul-drawer-visible="isVisible ? 'true' : 'false'"
+    data-vaul-drawer=""
+    :data-vaul-drawer-direction="direction"
+    :data-vaul-delayed-snap-points="delayedSnapPoints ? 'true' : 'false'"
+    :data-vaul-snap-points="isOpen && hasSnapPoints ? 'true' : 'false'"
     :style="{ '--snap-point-height': snapPointHeight }"
     @pointerdown="handlePointerDown"
     @pointermove="handleOnDrag"

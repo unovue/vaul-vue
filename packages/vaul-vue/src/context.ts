@@ -7,7 +7,6 @@ export interface DrawerRootContext {
   isOpen: Ref<boolean>
   modal: Ref<boolean>
   hasBeenOpened: Ref<boolean>
-  isVisible: Ref<boolean>
   drawerRef: Ref<ComponentPublicInstance | null>
   overlayRef: Ref<ComponentPublicInstance | null>
   handleRef: Ref<ComponentPublicInstance | null>
@@ -15,6 +14,7 @@ export interface DrawerRootContext {
   dragStartTime: Ref<Date | null>
   isAllowedToDrag: Ref<boolean>
   snapPoints: Ref<(number | string)[] | undefined>
+  hasSnapPoints: Ref<boolean>
   keyboardIsOpen: Ref<boolean>
   activeSnapPoint: Ref<number | string | null | undefined>
   pointerStart: Ref<number>
@@ -29,6 +29,7 @@ export interface DrawerRootContext {
   shouldFade: Ref<boolean>
   fadeFromIndex: Ref<number | undefined>
   shouldScaleBackground: Ref<boolean | undefined>
+  setBackgroundColorOnScale: Ref<boolean | undefined>
   onNestedDrag: (percentageDragged: number) => void
   onNestedRelease: (o: boolean) => void
   onNestedOpenChange: (o: boolean) => void
@@ -38,6 +39,7 @@ export interface DrawerRootContext {
   emitOpenChange: (o: boolean) => void
   nested: Ref<boolean>
   handleOnly: Ref<boolean>
+  noBodyStyles: Ref<boolean>
 }
 
 export const [injectDrawerRootContext, provideDrawerRootContext]

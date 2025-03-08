@@ -1,4 +1,4 @@
-import type { DrawerDirection } from './types'
+import type { AnyFunction, DrawerDirection } from './types'
 
 interface Style {
   [key: string]: string
@@ -89,5 +89,32 @@ export function isVertical(direction: DrawerDirection) {
       return false
     default:
       return direction satisfies never
+  }
+}
+
+export function assignStyle(element: HTMLElement | null | undefined, style: Partial<CSSStyleDeclaration>) {
+  if (!element)
+    return () => {}
+
+  const prevStyle = element.style.cssText
+  Object.assign(element.style, style)
+
+  return () => {
+    element.style.cssText = prevStyle
+  }
+}
+
+/**
+ * Receives functions as arguments and returns a new function that calls all.
+ */
+export function chain<T>(...fns: T[]) {
+  return (...args: T extends AnyFunction ? Parameters<T> : never) => {
+    for (const fn of fns) {
+      if (typeof fn === 'function') {
+        // eslint-disable-next-line ts/ban-ts-comment
+        // @ts-ignore
+        fn(...args)
+      }
+    }
   }
 }
