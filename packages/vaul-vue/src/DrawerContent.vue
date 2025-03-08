@@ -84,6 +84,7 @@ watch(
     @pointermove="handleOnDrag"
     @pointerup="onRelease"
     @pointer-down-outside="handlePointerDownOutside"
+    @open-auto-focus.prevent
     @escape-key-down="(event) => {
       if (!dismissible)
         event.preventDefault()
