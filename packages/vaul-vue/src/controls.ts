@@ -8,18 +8,26 @@ import { usePositionFixed } from './usePositionFixed'
 import type { DrawerRootContext } from './context'
 import type { DrawerDirection } from './types'
 
-export interface WithFadeFromProps {
-  snapPoints: (number | string)[]
-  fadeFromIndex: number
-}
-
 export interface WithoutFadeFromProps {
+  /**
+   * Array of numbers from 0 to 100 that corresponds to % of the screen a given snap point should take up.
+   * Should go from least visible. Example `[0.2, 0.5, 0.8]`.
+   * You can also use px values, which doesn't take screen height into account.
+   */
   snapPoints?: (number | string)[]
+  /**
+   * Index of a `snapPoint` from which the overlay fade should be applied. Defaults to the last snap point.
+   */
   fadeFromIndex?: never
 }
 
 export type DrawerRootProps = {
   activeSnapPoint?: number | string | null
+  /**
+   * Number between 0 and 1 that determines when the drawer should be closed.
+   * Example: threshold of 0.5 would close the drawer if the user swiped for 50% of the height of the drawer or more.
+   * @default 0.25
+   */
   closeThreshold?: number
   shouldScaleBackground?: boolean
   /**
@@ -27,21 +35,49 @@ export type DrawerRootProps = {
    * @default true
    */
   setBackgroundColorOnScale?: boolean
+  /**
+   * Duration for which the drawer is not draggable after scrolling content inside of the drawer.
+   * @default 500ms
+   */
   scrollLockTimeout?: number
+  /**
+   * When `true`, don't move the drawer upwards if there's space, but rather only change it's height so it's fully scrollable when the keyboard is open
+   */
   fixed?: boolean
+  /**
+   * When `false` dragging, clicking outside, pressing esc, etc. will not close the drawer.
+   * Use this in combination with the `open` prop, otherwise you won't be able to open/close the drawer.
+   * @default true
+   */
   dismissible?: boolean
+  /**
+   * When `false` it allows to interact with elements outside of the drawer without closing it.
+   * @default true
+   */
   modal?: boolean
   open?: boolean
+  /**
+   * Opened by default, skips initial enter animation. Still reacts to `open` state changes
+   * @default false
+   */
   defaultOpen?: boolean
   nested?: boolean
+  /**
+   * Direction of the drawer. Can be `top` or `bottom`, `left`, `right`.
+   * @default 'bottom'
+   */
   direction?: DrawerDirection
   /**
    * When `true` the `body` doesn't get any styles assigned from Vaul
    */
   noBodyStyles?: boolean
+  /**
+   * When `true` only allows the drawer to be dragged by the `<Drawer.Handle />` component.
+   * @default false
+   */
   handleOnly?: boolean
   preventScrollRestoration?: boolean
-} & WithFadeFromProps
+} & WithoutFadeFromProps
 
 export interface UseDrawerProps {
   open: Ref<boolean>
@@ -68,6 +104,10 @@ export interface DrawerRootEmits {
   (e: 'close'): void
   (e: 'update:open', open: boolean): void
   (e: 'update:activeSnapPoint', val: string | number): void
+  /**
+   * Gets triggered after the open or close animation ends, it receives an `open` argument with the `open` state of the drawer by the time the function was triggered.
+   * Useful to revert any state changes for example.
+   */
   (e: 'animationEnd', open: boolean): void
 }
 
