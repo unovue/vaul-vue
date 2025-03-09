@@ -1,5 +1,18 @@
 # vaul-vue
 
+## 0.4.0
+
+### Minor Changes
+
+- 2c205d4: refactor data attribute from `[vaul-*]` to `[data-vaul-*]`
+- 3b225eb: Move styles to .css file to be able to use vaul-drawer with strich CSP-Header
+
+### Patch Changes
+
+- 694cf9d: add support for handle only interaction
+- 4fb90c6: fix: don't autofocus within Dialog
+- a3ad2ca: fix first drag issue when data-vaul-no-drag declared
+
 ## 0.3.0
 
 ### Minor Changes
