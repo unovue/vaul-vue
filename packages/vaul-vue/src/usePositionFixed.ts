@@ -25,6 +25,11 @@ export function usePositionFixed(options: PositionFixedOptions) {
   const scrollPos = ref(0)
 
   function setPositionFixed(): void {
+    // All browsers on iOS will return true here.
+    if (!isSafari())
+      return
+
+    // If previousBodyPosition is already set, don't set it again.
     if (previousBodyPosition === null && isOpen.value && !noBodyStyles.value) {
       previousBodyPosition = {
         position: document.body.style.position,
@@ -33,13 +38,16 @@ export function usePositionFixed(options: PositionFixedOptions) {
         height: document.body.style.height,
       }
 
+      // Update the dom inside an animation frame
       const { scrollX, innerHeight } = window
 
-      document.body.style.position = 'fixed'
-      document.body.style.top = `-${scrollPos.value}px`
-      document.body.style.left = `-${scrollX}px`
-      document.body.style.right = '0px'
-      document.body.style.height = 'auto'
+      document.body.style.setProperty('position', 'fixed', 'important')
+      Object.assign(document.body.style, {
+        top: `${-scrollPos.value}px`,
+        left: `${-scrollX}px`,
+        right: '0px',
+        height: 'auto',
+      })
 
       setTimeout(() => {
         requestAnimationFrame(() => {

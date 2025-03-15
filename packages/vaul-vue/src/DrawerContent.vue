@@ -41,10 +41,12 @@ function handlePointerDownOutside(event: Event) {
   if (keyboardIsOpen.value)
     keyboardIsOpen.value = false
 
-  event.preventDefault()
-
-  if (dismissible.value)
+  if (dismissible.value) {
     emitOpenChange(false)
+  }
+  else {
+    event.preventDefault()
+  }
 }
 
 function handlePointerDown(event: PointerEvent) {

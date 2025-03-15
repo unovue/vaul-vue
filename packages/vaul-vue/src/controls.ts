@@ -519,10 +519,6 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     }
   })
 
-  onUnmounted(() => {
-    restorePositionSetting()
-  })
-
   function onRelease(event: PointerEvent) {
     if (!isDragging.value || !drawerRef.value)
       return
