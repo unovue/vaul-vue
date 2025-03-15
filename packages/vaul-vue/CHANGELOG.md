@@ -1,5 +1,11 @@
 # vaul-vue
 
+## 0.4.1
+
+### Patch Changes
+
+- 7cd4bf2: fix body style persist after unmount, clicking overlay not dismissing drawer
+
 ## 0.4.0
 
 ### Minor Changes
