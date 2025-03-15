@@ -43,8 +43,10 @@ function handlePointerDownOutside(event: Event) {
 
   event.preventDefault()
 
-  if (dismissible.value)
+  if (dismissible.value) {
     emitOpenChange(false)
+    isOpen.value = false
+  }
 }
 
 function handlePointerDown(event: PointerEvent) {
