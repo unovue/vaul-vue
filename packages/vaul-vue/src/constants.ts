@@ -11,7 +11,9 @@ export const SCROLL_LOCK_TIMEOUT = 100
 
 export const BORDER_RADIUS = 8
 
-export const NESTED_DISPLACEMENT = 16
+export const NESTED_DISPLACEMENT_SCALE = 12
+
+export const NESTED_DISPLACEMENT = 22
 
 export const WINDOW_TOP_OFFSET = 26
 
