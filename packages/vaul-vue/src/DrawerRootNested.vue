@@ -1,39 +1,46 @@
 <script setup lang="ts">
-import { useForwardPropsEmits } from 'reka-ui'
-import DrawerRoot from './DrawerRoot.vue'
 import type { DrawerRootEmits, DrawerRootProps } from './controls'
+import { useForwardPropsEmits } from 'reka-ui'
 import { injectDrawerRootContext } from './context'
+import DrawerRoot from './DrawerRoot.vue'
 
 const props = defineProps<DrawerRootProps>()
+
 const emits = defineEmits<DrawerRootEmits>()
 
-const { onNestedDrag, onNestedOpenChange, onNestedRelease } = injectDrawerRootContext()
-function onClose() {
-  onNestedOpenChange(false)
-}
+const {
+  onNestedDrag,
+  onNestedOpenChange,
+  onNestedRelease,
+} = injectDrawerRootContext()
 
-function onDrag(p: number) {
-  onNestedDrag(p)
-}
+const open = defineModel<boolean>('open', {
+  required: false,
+  default: false,
+  set(value) {
+    onNestedOpenChange(value)
+    return value
+  },
+})
 
-function onOpenChange(o: boolean) {
-  if (o)
-    onNestedOpenChange(o)
+const activeSnapPoint = defineModel<number | string | null>('activeSnapPoint', {
+  required: false,
+  default: null,
+})
 
-  emits('update:open', o)
-}
-
-const forwarded = useForwardPropsEmits(props, emits)
+const forwarded: ReturnType<typeof useForwardPropsEmits> = useForwardPropsEmits(props, emits)
 </script>
 
 <template>
   <DrawerRoot
     v-bind="forwarded"
+    v-model:open="open"
+    :should-scale-background="false"
+    :active-snap-point="activeSnapPoint"
     nested
-    @close="onClose"
-    @drag="onDrag"
+    @close="onNestedOpenChange(false)"
+    @drag="onNestedDrag"
     @release="onNestedRelease"
-    @update:open="onOpenChange"
   >
     <slot />
   </DrawerRoot>

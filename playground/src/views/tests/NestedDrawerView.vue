@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import type { DrawerDirection } from 'vaul-vue'
 import {
   DrawerClose,
   DrawerContent,
-  type DrawerDirection,
   DrawerOverlay,
   DrawerPortal,
   DrawerRoot,
@@ -10,9 +10,9 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from 'vaul-vue'
+
 import { computed, ref } from 'vue'
 
-const open = ref(false)
 const direction = ref<DrawerDirection>('bottom')
 
 const directionShort = computed(() => {
@@ -48,10 +48,10 @@ const inset = computed(() => {
 const isVertical = computed(() => direction.value === 'top' || direction.value === 'bottom')
 
 const contentClasses = computed(() => [
-  'bg-zinc-100 flex flex-col fixed overflow-hidden',
+  'bg-zinc-100 flex flex-col fixed',
   `rounded-${directionShortOpposite.value}-[10px]`,
   `m${directionShortOpposite.value}-24`,
-  isVertical.value ? 'w-[100%] h-[96%]' : 'w-[96%] h-[100%]',
+  isVertical.value ? 'w-[100%] h-[96%] max-h-[800px]' : 'w-[96%] max-w-[800px] h-[100%]',
   inset.value,
 ])
 
@@ -73,24 +73,30 @@ const contentInnerClasses = computed(() => {
 </script>
 
 <template>
-  <div class="w-screen h-screen bg-white p-8 flex flex-col gap-6 justify-center items-center" data-vaul-drawer-wrapper="">
-    <div class="flex gap-2 items-center">
-      <label for="direction">Direction</label>
-      <select id="direction" v-model="direction" class="p-2">
-        <option value="left">
+  <div class="w-screen h-screen bg-white p-8 flex flex-col gap-6 justify-center items-center" data-vaul-drawer-wrapper>
+    <fieldset>
+      <legend class="mb-2">
+        Direction
+      </legend>
+      <div class="flex gap-4">
+        <label>
+          <input v-model="direction" type="radio" value="left">
           Left
-        </option>
-        <option value="right">
+        </label>
+        <label>
+          <input v-model="direction" type="radio" value="right">
           Right
-        </option>
-        <option value="top">
+        </label>
+        <label>
+          <input v-model="direction" type="radio" value="top">
           Top
-        </option>
-        <option value="bottom">
+        </label>
+        <label>
+          <input v-model="direction" type="radio" value="bottom">
           Bottom
-        </option>
-      </select>
-    </div>
+        </label>
+      </div>
+    </fieldset>
 
     <DrawerRoot should-scale-background :direction="direction">
       <DrawerTrigger as-child>
@@ -104,7 +110,7 @@ const contentInnerClasses = computed(() => {
           data-testid="content"
           :class="contentClasses"
         >
-          <div class="p-4 bg-white flex-1 flex" :class="contentInnerClasses">
+          <div class="p-4 flex-1 flex" :class="contentInnerClasses">
             <div :class="handleClasses" />
             <div class="max-w-md mx-auto">
               <DrawerTitle class="font-medium mb-4">
@@ -126,7 +132,7 @@ const contentInnerClasses = computed(() => {
                     data-testid="nested-content"
                     :class="contentClasses"
                   >
-                    <div class="p-4 bg-white flex-1 flex" :class="contentInnerClasses">
+                    <div class="p-4 flex-1 flex" :class="contentInnerClasses">
                       <div :class="handleClasses" />
                       <div class="max-w-md mx-auto">
                         <DrawerTitle class="font-medium mb-4">
@@ -158,4 +164,13 @@ const contentInnerClasses = computed(() => {
   </div>
 </template>
 
-<style scoped></style>
+<style>
+:root {
+  --vaul-duration: 1s;
+  --vaul-easing: linear(
+    0, 0.007, 0.029 2.1%, 0.118 4.6%, 0.626 14%, 0.828, 0.964 23.2%, 1.01,
+    1.043 28.1%, 1.065 31.4%, 1.071 35.2%, 1.062 39.5%, 1.015 52.2%, 0.999 60.4%,
+    0.995 69.6%, 1
+  );
+}
+</style>

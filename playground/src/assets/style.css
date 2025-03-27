@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   --vaul-overlay-background: 255, 255, 255;
@@ -37,4 +35,8 @@ html {
 a {
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
+}
+
+button {
+  cursor: pointer;
 }

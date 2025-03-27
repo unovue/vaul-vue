@@ -1,8 +1,8 @@
-import DrawerRoot from './DrawerRoot.vue'
-import DrawerRootNested from './DrawerRootNested.vue'
-import DrawerOverlay from './DrawerOverlay.vue'
 import DrawerContent from './DrawerContent.vue'
 import DrawerHandle from './DrawerHandle.vue'
+import DrawerOverlay from './DrawerOverlay.vue'
+import DrawerRoot from './DrawerRoot.vue'
+import DrawerRootNested from './DrawerRootNested.vue'
 
 export type {
   DrawerRootEmits,
@@ -10,16 +10,16 @@ export type {
 } from './controls'
 
 export type {
-  SnapPoint,
   DrawerDirection,
+  SnapPoint,
 } from './types'
 
 export {
-  DrawerRoot,
-  DrawerRootNested,
-  DrawerOverlay,
   DrawerContent,
   DrawerHandle,
+  DrawerOverlay,
+  DrawerRoot,
+  DrawerRootNested,
 }
 
 export {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import type { DrawerHandleProps } from './controls'
 import { ref } from 'vue'
 import { injectDrawerRootContext } from './context'
-import type { DrawerHandleProps } from './controls'
 
 const props = withDefaults(defineProps<DrawerHandleProps>(), {
   preventCycle: false,
@@ -10,8 +10,18 @@ const props = withDefaults(defineProps<DrawerHandleProps>(), {
 const LONG_HANDLE_PRESS_TIMEOUT = 250
 const DOUBLE_TAP_TIMEOUT = 120
 
-const { onPress, onDrag, handleRef, handleOnly, isOpen, snapPoints, activeSnapPoint, isDragging, dismissible, closeDrawer }
-    = injectDrawerRootContext()
+const {
+  onPress,
+  onDrag,
+  handleRef,
+  handleOnly,
+  open,
+  snapPoints,
+  activeSnapPoint,
+  isDragging,
+  dismissible,
+  closeDrawer,
+} = injectDrawerRootContext()
 
 const closeTimeoutId = ref<number | null>(null)
 const shouldCancelInteraction = ref(false)
@@ -91,7 +101,7 @@ function handleOnDrag(event: PointerEvent) {
 <template>
   <div
     ref="handleRef"
-    :data-vaul-drawer-visible="isOpen ? 'true' : 'false'"
+    :data-vaul-drawer-visible="open ? 'true' : 'false'"
     data-vaul-handle=""
     aria-hidden="true"
     @click="handleStartCycle"

@@ -1,6 +1,12 @@
 export const TRANSITIONS = {
-  DURATION: 0.5,
-  EASE: [0.32, 0.72, 0, 1],
+  DURATION: null as unknown as string,
+  EASE: null as unknown as string,
+}
+
+export function refreshTransitionsCache() {
+  const styles = getComputedStyle(document.documentElement)
+  TRANSITIONS.DURATION = styles.getPropertyValue('--vaul-duration')
+  TRANSITIONS.EASE = styles.getPropertyValue('--vaul-easing')
 }
 
 export const VELOCITY_THRESHOLD = 0.4
@@ -9,12 +15,8 @@ export const CLOSE_THRESHOLD = 0.25
 
 export const SCROLL_LOCK_TIMEOUT = 100
 
-export const BORDER_RADIUS = 8
-
 export const NESTED_DISPLACEMENT_SCALE = 12
 
 export const NESTED_DISPLACEMENT = 22
-
-export const WINDOW_TOP_OFFSET = 26
 
 export const DRAG_CLASS = 'vaul-dragging'

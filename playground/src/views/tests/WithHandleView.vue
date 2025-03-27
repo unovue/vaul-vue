@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import {
-  DrawerClose,
   DrawerContent,
   DrawerHandle,
   DrawerOverlay,
   DrawerPortal,
   DrawerRoot,
-  DrawerTitle,
   DrawerTrigger,
 } from 'vaul-vue'
 
@@ -20,11 +18,17 @@ const activeSnapPointIndex = computed(() => snapPoints.indexOf(snap.value as str
 </script>
 
 <template>
-  <div class="w-screen h-screen bg-white p-8 flex justify-center items-center">
-    <div data-testid="active-snap-index">
-      {{ activeSnapPointIndex }}
+  <div
+    class="w-screen h-screen bg-white p-8 flex flex-col gap-4 justify-center items-center"
+    data-vaul-drawer-wrapper
+  >
+    <div class="flex gap-2">
+      <strong>Active snap point:</strong>
+      <span data-testid="active-snap-index">
+        {{ activeSnapPointIndex }}
+      </span>
     </div>
-    <DrawerRoot v-model:active-snap-point="snap" default-open :snap-points="snapPoints">
+    <DrawerRoot v-model:active-snap-point="snap" open :snap-points="snapPoints">
       <DrawerTrigger as-child>
         <button data-testid="trigger">
           Open Drawer

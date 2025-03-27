@@ -1,46 +1,9 @@
-import type { ComponentPublicInstance, Ref } from 'vue'
+import type { useDrawer } from './controls'
 import { createContext } from 'reka-ui'
-import type { DrawerDirection } from './types'
 
-export interface DrawerRootContext {
-  open: Ref<boolean>
-  isOpen: Ref<boolean>
-  modal: Ref<boolean>
-  hasBeenOpened: Ref<boolean>
-  drawerRef: Ref<ComponentPublicInstance | null>
-  overlayRef: Ref<ComponentPublicInstance | null>
-  handleRef: Ref<ComponentPublicInstance | null>
-  isDragging: Ref<boolean>
-  dragStartTime: Ref<Date | null>
-  isAllowedToDrag: Ref<boolean>
-  snapPoints: Ref<(number | string)[] | undefined>
-  hasSnapPoints: Ref<boolean>
-  keyboardIsOpen: Ref<boolean>
-  activeSnapPoint: Ref<number | string | null | undefined>
-  pointerStart: Ref<number>
-  dismissible: Ref<boolean>
-  drawerHeightRef: Ref<number>
-  snapPointsOffset: Ref<number[]>
-  direction: Ref<DrawerDirection>
-  onPress: (event: PointerEvent) => void
-  onDrag: (event: PointerEvent) => void
-  onRelease: (event: PointerEvent) => void
-  closeDrawer: () => void
-  shouldFade: Ref<boolean>
-  fadeFromIndex: Ref<number | undefined>
-  shouldScaleBackground: Ref<boolean | undefined>
-  setBackgroundColorOnScale: Ref<boolean | undefined>
-  onNestedDrag: (percentageDragged: number) => void
-  onNestedRelease: (o: boolean) => void
-  onNestedOpenChange: (o: boolean) => void
-  emitClose: () => void
-  emitDrag: (percentageDragged: number) => void
-  emitRelease: (open: boolean) => void
-  emitOpenChange: (o: boolean) => void
-  nested: Ref<boolean>
-  handleOnly: Ref<boolean>
-  noBodyStyles: Ref<boolean>
-}
+type DrawerRootContext = ReturnType<typeof useDrawer>
 
-export const [injectDrawerRootContext, provideDrawerRootContext]
-  = createContext<DrawerRootContext>('DrawerRoot')
+export const [
+  injectDrawerRootContext,
+  provideDrawerRootContext,
+] = createContext<DrawerRootContext>('DrawerRoot')

@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { DrawerContent, DrawerOverlay, DrawerPortal, DrawerRoot, DrawerTrigger } from 'vaul-vue'
+import {
+  DrawerContent,
+  DrawerOverlay,
+  DrawerPortal,
+  DrawerRoot,
+  DrawerTrigger,
+} from 'vaul-vue'
 </script>
 
 <template>
   <div
     class="w-screen h-screen bg-white p-8 flex justify-center items-center"
-    data-vaul-drawer-wrapper=""
+    data-vaul-drawer-wrapper
   >
     <DrawerRoot should-scale-background>
       <DrawerTrigger
