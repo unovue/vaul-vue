@@ -6,18 +6,6 @@ interface Style {
 
 const cache = new WeakMap()
 
-export function getWrapper() {
-  const wrapper = document.querySelector('[data-vaul-drawer-wrapper]')
-    || document.querySelector('[vaul-drawer-wrapper]')
-
-  if (!wrapper) {
-    console.warn('[vaul-vue] Wrapper not found')
-    return null
-  }
-
-  return wrapper as HTMLElement
-}
-
 export function isInView(el: HTMLElement): boolean {
   const rect = el.getBoundingClientRect()
 

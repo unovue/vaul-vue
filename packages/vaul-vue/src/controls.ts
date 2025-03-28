@@ -3,7 +3,7 @@ import type { DrawerDirection } from './types'
 import { isClient, useWindowSize } from '@vueuse/core'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { DRAG_CLASS, NESTED_DISPLACEMENT, NESTED_DISPLACEMENT_SCALE, refreshTransitionsCache, TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
-import { clamp, dampenValue, getDirectionMultiplier, getTranslate, getWrapper, isVertical, reset, set, transitionDurationToMs } from './helpers'
+import { clamp, dampenValue, getDirectionMultiplier, getTranslate, isVertical, reset, set, transitionDurationToMs } from './helpers'
 import { usePositionFixed } from './usePositionFixed'
 import { useSnapPoints } from './useSnapPoints'
 
@@ -158,8 +158,6 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers) {
   const lastTimeDragPrevented = ref<Date | null>(null)
   const isAllowedToDrag = ref(false)
 
-  const nestedOpenChangeTimer = ref<number | null>(null)
-
   const pointerStart = ref(0)
   const keyboardIsOpen = ref(false)
 
@@ -190,6 +188,26 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers) {
 
   const directionMultiplier = computed(() => getDirectionMultiplier(direction.value))
   const nestedDisplacement = computed(() => directionMultiplier.value * NESTED_DISPLACEMENT)
+
+  function getWrapper() {
+    const wrapper = document.querySelector('[data-vaul-drawer-wrapper]')
+      || document.querySelector('[vaul-drawer-wrapper]')
+
+    if (!wrapper) {
+      console.warn('[vaul-vue] Wrapper not found')
+      return
+    }
+
+    wrapperRef.value = wrapper as HTMLElement
+  }
+
+  // When `open` is initially `true`, we need to know the wrapper before mounting.
+  getWrapper()
+
+  // Just to be sure.
+  onMounted(() => {
+    getWrapper()
+  })
 
   watchEffect((onCleanup) => {
     if (shouldScaleBackground.value) {
@@ -627,17 +645,15 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers) {
     resetDrawer()
   }
 
-  onMounted(() => {
-    wrapperRef.value = getWrapper()
-  })
+  let nestedOpenChangeTimeoutId: number | null = null
 
   function onNestedOpenChange(o: boolean) {
     const size = windowOppositeSize.value
     const scale = o ? (size - NESTED_DISPLACEMENT_SCALE) / size : 1
     const translate = o ? -1 * nestedDisplacement.value : 0
 
-    if (nestedOpenChangeTimer.value)
-      window.clearTimeout(nestedOpenChangeTimer.value)
+    if (nestedOpenChangeTimeoutId !== null)
+      window.clearTimeout(nestedOpenChangeTimeoutId)
 
     const drawerEl = getDrawerEl()
 
@@ -649,7 +665,14 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers) {
     })
 
     if (!o && drawerEl) {
-      nestedOpenChangeTimer.value = window.setTimeout(() => {
+      nestedOpenChangeTimeoutId = window.setTimeout(() => {
+        // Drawer element can be a different HTML element after the timeout,
+        // so we need to get the latest one.
+        const drawerEl = getDrawerEl()
+
+        if (!drawerEl)
+          return
+
         const translate = getTranslate(drawerEl, direction.value)
         set(drawerEl, {
           transition: 'none',

@@ -3,6 +3,7 @@ import type { DrawerRootEmits, DrawerRootProps } from './controls'
 import { useForwardPropsEmits } from 'reka-ui'
 import { injectDrawerRootContext } from './context'
 import DrawerRoot from './DrawerRoot.vue'
+import { watchEffect } from 'vue';
 
 const props = defineProps<DrawerRootProps>()
 
@@ -17,10 +18,6 @@ const {
 const open = defineModel<boolean>('open', {
   required: false,
   default: false,
-  set(value) {
-    onNestedOpenChange(value)
-    return value
-  },
 })
 
 const activeSnapPoint = defineModel<number | string | null>('activeSnapPoint', {
@@ -29,6 +26,10 @@ const activeSnapPoint = defineModel<number | string | null>('activeSnapPoint', {
 })
 
 const forwarded: ReturnType<typeof useForwardPropsEmits> = useForwardPropsEmits(props, emits)
+
+watchEffect(() => {
+  onNestedOpenChange(open.value)
+})
 </script>
 
 <template>
