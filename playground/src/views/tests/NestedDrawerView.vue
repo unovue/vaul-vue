@@ -12,6 +12,7 @@ import {
 } from 'vaul-vue'
 
 import { computed, ref } from 'vue'
+import DirectionSwitcher from '@/components/DirectionSwitcher.vue'
 
 const direction = ref<DrawerDirection>('bottom')
 
@@ -74,29 +75,7 @@ const contentInnerClasses = computed(() => {
 
 <template>
   <div class="w-screen h-screen bg-white p-8 flex flex-col gap-6 justify-center items-center" data-vaul-drawer-wrapper>
-    <fieldset>
-      <legend class="mb-2">
-        Direction
-      </legend>
-      <div class="flex gap-4">
-        <label>
-          <input v-model="direction" type="radio" value="left">
-          Left
-        </label>
-        <label>
-          <input v-model="direction" type="radio" value="right">
-          Right
-        </label>
-        <label>
-          <input v-model="direction" type="radio" value="top">
-          Top
-        </label>
-        <label>
-          <input v-model="direction" type="radio" value="bottom">
-          Bottom
-        </label>
-      </div>
-    </fieldset>
+    <DirectionSwitcher v-model="direction"/>
 
     <DrawerRoot should-scale-background :direction="direction">
       <DrawerTrigger as-child>

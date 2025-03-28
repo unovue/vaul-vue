@@ -11,6 +11,10 @@ const router = createRouter({
       path: '/test',
       children: [
         {
+          path: 'custom-styles',
+          component: () => import('../views/tests/CustomStylesView.vue'),
+        },
+        {
           path: 'controlled',
           component: () => import('../views/tests/ControlledView.vue'),
         },
