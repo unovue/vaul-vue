@@ -6,9 +6,6 @@
 :where([data-vaul-drawer-wrapper], [vaul-drawer-wrapper]:is([data-vaul-scale='true'])) {
   --vaul-wrapper-scale-px-unitless: -26;
   --vaul-wrapper-border-radius: 8px;
-}
-
-:is([data-vaul-drawer-wrapper], [vaul-drawer-wrapper]):is([data-vaul-scale='true']) {
   --vaul-opened-percentage: calc(1 - var(--vaul-closed-percentage, 1));
   --vaul-wrapper-target-displacement: calc(var(--vaul-wrapper-scale-px-unitless) / -2 * 1px);
   --vaul-wrapper-displacement: calc(var(--vaul-wrapper-target-displacement) - var(--vaul-closed-percentage, 1) * var(--vaul-wrapper-target-displacement));
@@ -21,7 +18,7 @@
 }
 
 /* REVIEW: Is this really necessary? Can we set it to clip instead? */
-body:has([data-vaul-drawer]) :is([data-vaul-drawer-wrapper], [vaul-drawer-wrapper]) {
+:where(body:has([data-vaul-drawer]) :is([data-vaul-drawer-wrapper], [vaul-drawer-wrapper])) {
   overflow: hidden;
 }
 
@@ -29,22 +26,22 @@ body:has([data-vaul-drawer]:active) :is([data-vaul-drawer-wrapper], [vaul-drawer
   transition: none;
 }
 
-body:has([data-vaul-drawer-direction='top']) :is([data-vaul-drawer-wrapper], [vaul-drawer-wrapper]) {
+:where(body:has([data-vaul-drawer-direction='top']) :is([data-vaul-drawer-wrapper], [vaul-drawer-wrapper])) {
   transform-origin: bottom;
   translate: 0 calc(-1 * (env(safe-area-inset-bottom) + var(--vaul-wrapper-displacement))) 0;
 }
 
-body:has([data-vaul-drawer-direction='bottom']) :is([data-vaul-drawer-wrapper], [vaul-drawer-wrapper]) {
+:where(body:has([data-vaul-drawer-direction='bottom']) :is([data-vaul-drawer-wrapper], [vaul-drawer-wrapper])) {
   transform-origin: top;
   translate: 0 calc(1 * (env(safe-area-inset-top) + var(--vaul-wrapper-displacement))) 0;
 }
 
-body:has([data-vaul-drawer-direction='left']) :is([data-vaul-drawer-wrapper], [vaul-drawer-wrapper]) {
+:where(body:has([data-vaul-drawer-direction='left']) :is([data-vaul-drawer-wrapper], [vaul-drawer-wrapper])) {
   transform-origin: right;
   translate: calc(-1 * (env(safe-area-inset-right) + var(--vaul-wrapper-displacement))) 0 0;
 }
 
-body:has([data-vaul-drawer-direction='right']) :is([data-vaul-drawer-wrapper], [vaul-drawer-wrapper]) {
+:where(body:has([data-vaul-drawer-direction='right']) :is([data-vaul-drawer-wrapper], [vaul-drawer-wrapper])) {
   transform-origin: left;
   translate: calc(1 * (env(safe-area-inset-left) + var(--vaul-wrapper-displacement))) 0 0;
 }
