@@ -18,7 +18,7 @@ export interface WithoutFadeFromProps {
   /**
    * Index of a `snapPoint` from which the overlay fade should be applied. Defaults to the last snap point.
    */
-  fadeFromIndex?: never
+  fadeFromIndex: never
 }
 
 export type DrawerRootProps = {
