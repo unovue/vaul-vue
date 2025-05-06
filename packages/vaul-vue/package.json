@@ -41,8 +41,7 @@
   },
   "dependencies": {
     "@vueuse/core": "^13.0.0",
-    "reka-ui": "^2.1.1",
-    "vue": "^3.5.13"
+    "reka-ui": "^2.1.1"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.11.0",

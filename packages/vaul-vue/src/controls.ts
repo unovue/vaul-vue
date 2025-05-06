@@ -21,6 +21,13 @@ export interface WithoutFadeFromProps {
 }
 
 export type DrawerRootProps = {
+  activeSnapPoint?: number | string | null
+  open?: boolean
+  /**
+   * Opened by default, skips initial enter animation. Still reacts to `open` state changes
+   * @default false
+   */
+  defaultOpen?: boolean
   /**
    * Number between 0 and 1 that determines when the drawer should be closed.
    * Example: threshold of 0.5 would close the drawer if the user swiped for 50% of the height of the drawer or more.
@@ -101,6 +108,8 @@ export interface DrawerRootEmits {
   (e: 'drag', percentageClosed: number): void
   (e: 'release', open: boolean): void
   (e: 'close'): void
+  (e: 'update:open', open: boolean): void
+  (e: 'update:activeSnapPoint', val: string | number): void
   /**
    * Gets triggered after the open or close animation ends, it receives an `open` argument with the `open` state of the drawer by the time the function was triggered.
    * Useful to revert any state changes for example.

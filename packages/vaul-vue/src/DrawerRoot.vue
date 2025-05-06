@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DrawerRootEmits, DrawerRootProps } from './controls'
+import { useVModel } from '@vueuse/core'
 import { DialogRoot } from 'reka-ui'
 import { computed, ref, toRefs } from 'vue'
 import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT, TRANSITIONS } from './constants'
@@ -9,6 +10,8 @@ import { transitionDurationToMs } from './helpers'
 import './style.css'
 
 const props = withDefaults(defineProps<DrawerRootProps>(), {
+  open: undefined,
+  defaultOpen: undefined,
   fixed: false,
   dismissible: true,
   snapPoints: undefined,
@@ -23,7 +26,7 @@ const props = withDefaults(defineProps<DrawerRootProps>(), {
   handleOnly: false,
 })
 
-const emit = defineEmits<DrawerRootEmits>()
+const emits = defineEmits<DrawerRootEmits>()
 
 const slots = defineSlots<{
   default: (props: {
@@ -31,27 +34,24 @@ const slots = defineSlots<{
   }) => any
 }>()
 
-const open = defineModel<boolean>('open', {
-  required: false,
-  default: false,
+const open = useVModel(props, 'open', emits, {
+  defaultValue: props.defaultOpen,
+  passive: (props.open === undefined) as false,
 })
 
-const activeSnapPoint = defineModel<number | string | null>('activeSnapPoint', {
-  required: false,
-  default: null,
+const activeSnapPoint = useVModel(props, 'activeSnapPoint', emits, {
+  passive: (props.activeSnapPoint === undefined) as false,
 })
-
-const defaultOpen = ref(open.value)
 
 const fadeFromIndex = computed(() => props.fadeFromIndex ?? (props.snapPoints && props.snapPoints.length - 1))
 
 const emitHandlers = {
-  emitDrag: (percentageClosed: number) => emit('drag', percentageClosed),
-  emitRelease: (open: boolean) => emit('release', open),
-  emitClose: () => emit('close'),
+  emitDrag: (percentageClosed: number) => emits('drag', percentageClosed),
+  emitRelease: (open: boolean) => emits('release', open),
+  emitClose: () => emits('close'),
   emitOpenChange: (o: boolean) => {
     window.setTimeout(() => {
-      emit('animationEnd', o)
+      emits('animationEnd', o)
     }, transitionDurationToMs(TRANSITIONS.DURATION))
   },
 }
@@ -61,7 +61,7 @@ const context = useDrawer({
   ...toRefs(props),
   activeSnapPoint,
   fadeFromIndex,
-  open,
+  open: open as any,
 })
 
 const { hasBeenOpened, modal } = context
@@ -71,11 +71,17 @@ provideDrawerRootContext(context)
 const openProxy = computed({
   get: () => open.value,
   set: (o: boolean) => {
-    open.value = o
+    if (!props.dismissible && !open.value)
+      return
 
     if (o) {
       hasBeenOpened.value = true
     }
+    else {
+      context.closeDrawer(true)
+    }
+
+    open.value = o
   },
 })
 

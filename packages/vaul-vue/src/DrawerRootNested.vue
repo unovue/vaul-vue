@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { DrawerRootEmits, DrawerRootProps } from './controls'
+import { useVModel } from '@vueuse/core'
 import { useForwardPropsEmits } from 'reka-ui'
+import { computed } from 'vue'
 import { injectDrawerRootContext } from './context'
 import DrawerRoot from './DrawerRoot.vue'
-import { watchEffect } from 'vue';
 
 const props = defineProps<DrawerRootProps>()
 
@@ -15,30 +16,24 @@ const {
   onNestedRelease,
 } = injectDrawerRootContext()
 
-const open = defineModel<boolean>('open', {
-  required: false,
-  default: false,
+const delegatedProps = computed(() => {
+  const { nested: _, ...delegated } = props
+
+  return delegated
 })
 
-const activeSnapPoint = defineModel<number | string | null>('activeSnapPoint', {
-  required: false,
-  default: null,
-})
-
-const forwarded: ReturnType<typeof useForwardPropsEmits> = useForwardPropsEmits(props, emits)
-
-watchEffect(() => {
-  onNestedOpenChange(open.value)
-})
+const forwarded = useForwardPropsEmits(delegatedProps, emits)
 </script>
 
 <template>
   <DrawerRoot
-    v-bind="forwarded"
-    v-model:open="open"
-    :should-scale-background="false"
-    :active-snap-point="activeSnapPoint"
     nested
+    v-bind="forwarded"
+    @update:open="(o) => {
+      if (o) {
+        onNestedOpenChange(o);
+      }
+    }"
     @close="onNestedOpenChange(false)"
     @drag="onNestedDrag"
     @release="onNestedRelease"
