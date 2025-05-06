@@ -1,16 +1,17 @@
 <script setup lang="ts">
+import type { DrawerDirection } from 'vaul-vue'
 import {
-  DrawerClose,
-  type DrawerDirection,
   DrawerOverlay,
   DrawerPortal,
   DrawerRoot,
   DrawerTitle,
   DrawerTrigger,
 } from 'vaul-vue'
+
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import DrawerContentWrapper from '../../components/DrawerContent.vue'
+import DrawerContentWrapper from '@/components/DrawerContent.vue'
+import DirectionSwitcher from '@/components/DirectionSwitcher.vue'
 
 const route = useRoute()
 const direction = ref<DrawerDirection>(route.query.direction as DrawerDirection ?? 'bottom')
@@ -18,9 +19,11 @@ const direction = ref<DrawerDirection>(route.query.direction as DrawerDirection 
 
 <template>
   <div
-    class="w-screen h-screen bg-white p-8 flex justify-center items-center"
-    data-vaul-drawer-wrapper=""
+    class="w-screen h-screen bg-white p-8 flex flex-col gap-6 justify-center items-center"
+    data-vaul-drawer-wrapper
   >
+    <DirectionSwitcher v-model="direction"/>
+
     <DrawerRoot :direction="direction">
       <DrawerTrigger as-child>
         <button data-testid="trigger" class="text-2xl">

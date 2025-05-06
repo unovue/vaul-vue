@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue'
 import { DialogContent } from 'reka-ui'
+import { computed, ref, watchEffect } from 'vue'
 import { injectDrawerRootContext } from './context'
-import { useScaleBackground } from './useScaleBackground'
 
 const {
   open,
-  isOpen,
   snapPointsOffset,
   hasSnapPoints,
   drawerRef,
@@ -17,12 +15,9 @@ const {
   emitOpenChange,
   dismissible,
   keyboardIsOpen,
-  closeDrawer,
   direction,
   handleOnly,
 } = injectDrawerRootContext()
-
-useScaleBackground()
 
 const delayedSnapPoints = ref(false)
 
@@ -42,6 +37,7 @@ function handlePointerDownOutside(event: Event) {
     keyboardIsOpen.value = false
 
   if (dismissible.value) {
+    open.value = false
     emitOpenChange(false)
   }
   else {
@@ -78,8 +74,8 @@ watchEffect (() => {
     data-vaul-drawer=""
     :data-vaul-drawer-direction="direction"
     :data-vaul-delayed-snap-points="delayedSnapPoints ? 'true' : 'false'"
-    :data-vaul-snap-points="isOpen && hasSnapPoints ? 'true' : 'false'"
-    :style="{ '--snap-point-height': snapPointHeight }"
+    :data-vaul-snap-points="open && hasSnapPoints ? 'true' : 'false'"
+    :style="{ '--vaul-snap-point-height': snapPointHeight }"
     @pointerdown="handlePointerDown"
     @pointermove="handleOnDrag"
     @pointerup="onRelease"

@@ -1,7 +1,7 @@
-import type { AnyFunction, DrawerDirection } from './types'
+import type { DrawerDirection } from './types'
 
 interface Style {
-  [key: string]: string
+  [key: string]: string | null
 }
 
 const cache = new WeakMap()
@@ -22,19 +22,15 @@ export function isInView(el: HTMLElement): boolean {
 }
 
 export function set(el?: Element | HTMLElement | null, styles?: Style, ignoreCache = false) {
-  if (!el || !(el instanceof HTMLElement) || !styles)
+  if (!(el instanceof HTMLElement) || !styles)
     return
+
   const originalStyles: Style = {}
 
-  Object.entries(styles).forEach(([key, value]: [string, string]) => {
-    if (key.startsWith('--')) {
-      el.style.setProperty(key, value)
-      return
-    }
-
-    originalStyles[key] = (el.style as any)[key];
-    (el.style as any)[key] = value
-  })
+  for (const [prop, value] of Object.entries(styles) as [string, string][]) {
+    originalStyles[prop] = el.style.getPropertyValue(prop)
+    el.style.setProperty(prop, value)
+  }
 
   if (ignoreCache)
     return
@@ -42,21 +38,24 @@ export function set(el?: Element | HTMLElement | null, styles?: Style, ignoreCac
   cache.set(el, originalStyles)
 }
 
-export function reset(el: Element | HTMLElement | null, prop?: string) {
-  if (!el || !(el instanceof HTMLElement))
+export function reset(el: Element | HTMLElement | null, forceRemoveProps?: string[]) {
+  if (!(el instanceof HTMLElement))
     return
+
+  if (forceRemoveProps) {
+    for (const prop of forceRemoveProps) {
+      el.style.removeProperty(prop)
+    }
+
+    return
+  }
+
   const originalStyles = cache.get(el)
 
-  if (!originalStyles)
-    return
-
-  if (prop) {
-    ; (el.style as any)[prop] = originalStyles[prop]
-  }
-  else {
-    Object.entries(originalStyles).forEach(([key, value]) => {
-      ; (el.style as any)[key] = value
-    })
+  if (originalStyles) {
+    for (const [prop, value] of Object.entries(originalStyles)) {
+      el.style.setProperty(prop, value as string)
+    }
   }
 }
 
@@ -79,6 +78,10 @@ export function dampenValue(v: number) {
   return 8 * (Math.log(v + 1) - 2)
 }
 
+export function clamp(min: number, value: number, max: number) {
+  return Math.min(Math.max(value, min), max)
+}
+
 export function isVertical(direction: DrawerDirection) {
   switch (direction) {
     case 'top':
@@ -92,29 +95,20 @@ export function isVertical(direction: DrawerDirection) {
   }
 }
 
-export function assignStyle(element: HTMLElement | null | undefined, style: Partial<CSSStyleDeclaration>) {
-  if (!element)
-    return () => {}
-
-  const prevStyle = element.style.cssText
-  Object.assign(element.style, style)
-
-  return () => {
-    element.style.cssText = prevStyle
+export function getDirectionMultiplier(direction: DrawerDirection) {
+  switch (direction) {
+    case 'bottom':
+    case 'right':
+      return 1
+    case 'top':
+    case 'left':
+      return -1
+    default:
+      return direction satisfies never
   }
 }
 
-/**
- * Receives functions as arguments and returns a new function that calls all.
- */
-export function chain<T>(...fns: T[]) {
-  return (...args: T extends AnyFunction ? Parameters<T> : never) => {
-    for (const fn of fns) {
-      if (typeof fn === 'function') {
-        // eslint-disable-next-line ts/ban-ts-comment
-        // @ts-ignore
-        fn(...args)
-      }
-    }
-  }
+export function transitionDurationToMs(duration: string) {
+  const factor = duration.endsWith('ms') ? 1 : 1000
+  return Number.parseFloat(duration) * factor
 }

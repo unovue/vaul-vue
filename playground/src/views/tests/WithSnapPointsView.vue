@@ -13,11 +13,14 @@ const open = ref<boolean>(false)
 
 <template>
   <div
-    class="w-screen h-screen bg-white p-8 flex justify-center items-center"
-    data-vaul-drawer-wrapper=""
+    class="w-screen h-screen bg-white p-8 flex flex-col gap-4 justify-center items-center"
+    data-vaul-drawer-wrapper
   >
-    <div data-testid="active-snap-index">
-      {{ activeSnapPointIndex }}
+    <div class="flex gap-2">
+      <strong>Active snap point:</strong>
+      <span data-testid="active-snap-index">
+        {{ activeSnapPointIndex }}
+      </span>
     </div>
     <DrawerRoot v-model:open="open" v-model:active-snap-point="snap" :snap-points="snapPoints">
       <DrawerTrigger as-child>

@@ -1,24 +1,21 @@
 <script setup lang="ts">
-import { DialogRoot } from 'reka-ui'
+import type { DrawerRootEmits, DrawerRootProps } from './controls'
 import { useVModel } from '@vueuse/core'
-import { type WritableComputedRef, computed, toRefs } from 'vue'
-import { provideDrawerRootContext } from './context'
-import {
-  type DrawerRootEmits,
-  type DrawerRootProps,
-  useDrawer,
-} from './controls'
+import { DialogRoot } from 'reka-ui'
+import { computed, ref, toRefs } from 'vue'
 import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT, TRANSITIONS } from './constants'
+import { provideDrawerRootContext } from './context'
+import { useDrawer } from './controls'
+import { transitionDurationToMs } from './helpers'
 import './style.css'
 
 const props = withDefaults(defineProps<DrawerRootProps>(), {
   open: undefined,
   defaultOpen: undefined,
-  fixed: undefined,
+  fixed: false,
   dismissible: true,
-  activeSnapPoint: undefined,
   snapPoints: undefined,
-  shouldScaleBackground: undefined,
+  shouldScaleBackground: false,
   setBackgroundColorOnScale: true,
   closeThreshold: CLOSE_THRESHOLD,
   fadeFromIndex: undefined,
@@ -29,74 +26,76 @@ const props = withDefaults(defineProps<DrawerRootProps>(), {
   handleOnly: false,
 })
 
-const emit = defineEmits<DrawerRootEmits>()
+const emits = defineEmits<DrawerRootEmits>()
 
 const slots = defineSlots<{
   default: (props: {
-    open: typeof isOpen.value
+    open: typeof open.value
   }) => any
 }>()
 
-const fadeFromIndex = computed(() => props.fadeFromIndex ?? (props.snapPoints && props.snapPoints.length - 1))
-
-const open = useVModel(props, 'open', emit, {
+const open = useVModel(props, 'open', emits, {
   defaultValue: props.defaultOpen,
   passive: (props.open === undefined) as false,
-}) as WritableComputedRef<boolean>
+})
 
-const activeSnapPoint = useVModel(props, 'activeSnapPoint', emit, {
+const activeSnapPoint = useVModel(props, 'activeSnapPoint', emits, {
   passive: (props.activeSnapPoint === undefined) as false,
 })
 
-const emitHandlers = {
-  emitDrag: (percentageDragged: number) => emit('drag', percentageDragged),
-  emitRelease: (open: boolean) => emit('release', open),
-  emitClose: () => emit('close'),
-  emitOpenChange: (o: boolean) => {
-    emit('update:open', o)
+const fadeFromIndex = computed(() => props.fadeFromIndex ?? (props.snapPoints && props.snapPoints.length - 1))
 
-    setTimeout(() => {
-      emit('animationEnd', o)
-    }, TRANSITIONS.DURATION * 1000)
+const emitHandlers = {
+  emitDrag: (percentageClosed: number) => emits('drag', percentageClosed),
+  emitRelease: (open: boolean) => emits('release', open),
+  emitClose: () => emits('close'),
+  emitOpenChange: (o: boolean) => {
+    window.setTimeout(() => {
+      emits('animationEnd', o)
+    }, transitionDurationToMs(TRANSITIONS.DURATION))
   },
 }
 
-const { closeDrawer, hasBeenOpened, modal, isOpen } = provideDrawerRootContext(
-  useDrawer({
-    ...emitHandlers,
-    ...toRefs(props),
-    activeSnapPoint,
-    fadeFromIndex,
-    open,
-  }),
-)
+const context = useDrawer({
+  ...emitHandlers,
+  ...toRefs(props),
+  activeSnapPoint,
+  fadeFromIndex,
+  open: open as any,
+})
 
-function handleOpenChange(o: boolean) {
-  if (open.value !== undefined) {
-    emitHandlers.emitOpenChange(o)
-    return
-  }
-  isOpen.value = o
+const { hasBeenOpened, modal } = context
 
-  if (o) {
-    hasBeenOpened.value = true
-  }
-  else {
-    closeDrawer()
-  }
-}
+provideDrawerRootContext(context)
+
+const openProxy = computed({
+  get: () => open.value,
+  set: (o: boolean) => {
+    if (!props.dismissible && !open.value)
+      return
+
+    if (o) {
+      hasBeenOpened.value = true
+    }
+    else {
+      context.closeDrawer(true)
+    }
+
+    open.value = o
+  },
+})
 
 defineExpose({
-  open: isOpen,
+  open,
 })
 </script>
 
 <template>
   <DialogRoot
-    :open="isOpen"
+    v-model:open="openProxy"
+    :default-open="defaultOpen"
     :modal="modal"
-    @update:open="handleOpenChange"
   >
-    <slot :open="isOpen" />
+    <slot :open="open" />
   </DialogRoot>
 </template>

@@ -1,4 +1,5 @@
-import { type Ref, onMounted, onUnmounted, ref, watch } from 'vue'
+import type { Ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { isSafari } from './browser'
 
 interface BodyPosition {
@@ -9,7 +10,7 @@ interface BodyPosition {
 }
 
 interface PositionFixedOptions {
-  isOpen: Ref<boolean>
+  open: Ref<boolean>
   modal: Ref<boolean>
   nested: Ref<boolean>
   hasBeenOpened: Ref<boolean>
@@ -20,7 +21,7 @@ interface PositionFixedOptions {
 let previousBodyPosition: BodyPosition | null = null
 
 export function usePositionFixed(options: PositionFixedOptions) {
-  const { isOpen, modal, nested, hasBeenOpened, preventScrollRestoration, noBodyStyles } = options
+  const { open, modal, nested, hasBeenOpened, preventScrollRestoration, noBodyStyles } = options
   const activeUrl = ref(typeof window !== 'undefined' ? window.location.href : '')
   const scrollPos = ref(0)
 
@@ -30,7 +31,7 @@ export function usePositionFixed(options: PositionFixedOptions) {
       return
 
     // If previousBodyPosition is already set, don't set it again.
-    if (previousBodyPosition === null && isOpen.value && !noBodyStyles.value) {
+    if (previousBodyPosition === null && open.value && !noBodyStyles.value) {
       previousBodyPosition = {
         position: document.body.style.position,
         top: document.body.style.top,
@@ -101,12 +102,12 @@ export function usePositionFixed(options: PositionFixedOptions) {
     })
   })
 
-  watch([isOpen, hasBeenOpened, activeUrl], () => {
+  watch([open, hasBeenOpened, activeUrl], () => {
     if (nested.value || !hasBeenOpened.value)
       return
 
     // This is needed to force Safari toolbar to show **before** the drawer starts animating to prevent a gnarly shift from happening
-    if (isOpen.value) {
+    if (open.value) {
       // avoid for standalone mode (PWA)
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches
       if (!isStandalone)

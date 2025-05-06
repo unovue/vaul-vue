@@ -8,6 +8,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from 'vaul-vue'
+
 import { ref } from 'vue'
 
 const open = ref<boolean>(false)
@@ -16,13 +17,13 @@ const fullyControlled = ref<boolean>(false)
 
 <template>
   <div
-    class="w-screen h-screen bg-white p-8 flex justify-center items-center"
-    data-vaul-drawer-wrapper=""
+    class="w-screen h-screen bg-white p-8 flex flex-col gap-4 justify-center items-center"
+    data-vaul-drawer-wrapper
   >
-    <DrawerRoot :open="open">
+    <DrawerRoot :open="open" should-scale-background>
       <DrawerTrigger as-child @click="open = true">
         <button data-testid="trigger" class="text-2xl">
-          Open Drawer
+          Open prop-controlled Drawer (<code>:open</code>)
         </button>
       </DrawerTrigger>
       <DrawerPortal>
@@ -32,10 +33,10 @@ const fullyControlled = ref<boolean>(false)
           class="bg-zinc-100 flex flex-col rounded-t-[10px] h-[96%] mt-24 fixed bottom-0 left-0 right-0"
         >
           <DrawerClose data-testid="drawer-close">
-            Close
+            Close (from DrawerClose, this will work, but will <strong>not</strong> update the passed prop)
           </DrawerClose>
           <button data-testid="controlled-close" class="text-2xl" @click="open = false">
-            Close
+            Close (custom)
           </button>
           <div class="p-4 bg-white rounded-t-[10px] flex-1">
             <div class="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
@@ -51,10 +52,11 @@ const fullyControlled = ref<boolean>(false)
         </DrawerContent>
       </DrawerPortal>
     </DrawerRoot>
-    <DrawerRoot v-model:open="fullyControlled">
+
+    <DrawerRoot v-model:open="fullyControlled" should-scale-background>
       <DrawerTrigger as-child>
         <button data-testid="fully-controlled-trigger" class="text-2xl">
-          Open Drawer
+          Open v-model-controlled Drawer (<code>v-model:open</code>)
         </button>
       </DrawerTrigger>
       <DrawerPortal>
@@ -64,10 +66,10 @@ const fullyControlled = ref<boolean>(false)
           class="bg-zinc-100 flex flex-col rounded-t-[10px] h-[96%] mt-24 fixed bottom-0 left-0 right-0"
         >
           <DrawerClose data-testid="drawer-close">
-            Close
+            Close (from DrawerClose, this will work and <strong>will</strong> update the passed prop)
           </DrawerClose>
           <button data-testid="controlled-close" class="text-2xl" @click="fullyControlled = false">
-            Close
+            Close (custom)
           </button>
           <div class="p-4 bg-white rounded-t-[10px] flex-1">
             <div class="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />

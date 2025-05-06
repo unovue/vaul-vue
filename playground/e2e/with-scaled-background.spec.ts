@@ -7,15 +7,15 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('With scaled background', () => {
   test('should scale background', async ({ page }) => {
-    await expect(page.locator('[data-vaul-drawer-wrapper]')).not.toHaveCSS('transform', '')
+    await expect(page.locator('[data-vaul-drawer-wrapper]')).not.toHaveCSS('--vaul-closed-percentage', '1')
 
     await page.getByTestId('trigger').click()
 
-    await expect(page.locator('[data-vaul-drawer-wrapper]')).toHaveCSS('transform', /matrix/)
+    await expect(page.locator('[data-vaul-drawer-wrapper]')).toHaveCSS('--vaul-closed-percentage', '0')
   })
 
   test('should scale background when dragging', async ({ page }) => {
-    await expect(page.locator('[data-vaul-drawer-wrapper]')).not.toHaveCSS('transform', '')
+    await expect(page.locator('[data-vaul-drawer-wrapper]')).not.toHaveCSS('--vaul-closed-percentage', '1')
 
     await openDrawer(page)
 
@@ -23,10 +23,10 @@ test.describe('With scaled background', () => {
     await page.mouse.down()
     await page.mouse.move(0, 100)
 
-    await expect(page.locator('[data-vaul-drawer-wrapper]')).toHaveCSS('transform', /matrix/)
+    await expect(page.locator('[data-vaul-drawer-wrapper]')).toHaveCSS('--vaul-closed-percentage', /0(.*)*/)
 
     await page.mouse.up()
 
-    await expect(page.locator('[data-vaul-drawer-wrapper]')).not.toHaveCSS('transform', '')
+    await expect(page.locator('[data-vaul-drawer-wrapper]')).not.toHaveCSS('--vaul-closed-percentage', '1')
   })
 })

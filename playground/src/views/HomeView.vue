@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DemoDrawer from '@/components/DemoDrawer.vue'
 import BackgroundTexture from '@/components/BackgroundTexture.vue'
+import DemoDrawer from '@/components/DemoDrawer.vue'
 </script>
 
 <template>

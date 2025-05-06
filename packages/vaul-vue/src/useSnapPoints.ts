@@ -1,7 +1,8 @@
-import { type ComponentPublicInstance, type Ref, computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { isVertical, set } from './helpers'
-import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
+import type { ComponentPublicInstance, Ref } from 'vue'
 import type { DrawerDirection } from './types'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
+import { isVertical, set } from './helpers'
 
 interface useSnapPointsProps {
   activeSnapPoint: Ref<number | string | null | undefined>
@@ -49,17 +50,17 @@ export function useSnapPoints({
   const isLastSnapPoint = computed(
     () =>
       (snapPoints.value
-      && activeSnapPoint.value === snapPoints.value[snapPoints.value.length - 1])
+        && activeSnapPoint.value === snapPoints.value[snapPoints.value.length - 1])
       ?? null,
   )
 
   const shouldFade = computed(
     () =>
       (snapPoints.value
-      && snapPoints.value.length > 0
-      && (fadeFromIndex?.value || fadeFromIndex?.value === 0)
-      && !Number.isNaN(fadeFromIndex?.value)
-      && snapPoints.value[fadeFromIndex?.value ?? -1] === activeSnapPoint.value)
+        && snapPoints.value.length > 0
+        && (fadeFromIndex?.value || fadeFromIndex?.value === 0)
+        && !Number.isNaN(fadeFromIndex?.value)
+        && snapPoints.value[fadeFromIndex?.value ?? -1] === activeSnapPoint.value)
       || !snapPoints.value,
   )
 
@@ -106,7 +107,7 @@ export function useSnapPoints({
     nextTick(() => {
       onSnapPointChange(newSnapPointIndex, snapPointsOffset.value)
       set(drawerRef.value?.$el, {
-        transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
+        transition: `transform ${TRANSITIONS.DURATION} ${TRANSITIONS.EASE}`,
         transform: isVertical(direction.value) ? `translate3d(0, ${dimension}px, 0)` : `translate3d(${dimension}px, 0, 0)`,
       })
     })
@@ -117,13 +118,13 @@ export function useSnapPoints({
       && newSnapPointIndex !== fadeFromIndex?.value
     ) {
       set(overlayRef.value?.$el, {
-        transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
+        transition: `opacity ${TRANSITIONS.DURATION} ${TRANSITIONS.EASE}`,
         opacity: '0',
       })
     }
     else {
       set(overlayRef.value?.$el, {
-        transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
+        transition: `opacity ${TRANSITIONS.DURATION} ${TRANSITIONS.EASE}`,
         opacity: '1',
       })
     }
@@ -143,8 +144,9 @@ export function useSnapPoints({
           snapPointsOffset.value
           && newIndex !== -1
           && typeof snapPointsOffset.value[newIndex] === 'number'
-        )
+        ) {
           snapToPoint(snapPointsOffset.value[newIndex])
+        }
       }
     },
     {
@@ -176,7 +178,7 @@ export function useSnapPoints({
 
     if (isOverlaySnapPoint) {
       set(overlayRef.value?.$el, {
-        transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
+        transition: `opacity ${TRANSITIONS.DURATION} ${TRANSITIONS.EASE}`,
       })
     }
 
@@ -243,14 +245,15 @@ export function useSnapPoints({
     })
   }
 
-  function getPercentageDragged(absDraggedDistance: number, isDraggingDown: boolean) {
+  function getPercentageClosed(absDraggedDistance: number, isDraggingDown: boolean) {
     if (
       !snapPoints.value
       || typeof activeSnapPointIndex.value !== 'number'
       || !snapPointsOffset.value
       || fadeFromIndex.value === undefined
-    )
+    ) {
       return null
+    }
 
     // If this is true we are dragging to a snap point that is supposed to have an overlay
     const isOverlaySnapPoint = activeSnapPointIndex.value === fadeFromIndex.value - 1
@@ -275,20 +278,20 @@ export function useSnapPoints({
       ? snapPointsOffset.value[targetSnapPointIndex]
       - snapPointsOffset.value[targetSnapPointIndex - 1]
       : snapPointsOffset.value[targetSnapPointIndex + 1]
-      - snapPointsOffset.value[targetSnapPointIndex]
+        - snapPointsOffset.value[targetSnapPointIndex]
 
-    const percentageDragged = absDraggedDistance / Math.abs(snapPointDistance)
+    const percentageClosed = absDraggedDistance / Math.abs(snapPointDistance)
 
     if (isOverlaySnapPoint)
-      return 1 - percentageDragged
+      return 1 - percentageClosed
     else
-      return percentageDragged
+      return percentageClosed
   }
 
   return {
     isLastSnapPoint,
     shouldFade,
-    getPercentageDragged,
+    getPercentageClosed,
     activeSnapPointIndex,
     onRelease,
     onDrag,

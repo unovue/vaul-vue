@@ -1,39 +1,42 @@
 <script setup lang="ts">
-import { useForwardPropsEmits } from 'reka-ui'
-import DrawerRoot from './DrawerRoot.vue'
 import type { DrawerRootEmits, DrawerRootProps } from './controls'
+import { useVModel } from '@vueuse/core'
+import { useForwardPropsEmits } from 'reka-ui'
+import { computed } from 'vue'
 import { injectDrawerRootContext } from './context'
+import DrawerRoot from './DrawerRoot.vue'
 
 const props = defineProps<DrawerRootProps>()
+
 const emits = defineEmits<DrawerRootEmits>()
 
-const { onNestedDrag, onNestedOpenChange, onNestedRelease } = injectDrawerRootContext()
-function onClose() {
-  onNestedOpenChange(false)
-}
+const {
+  onNestedDrag,
+  onNestedOpenChange,
+  onNestedRelease,
+} = injectDrawerRootContext()
 
-function onDrag(p: number) {
-  onNestedDrag(p)
-}
+const delegatedProps = computed(() => {
+  const { nested: _, ...delegated } = props
 
-function onOpenChange(o: boolean) {
-  if (o)
-    onNestedOpenChange(o)
+  return delegated
+})
 
-  emits('update:open', o)
-}
-
-const forwarded = useForwardPropsEmits(props, emits)
+const forwarded = useForwardPropsEmits(delegatedProps, emits)
 </script>
 
 <template>
   <DrawerRoot
-    v-bind="forwarded"
     nested
-    @close="onClose"
-    @drag="onDrag"
+    v-bind="forwarded"
+    @update:open="(o) => {
+      if (o) {
+        onNestedOpenChange(o);
+      }
+    }"
+    @close="onNestedOpenChange(false)"
+    @drag="onNestedDrag"
     @release="onNestedRelease"
-    @update:open="onOpenChange"
   >
     <slot />
   </DrawerRoot>

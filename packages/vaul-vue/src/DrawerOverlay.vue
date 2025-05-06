@@ -1,17 +1,25 @@
 <script setup lang="ts">
 import { DialogOverlay } from 'reka-ui'
-import { computed } from 'vue'
 import { injectDrawerRootContext } from './context'
 
-const { overlayRef, hasSnapPoints, isOpen, shouldFade } = injectDrawerRootContext()
+const {
+  overlayRef,
+  hasSnapPoints,
+  open,
+  shouldFade,
+} = injectDrawerRootContext()
+
+defineExpose({
+  el: overlayRef,
+})
 </script>
 
 <template>
   <DialogOverlay
     ref="overlayRef"
     data-vaul-overlay=""
-    :data-vaul-snap-points="isOpen && hasSnapPoints ? 'true' : 'false'"
-    :data-vaul-snap-points-overlay="isOpen && shouldFade ? 'true' : 'false'"
+    :data-vaul-snap-points="open && hasSnapPoints ? 'true' : 'false'"
+    :data-vaul-snap-points-overlay="open && shouldFade ? 'true' : 'false'"
   />
 </template>
 

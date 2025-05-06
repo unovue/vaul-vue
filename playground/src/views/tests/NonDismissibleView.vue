@@ -7,6 +7,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from 'vaul-vue'
+
 import { ref } from 'vue'
 
 const open = ref<boolean>(false)
@@ -15,7 +16,7 @@ const open = ref<boolean>(false)
 <template>
   <div
     class="w-screen h-screen bg-white p-8 flex justify-center items-center"
-    data-vaul-drawer-wrapper=""
+    data-vaul-drawer-wrapper
   >
     <DrawerRoot v-model:open="open" :dismissible="false">
       <DrawerTrigger as-child>
