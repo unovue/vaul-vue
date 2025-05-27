@@ -49,17 +49,17 @@ export function useSnapPoints({
   const isLastSnapPoint = computed(
     () =>
       (snapPoints.value
-      && activeSnapPoint.value === snapPoints.value[snapPoints.value.length - 1])
+        && activeSnapPoint.value === snapPoints.value[snapPoints.value.length - 1])
       ?? null,
   )
 
   const shouldFade = computed(
     () =>
       (snapPoints.value
-      && snapPoints.value.length > 0
-      && (fadeFromIndex?.value || fadeFromIndex?.value === 0)
-      && !Number.isNaN(fadeFromIndex?.value)
-      && snapPoints.value[fadeFromIndex?.value ?? -1] === activeSnapPoint.value)
+        && snapPoints.value.length > 0
+        && (fadeFromIndex?.value || fadeFromIndex?.value === 0)
+        && !Number.isNaN(fadeFromIndex?.value)
+        && snapPoints.value[fadeFromIndex?.value ?? -1] === activeSnapPoint.value)
       || !snapPoints.value,
   )
 
@@ -143,8 +143,9 @@ export function useSnapPoints({
           snapPointsOffset.value
           && newIndex !== -1
           && typeof snapPointsOffset.value[newIndex] === 'number'
-        )
+        ) {
           snapToPoint(snapPointsOffset.value[newIndex])
+        }
       }
     },
     {
@@ -249,8 +250,9 @@ export function useSnapPoints({
       || typeof activeSnapPointIndex.value !== 'number'
       || !snapPointsOffset.value
       || fadeFromIndex.value === undefined
-    )
+    ) {
       return null
+    }
 
     // If this is true we are dragging to a snap point that is supposed to have an overlay
     const isOverlaySnapPoint = activeSnapPointIndex.value === fadeFromIndex.value - 1
@@ -275,7 +277,7 @@ export function useSnapPoints({
       ? snapPointsOffset.value[targetSnapPointIndex]
       - snapPointsOffset.value[targetSnapPointIndex - 1]
       : snapPointsOffset.value[targetSnapPointIndex + 1]
-      - snapPointsOffset.value[targetSnapPointIndex]
+        - snapPointsOffset.value[targetSnapPointIndex]
 
     const percentageDragged = absDraggedDistance / Math.abs(snapPointDistance)
 

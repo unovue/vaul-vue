@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import {
-  DrawerClose,
   DrawerContent,
   DrawerHandle,
   DrawerOverlay,
   DrawerPortal,
   DrawerRoot,
-  DrawerTitle,
   DrawerTrigger,
 } from 'vaul-vue'
 

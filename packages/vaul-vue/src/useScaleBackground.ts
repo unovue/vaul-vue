@@ -1,6 +1,6 @@
 import { ref, watchEffect } from 'vue'
 import { injectDrawerRootContext } from './context'
-import { assignStyle, chain, isVertical, reset } from './helpers'
+import { assignStyle, chain, isVertical } from './helpers'
 import { BORDER_RADIUS, TRANSITIONS, WINDOW_TOP_OFFSET } from './constants'
 
 const noop = () => () => {}

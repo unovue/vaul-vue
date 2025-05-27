@@ -1,4 +1,4 @@
-import { computed, onUnmounted, ref, watch, watchEffect } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import type { ComponentPublicInstance, Ref } from 'vue'
 import { isClient } from '@vueuse/core'
 import { dampenValue, getTranslate, isVertical, reset, set } from './helpers'
