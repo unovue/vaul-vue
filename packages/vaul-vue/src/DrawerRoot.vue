@@ -34,6 +34,7 @@ const emit = defineEmits<DrawerRootEmits>()
 const slots = defineSlots<{
   default: (props: {
     open: typeof isOpen.value
+    close: () => void
   }) => any
 }>()
 
@@ -93,10 +94,11 @@ defineExpose({
 
 <template>
   <DialogRoot
+    v-slot="{ close }"
     :open="isOpen"
     :modal="modal"
     @update:open="handleOpenChange"
   >
-    <slot :open="isOpen" />
+    <slot :open="isOpen" :close="close" />
   </DialogRoot>
 </template>

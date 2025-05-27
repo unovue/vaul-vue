@@ -6,6 +6,11 @@ import { injectDrawerRootContext } from './context'
 
 const props = defineProps<DrawerRootProps>()
 const emits = defineEmits<DrawerRootEmits>()
+const slots = defineSlots<{
+  default: (props: {
+    close: () => void
+  }) => any
+}>()
 
 const { onNestedDrag, onNestedOpenChange, onNestedRelease } = injectDrawerRootContext()
 function onClose() {
@@ -28,6 +33,7 @@ const forwarded = useForwardPropsEmits(props, emits)
 
 <template>
   <DrawerRoot
+    v-slot="{ close }"
     v-bind="forwarded"
     nested
     @close="onClose"
@@ -35,6 +41,6 @@ const forwarded = useForwardPropsEmits(props, emits)
     @release="onNestedRelease"
     @update:open="onOpenChange"
   >
-    <slot />
+    <slot :close="close" />
   </DrawerRoot>
 </template>
