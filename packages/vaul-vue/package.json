@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@vueuse/core": "^10.8.0",
-    "reka-ui": "^2.0.0",
+    "reka-ui": "^2.3.0",
     "vue": "^3.4.5"
   },
   "devDependencies": {

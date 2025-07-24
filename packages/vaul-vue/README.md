@@ -31,6 +31,33 @@ import { DrawerContent, DrawerOverlay, DrawerPortal, DrawerRoot, DrawerTrigger }
       <DrawerOverlay />
       <DrawerContent>
         <p>Content</p>
+
+        <DrawerClose>
+          Close
+        </DrawerClose>
+      </DrawerContent>
+    </DrawerPortal>
+  </DrawerRoot>
+</template>
+```
+
+#### Close programatically
+
+```vue
+<script setup lang="ts">
+import { DrawerContent, DrawerOverlay, DrawerPortal, DrawerRoot, DrawerTrigger } from 'vaul-vue'
+</script>
+
+<template>
+  <DrawerRoot v-slot="{ close }">
+    <DrawerTrigger> Open </DrawerTrigger>
+    <DrawerPortal>
+      <DrawerOverlay />
+      <DrawerContent>
+        <p>Content</p>
+        <button @click="close">
+          close
+        </button>
       </DrawerContent>
     </DrawerPortal>
   </DrawerRoot>

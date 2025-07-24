@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { DialogOverlay } from 'reka-ui'
-import { computed } from 'vue'
 import { injectDrawerRootContext } from './context'
 
 const { overlayRef, hasSnapPoints, isOpen, shouldFade } = injectDrawerRootContext()

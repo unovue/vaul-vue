@@ -33,8 +33,8 @@ importers:
         specifier: ^10.8.0
         version: 10.11.1(vue@3.5.13)
       reka-ui:
-        specifier: ^2.0.0
-        version: 2.0.2(typescript@5.3.3)(vue@3.5.13)
+        specifier: ^2.3.0
+        version: 2.3.0(typescript@5.3.3)(vue@3.5.13)
       vue:
         specifier: ^3.4.5
         version: 3.5.13(typescript@5.3.3)
@@ -97,8 +97,8 @@ importers:
   playground:
     dependencies:
       reka-ui:
-        specifier: ^2.0.0
-        version: 2.0.2(typescript@5.3.3)(vue@3.5.13)
+        specifier: ^2.3.0
+        version: 2.3.0(typescript@5.3.3)(vue@3.5.13)
       vaul-vue:
         specifier: workspace:*
         version: link:../packages/vaul-vue
@@ -3962,8 +3962,8 @@ packages:
     engines: {node: '>= 6'}
     dev: true
 
-  /ohash@1.1.6:
-    resolution: {integrity: sha512-TBu7PtV8YkAZn0tSxobKY2n2aAQva936lhRrj6957aDaCf9IEtqsKbgMzXE/F/sjqYOwmrukeORHNLe5glk7Cg==}
+  /ohash@2.0.11:
+    resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
     dev: false
 
   /once@1.4.0:
@@ -4426,8 +4426,8 @@ packages:
       jsesc: 0.5.0
     dev: true
 
-  /reka-ui@2.0.2(typescript@5.3.3)(vue@3.5.13):
-    resolution: {integrity: sha512-pC2UF6Z+kJF96aJvIErhkSO4DJYIeq9pgvh3pntNqcZb3zFGMzw8h2uny+GnLX2CKiQV54kZNYXxecYIiPMGyg==}
+  /reka-ui@2.3.0(typescript@5.3.3)(vue@3.5.13):
+    resolution: {integrity: sha512-HKvJej9Sc0KYEvTAbsGHgOxpEWL4FWSR70Q6Ld+bVNuaCxK6LP3jyTtyTWS+A44hHA9/aYfOBZ1Q8WkgZsGZpA==}
     peerDependencies:
       vue: '>= 3.2.0'
     dependencies:
@@ -4440,7 +4440,7 @@ packages:
       '@vueuse/shared': 12.8.2(typescript@5.3.3)
       aria-hidden: 1.2.4
       defu: 6.1.4
-      ohash: 1.1.6
+      ohash: 2.0.11
       vue: 3.5.13(typescript@5.3.3)
     transitivePeerDependencies:
       - '@vue/composition-api'
