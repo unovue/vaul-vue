@@ -5,18 +5,34 @@ import {
   DrawerOverlay,
   DrawerPortal,
   DrawerRoot,
+  DrawerTitle,
   DrawerTrigger,
 } from 'vaul-vue'
 </script>
 
 <template>
-  <DrawerRoot should-scale-background>
-    <DrawerTrigger
+  <DrawerRoot>
+    <DrawerTrigger>
+      OpenDrawer
+    </DrawerTrigger>
+
+    <DrawerPortal>
+      <DrawerContent class="bg-gray-300 flex flex-col rounded-t-lg h-full mt-24 max-h-[96%] fixed bottom-0 left-0 right-0">
+        <div class="p-4 flex-1">
+          <DrawerHandle />
+
+          <p>a lot of content wow</p>
+        </div>
+      </DrawerContent>
+    </DrawerPortal>
+
+    <!-- <DrawerTrigger
       class="rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
     >
       Open Drawer
-    </DrawerTrigger>
-    <DrawerPortal>
+    </DrawerTrigger> -->
+
+    <!-- <DrawerPortal>
       <DrawerOverlay class="fixed bg-black/40 inset-0" />
       <DrawerContent
         class="bg-gray-100 flex flex-col rounded-t-[10px] h-full mt-24 max-h-[96%] fixed bottom-0 left-0 right-0"
@@ -52,6 +68,6 @@ import {
           </div>
         </div>
       </DrawerContent>
-    </DrawerPortal>
+    </DrawerPortal> -->
   </DrawerRoot>
 </template>

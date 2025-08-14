@@ -12,6 +12,7 @@
   --vaul-wrapper-target-size: calc(var(--vaul-window-opposite-size) + (var(--vaul-opened-percentage) * var(--vaul-wrapper-scale-px-unitless)));
   border-radius: calc(var(--vaul-opened-percentage) * var(--vaul-wrapper-border-radius));
   scale: calc(var(--vaul-wrapper-target-size) / var(--vaul-window-opposite-size));
+  
   transition-property: scale, translate, border-radius;
   transition-duration: var(--vaul-duration);
   transition-timing-function: var(--vaul-easing);

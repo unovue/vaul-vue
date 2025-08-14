@@ -1,76 +1,86 @@
 <script setup lang="ts">
 import { DialogContent } from 'reka-ui'
-import { computed, ref, watchEffect } from 'vue'
 import { injectDrawerRootContext } from './context'
+// import { computed, ref, watchEffect } from 'vue'
+// import { injectDrawerRootContext } from './context'
 
-const {
-  open,
-  snapPointsOffset,
-  hasSnapPoints,
-  drawerRef,
-  onPress,
-  onDrag,
-  onRelease,
-  modal,
-  emitOpenChange,
-  dismissible,
-  keyboardIsOpen,
-  direction,
-  handleOnly,
-} = injectDrawerRootContext()
+// const {
+//   open,
+//   snapPointsOffset,
+//   hasSnapPoints,
+//   drawerRef,
+//   onPress,
+//   onDrag,
+//   onRelease,
+//   modal,
+//   emitOpenChange,
+//   dismissible,
+//   keyboardIsOpen,
+//   direction,
+//   handleOnly,
+// } = injectDrawerRootContext()
 
-const delayedSnapPoints = ref(false)
+// const delayedSnapPoints = ref(false)
 
-const snapPointHeight = computed(() => {
-  if (snapPointsOffset.value && snapPointsOffset.value.length > 0)
-    return `${snapPointsOffset.value[0]}px`
+// const snapPointHeight = computed(() => {
+//   if (snapPointsOffset.value && snapPointsOffset.value.length > 0)
+//     return `${snapPointsOffset.value[0]}px`
 
-  return '0'
-})
+//   return '0'
+// })
 
-function handlePointerDownOutside(event: Event) {
-  if (!modal.value || event.defaultPrevented) {
-    event.preventDefault()
-    return
-  }
-  if (keyboardIsOpen.value)
-    keyboardIsOpen.value = false
+// function handlePointerDownOutside(event: Event) {
+//   if (!modal.value || event.defaultPrevented) {
+//     event.preventDefault()
+//     return
+//   }
+//   if (keyboardIsOpen.value)
+//     keyboardIsOpen.value = false
 
-  if (dismissible.value) {
-    open.value = false
-    emitOpenChange(false)
-  }
-  else {
-    event.preventDefault()
-  }
-}
+//   if (dismissible.value) {
+//     open.value = false
+//     emitOpenChange(false)
+//   }
+//   else {
+//     event.preventDefault()
+//   }
+// }
 
-function handlePointerDown(event: PointerEvent) {
-  if (handleOnly.value)
-    return
+// function handlePointerDown(event: PointerEvent) {
+//   if (handleOnly.value)
+//     return
 
-  onPress(event)
-}
+//   onPress(event)
+// }
 
-function handleOnDrag(event: PointerEvent) {
-  if (handleOnly.value)
-    return
+// function handleOnDrag(event: PointerEvent) {
+//   if (handleOnly.value)
+//     return
 
-  onDrag(event)
-}
+//   onDrag(event)
+// }
 
-watchEffect (() => {
-  if (hasSnapPoints.value) {
-    window.requestAnimationFrame(() => {
-      delayedSnapPoints.value = true
-    })
-  }
-})
+// watchEffect (() => {
+//   if (hasSnapPoints.value) {
+//     window.requestAnimationFrame(() => {
+//       delayedSnapPoints.value = true
+//     })
+//   }
+// })
+
+const { drawerContentRef, onDrag, onDragEnd, onDragStart, containerStyle } = injectDrawerRootContext()
 </script>
 
 <template>
   <DialogContent
-    ref="drawerRef"
+    ref="drawerContentRef"
+    :style="containerStyle"
+    class="transition-all"
+    @pointerdown="onDragStart"
+    @pointerup="onDragEnd"
+    @pointermove="onDrag"
+  >
+    <!-- ref="drawerRef"
     data-vaul-drawer=""
     :data-vaul-drawer-direction="direction"
     :data-vaul-delayed-snap-points="delayedSnapPoints ? 'true' : 'false'"
@@ -84,8 +94,7 @@ watchEffect (() => {
     @escape-key-down="(event) => {
       if (!dismissible)
         event.preventDefault()
-    }"
-  >
+    }" -->
     <slot />
   </DialogContent>
 </template>

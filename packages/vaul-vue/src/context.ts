@@ -1,7 +1,8 @@
-import type { useDrawer } from './controls'
+import type { useDrawer } from './composables/useDrawer'
+import type { useSnapPoints } from './composables/useSnapPoints'
 import { createContext } from 'reka-ui'
 
-type DrawerRootContext = ReturnType<typeof useDrawer>
+type DrawerRootContext = ReturnType<typeof useDrawer> & ReturnType<typeof useSnapPoints>
 
 export const [
   injectDrawerRootContext,

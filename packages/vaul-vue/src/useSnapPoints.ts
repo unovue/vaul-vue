@@ -1,4 +1,4 @@
-import type { ComponentPublicInstance, Ref } from 'vue'
+import type { ComponentPublicInstance, Ref, ShallowRef } from 'vue'
 import type { DrawerDirection } from './types'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
@@ -8,8 +8,8 @@ interface useSnapPointsProps {
   activeSnapPoint: Ref<number | string | null | undefined>
   snapPoints: Ref<(number | string)[] | undefined>
   fadeFromIndex: Ref<number | undefined>
-  drawerRef: Ref<ComponentPublicInstance | null>
-  overlayRef: Ref<ComponentPublicInstance | null>
+  drawerRef: ShallowRef<ComponentPublicInstance | null>
+  overlayRef: ShallowRef<ComponentPublicInstance | null>
   onSnapPointChange: (activeSnapPointIndex: number, snapPointsOffset: number[]) => void
   direction: Ref<DrawerDirection>
 }

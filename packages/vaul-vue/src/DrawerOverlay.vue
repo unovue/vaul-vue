@@ -4,9 +4,6 @@ import { injectDrawerRootContext } from './context'
 
 const {
   overlayRef,
-  hasSnapPoints,
-  open,
-  shouldFade,
 } = injectDrawerRootContext()
 
 defineExpose({
@@ -15,12 +12,12 @@ defineExpose({
 </script>
 
 <template>
-  <DialogOverlay
+  <DialogOverlay />
+
+  <!-- <DialogOverlay
     ref="overlayRef"
     data-vaul-overlay=""
     :data-vaul-snap-points="open && hasSnapPoints ? 'true' : 'false'"
     :data-vaul-snap-points-overlay="open && shouldFade ? 'true' : 'false'"
-  />
+  /> -->
 </template>
-
-<style scoped></style>

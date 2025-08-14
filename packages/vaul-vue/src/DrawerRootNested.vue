@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { DrawerRootEmits, DrawerRootProps } from './controls'
 import { useVModel } from '@vueuse/core'
 import { useForwardPropsEmits } from 'reka-ui'
 import { computed } from 'vue'
+import type { DrawerRootEmits, DrawerRootProps } from './controls'
 import { injectDrawerRootContext } from './context'
 import DrawerRoot from './DrawerRoot.vue'
 
