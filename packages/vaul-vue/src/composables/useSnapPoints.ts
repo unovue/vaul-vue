@@ -38,26 +38,36 @@ export function useSnapPoints({
     return getClosestNumber(points.value, sheetPositionNormalized)
   })
 
-  const activeSnapPointOffset = computed(
-    () => Math.abs((activeSnapPoint.value * windowHeight.value) - toValue(contentHeight))
+  const closestSnapPointIndex = computed(
+    () => points.value.findIndex(point => point === closestSnapPoint.value)
   )
+
+  const activeSnapPointOffset = computed(() => {
+    const off = (activeSnapPoint.value * windowHeight.value) - toValue(contentHeight)
+    return off * -1
+  })
 
   const snapTo = (snapPointIndex: number) => {
     const point = points.value[snapPointIndex]
+    
+    if (!point) {
+      console.error('Snap point not found')
+      return
+    }
+
+    activeSnapPoint.value = point
     const screenYOffset = point * windowHeight.value
-    // const screenYOffset = range(0, 1, 0, windowHeight.value, point)
 
     const newOffset = screenYOffset - toValue(contentHeight)
-    activeSnapPoint.value = point
-
     return -newOffset
   }
 
   return {
     points,
     snapTo,
-    closestSnapPoint,
     activeSnapPoint,
     activeSnapPointOffset,
+    closestSnapPoint,
+    closestSnapPointIndex
   }
 }
