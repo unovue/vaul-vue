@@ -26,7 +26,7 @@ export function useDrawer(props: UseDrawerProps) {
   const pointerStart = ref(0)
   const offset = ref(0)
 
-  const drawerSide = ref(props.side!)
+  const drawerSide = ref(props.side)
   const isDragging = ref(false)
 
   const {
@@ -48,6 +48,8 @@ export function useDrawer(props: UseDrawerProps) {
   // const directionMultiplier = computed(() => props.side === 'bottom' || props.side === 'right' ? 1 : -1)
   // const normalizedOffset = computed(() => range(0, windowHeight.value, 0, 1, offset.value))
 
+  const isVertical = computed(() => drawerSide.value === 'top' || drawerSide.value === 'bottom' ? true : false)
+
   const containerStyle = computed(() => {
     return {
       transform: `translateY(${offset.value}px)`,
@@ -62,14 +64,14 @@ export function useDrawer(props: UseDrawerProps) {
 
   const onDragStart = (event: PointerEvent) => {
     isDragging.value = true
-    pointerStart.value = isVertical(toValue(drawerSide.value)) ? event.clientY : event.clientX
+    pointerStart.value = isVertical.value ? event.clientY : event.clientX
   }
 
   const onDrag = (event: PointerEvent) => {
     if (!isDragging.value)
       return
 
-    const dragDistance = (pointerStart.value - (isVertical(toValue(drawerSide.value)) ? event.clientY : event.clientX)) * -1
+    const dragDistance = (pointerStart.value - (isVertical.value ? event.clientY : event.clientX)) * -1
 
     offset.value = activeSnapPointOffset.value + dragDistance
   }

@@ -1,7 +1,7 @@
 import type { DrawerSide } from './types'
 
 export function isVertical(side: DrawerSide) {
-  if (side === 'top' || side || 'bottom')
+  if (side === 'top' || side === 'bottom')
     return true
 
   return false

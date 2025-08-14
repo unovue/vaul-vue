@@ -33,6 +33,11 @@ export function useSnapPoints({
   })
 
   const closestSnapPoint = computed(() => {
+    const _p = toValue(snapPoints)
+
+    if (_p.length <= 1)
+      return _p[0]
+
     const sheetOpenPositionY = toValue(contentHeight) + Math.abs(toValue(offset))
     const sheetPositionNormalized = range(0, windowHeight.value, 0, 1, sheetOpenPositionY)
 
