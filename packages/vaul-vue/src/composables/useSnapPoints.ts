@@ -1,6 +1,6 @@
 import type { MaybeRefOrGetter } from 'vue'
 import { useWindowSize } from '@vueuse/core'
-import { computed, toValue, watch, watchEffect } from 'vue'
+import { computed, ref, toValue, watch, watchEffect } from 'vue'
 import { getClosestNumber, range } from '../utils'
 
 export interface SnapPointsProps {
@@ -14,6 +14,8 @@ export function useSnapPoints({
   contentHeight,
   offset,
 }: SnapPointsProps) {
+  const activeSnapPoint = ref(0)
+
   const {
     width: windowWidth,
     height: windowHeight,
@@ -36,17 +38,26 @@ export function useSnapPoints({
     return getClosestNumber(points.value, sheetPositionNormalized)
   })
 
+  const activeSnapPointOffset = computed(
+    () => Math.abs((activeSnapPoint.value * windowHeight.value) - toValue(contentHeight))
+  )
+
   const snapTo = (snapPointIndex: number) => {
     const point = points.value[snapPointIndex]
-    const screenYOffset = range(0, 1, 0, windowHeight.value, point)
+    const screenYOffset = point * windowHeight.value
+    // const screenYOffset = range(0, 1, 0, windowHeight.value, point)
 
     const newOffset = screenYOffset - toValue(contentHeight)
-    return newOffset
+    activeSnapPoint.value = point
+
+    return -newOffset
   }
 
   return {
     points,
     snapTo,
     closestSnapPoint,
+    activeSnapPoint,
+    activeSnapPointOffset,
   }
 }

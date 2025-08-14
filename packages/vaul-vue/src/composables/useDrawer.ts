@@ -28,7 +28,7 @@ export function useDrawer(props: DrawerRootProps) {
     height: windowHeight,
   } = useWindowSize()
 
-  const { snapTo } = useSnapPoints({
+  const { snapTo, closestSnapPoint, activeSnapPointOffset } = useSnapPoints({
     snapPoints: props.snapPoints,
     contentHeight,
     offset,
@@ -56,14 +56,16 @@ export function useDrawer(props: DrawerRootProps) {
     if (!isDragging.value)
       return
 
-    const dragDistance = (pointerStart.value - (isVertical(drawerSide.value) ? event.clientY : event.clientX)) * directionMultiplier.value
-    const normalized = range(0, windowHeight.value, 0, 1, dragDistance * -1)
+    const dragDistance = (pointerStart.value - (isVertical(drawerSide.value) ? event.clientY : event.clientX)) * -1
 
-    offset.value = dragDistance * -1
+    offset.value = activeSnapPointOffset.value + dragDistance
   }
 
   const onDragEnd = () => {
     isDragging.value = false
+
+    console.log(closestSnapPoint.value, snapTo(closestSnapPoint.value))
+    offset.value = snapTo(0)
   }
 
   const dismiss = async () => {
@@ -85,7 +87,7 @@ export function useDrawer(props: DrawerRootProps) {
         resolve(true)
       }, { once: true })
 
-      offset.value = snapTo(0) * -directionMultiplier.value
+      offset.value = snapTo(0)
     })
   }
 
