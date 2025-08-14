@@ -7,6 +7,20 @@ export function isVertical(side: DrawerSide) {
   return false
 }
 
+export function getClosestNumber(numbers: number[], target: number) {
+  let current = numbers[0]
+
+  for (let index = 0; index < numbers.length; index++) {
+    const num = numbers[index]
+
+    if (Math.abs(target - num) < Math.abs(num - current)) {
+      current = num
+    }
+  }
+
+  return current
+}
+
 export const lerp = (x: number, y: number, a: number) => x * (1 - a) + y * a
 export const clamp = (a: number, min = 0, max = 1) => Math.min(max, Math.max(min, a))
 export const invlerp = (x: number, y: number, a: number) => clamp((a - x) / (y - x))
