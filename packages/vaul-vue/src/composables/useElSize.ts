@@ -1,5 +1,5 @@
 import type { ComponentPublicInstance, MaybeRefOrGetter } from 'vue'
-import { nextTick, onUnmounted, ref, shallowRef, toValue, watchEffect } from 'vue'
+import { computed, onMounted, onUnmounted, ref, shallowRef, toValue, watch } from 'vue'
 
 export function useElSize(
   target: MaybeRefOrGetter<ComponentPublicInstance | undefined>,
@@ -12,24 +12,34 @@ export function useElSize(
   const element = shallowRef<HTMLElement>()
 
   const onResize = (entries: ResizeObserverEntry[]) => {
+    console.log('resize', entries)
     const target = entries[0]
 
-    height.value = target.contentRect.width
-    width.value = target.contentRect.height
+    height.value = target.contentRect.height
+    width.value = target.contentRect.width
   }
 
-  watchEffect(async () => {
-    const isOpen = toValue(open)
-    await nextTick()
+  const checkMounted = () => {
+    console.log('element empt', element.value)
+  }
+  
+  watch(() => toValue(open), (_open) => {
+    if (!open)
+      return
 
-    if (isOpen) {
-      const el = toValue(target)?.$el
+    const el = toValue(target)?.$el
+    
+    if (!(el instanceof HTMLElement))
+      return
 
-      observer.value = new ResizeObserver(onResize)
-      element.value = el
+    element.value = el
+    observer.value = new ResizeObserver(onResize)
+    observer.value.observe(el)
 
-      observer.value.observe(el)
-    }
+    width.value = element.value.clientWidth
+    height.value = element.value.clientHeight
+  }, {
+    flush: 'post'
   })
 
   onUnmounted(() => {
@@ -43,5 +53,6 @@ export function useElSize(
     height,
     width,
     element,
+    checkMounted,
   }
 }

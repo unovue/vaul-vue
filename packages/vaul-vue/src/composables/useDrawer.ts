@@ -1,7 +1,7 @@
 import type { ComponentPublicInstance, StyleValue } from 'vue'
 import type { DrawerRootProps } from '../types'
 import { useWindowSize } from '@vueuse/core'
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, watch, watchEffect } from 'vue'
 import { isVertical, range } from '../utils'
 import { useElSize } from './useElSize'
 import { useSnapPoints } from './useSnapPoints'
@@ -21,6 +21,7 @@ export function useDrawer(props: DrawerRootProps) {
   const {
     height: contentHeight,
     element: contentElement,
+    checkMounted,
   } = useElSize(drawerContentRef, open)
 
   const {
@@ -28,7 +29,7 @@ export function useDrawer(props: DrawerRootProps) {
     height: windowHeight,
   } = useWindowSize()
 
-  useSnapPoints({
+  const { snapTo } = useSnapPoints({
     snapPoints: props.snapPoints,
     contentHeight,
     offset,
@@ -69,7 +70,6 @@ export function useDrawer(props: DrawerRootProps) {
   const dismiss = async () => {
     return new Promise((resolve) => {
       contentElement.value?.addEventListener('transitionend', () => {
-        open.value = false
         resolve(false)
       }, { once: true })
 
@@ -81,13 +81,12 @@ export function useDrawer(props: DrawerRootProps) {
     offset.value = windowHeight.value
     await nextTick()
 
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       contentElement.value?.addEventListener('transitionend', () => {
-        open.value = true
         resolve(true)
       }, { once: true })
 
-      offset.value = 0
+      offset.value = snapTo(0) * -directionMultiplier.value
     })
   }
 

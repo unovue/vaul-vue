@@ -2,7 +2,7 @@
 import type { DrawerRootPropsLoose } from './types'
 
 import { DialogRoot } from 'reka-ui'
-import { computed } from 'vue'
+import { computed, nextTick } from 'vue'
 import { useDrawer } from './composables/useDrawer'
 import { provideDrawerRootContext } from './context'
 import './style.css'
