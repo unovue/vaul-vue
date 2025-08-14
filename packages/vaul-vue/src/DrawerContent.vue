@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { DialogContent } from 'reka-ui'
 import { injectDrawerRootContext } from './context'
+import { onUpdated } from 'vue'
 // import { computed, ref, watchEffect } from 'vue'
 // import { injectDrawerRootContext } from './context'
 
@@ -96,6 +97,6 @@ const { drawerContentRef, onDrag, onDragEnd, onDragStart, containerStyle } = inj
       if (!dismissible)
         event.preventDefault()
     }" -->
-    <slot />
+    <slot v-once />
   </DialogContent>
 </template>

@@ -7,13 +7,16 @@ export function isVertical(side: DrawerSide) {
   return false
 }
 
-export function getClosestNumber(numbers: number[], target: number) {
+export function getClosestNumber(numbers: number[], x: number) {
   let current = numbers[0]
+  let currentDiff = Math.abs(x - current)
 
   for (let index = 0; index < numbers.length; index++) {
     const num = numbers[index]
+    const newDiff = Math.abs(x - num)
 
-    if (Math.abs(target - num) < Math.abs(num - current)) {
+    if (newDiff <= currentDiff) {
+      currentDiff = newDiff
       current = num
     }
   }

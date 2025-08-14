@@ -1,16 +1,10 @@
 import type { ComponentPublicInstance, MaybeRefOrGetter, StyleValue } from 'vue'
 import type { DrawerRootProps, DrawerSide } from '../types'
 import { useWindowSize } from '@vueuse/core'
-import { computed, nextTick, onMounted, ref, toValue, watch } from 'vue'
-import { isVertical, range } from '../utils'
+import { computed, nextTick, onMounted, ref, shallowRef, toValue, watch } from 'vue'
+import { range } from '../utils'
 import { useElSize } from './useElSize'
 import { useSnapPoints } from './useSnapPoints'
-
-// export interface UseDrawerProps {
-//   snapPoints: MaybeRefOrGetter<number[]>,
-//   side: MaybeRefOrGetter<DrawerSide>,
-//   scaleBackground: MaybeRefOrGetter<boolean>,
-// }
 
 export type UseDrawerProps = {
   [K in keyof DrawerRootProps]-?: MaybeRefOrGetter<NonNullable<DrawerRootProps[K]>>
@@ -19,9 +13,9 @@ export type UseDrawerProps = {
 export function useDrawer(props: UseDrawerProps) {
   const open = ref(false)
 
-  const drawerContentRef = ref<ComponentPublicInstance>()
-  const drawerHandleRef = ref<ComponentPublicInstance>()
-  const drawerWrapperRef = ref<HTMLElement>()
+  const drawerContentRef = shallowRef<ComponentPublicInstance>()
+  const drawerHandleRef = shallowRef<ComponentPublicInstance>()
+  const drawerWrapperRef = shallowRef<HTMLElement>()
 
   const pointerStart = ref(0)
   const offset = ref(0)
@@ -130,19 +124,14 @@ export function useDrawer(props: UseDrawerProps) {
     const scale = range(0, windowHeight.value, 0.95, 1, offsetScreen)
     const borderRadius = range(0, windowHeight.value, 14, 0, offsetScreen)
 
-    requestAnimationFrame(() => {
-      if (!drawerWrapperRef.value)
-        return
-
-      drawerWrapperRef.value
-        .style
-        .cssText = `
-          overflow: hidden;
-          transform-origin: center top;
-          transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), border-radius;
-          transform: scale(${scale.toFixed(2)}) translate3d(0, calc(env(safe-area-inset-top) + ${depth.toFixed(2)}px), 0);
-          border-radius: ${borderRadius.toFixed(0)}px`
-    })
+    drawerWrapperRef.value
+      .style
+      .cssText = `
+        overflow: hidden;
+        transform-origin: center top;
+        transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), border-radius;
+        transform: scale(${scale.toFixed(2)}) translate3d(0, calc(env(safe-area-inset-top) + ${depth.toFixed(2)}px), 0);
+        border-radius: ${borderRadius.toFixed(0)}px`
   })
 
   return {

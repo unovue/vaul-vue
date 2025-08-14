@@ -38,8 +38,8 @@ export function useSnapPoints({
     if (_p.length <= 1)
       return _p[0]
 
-    const sheetOpenPositionY = toValue(contentHeight) + Math.abs(toValue(offset))
-    const sheetPositionNormalized = range(0, windowHeight.value, 0, 1, sheetOpenPositionY)
+    const sheetOpenPositionY = windowHeight.value - (toValue(contentHeight) + -toValue(offset))
+    const sheetPositionNormalized = range(0, windowHeight.value, 1, 0, sheetOpenPositionY)
 
     return getClosestNumber(points.value, sheetPositionNormalized)
   })
