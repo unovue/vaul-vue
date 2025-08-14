@@ -18,7 +18,7 @@ const addSnapPoint = () => {
 </script>
 
 <template>
-  <DrawerRoot :snap-points="[0.5]">
+  <DrawerRoot :snap-points="snapPoints">
     <DrawerTrigger>
       OpenDrawer, content height smaller than 0.5 snap point
     </DrawerTrigger>
@@ -35,7 +35,7 @@ const addSnapPoint = () => {
     </DrawerPortal>
   </DrawerRoot>
 
-<DrawerRoot :snap-points="[0.2]">
+<DrawerRoot :snap-points="snapPoints">
     <DrawerTrigger>
       OpenDrawer, content height bigger than 0.2 snap point
     </DrawerTrigger>

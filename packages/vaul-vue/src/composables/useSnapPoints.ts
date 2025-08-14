@@ -1,10 +1,10 @@
 import type { MaybeRefOrGetter } from 'vue'
 import { useWindowSize } from '@vueuse/core'
-import { computed, ref, toValue, watch, watchEffect } from 'vue'
+import { computed, ref, toValue } from 'vue'
 import { getClosestNumber, range } from '../utils'
 
-export interface SnapPointsProps {
-  snapPoints: number[]
+export interface useSnapPointsProps {
+  snapPoints: MaybeRefOrGetter<number[]>
   contentHeight: MaybeRefOrGetter<number>
   offset: MaybeRefOrGetter<number>
 }
@@ -13,7 +13,7 @@ export function useSnapPoints({
   snapPoints,
   contentHeight,
   offset,
-}: SnapPointsProps) {
+}: useSnapPointsProps) {
   const activeSnapPoint = ref(0)
 
   const {
@@ -23,12 +23,13 @@ export function useSnapPoints({
 
   const points = computed(() => {
     const _contentHeight = toValue(contentHeight)
+    const _snapPoints = toValue(snapPoints)
 
-    if (snapPoints.length < 1) {
+    if (_snapPoints.length < 1) {
       return [range(0, windowHeight.value, 0, 1, _contentHeight)]
     }
 
-    return snapPoints
+    return _snapPoints
   })
 
   const closestSnapPoint = computed(() => {

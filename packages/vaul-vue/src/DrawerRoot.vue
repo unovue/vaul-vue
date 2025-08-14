@@ -2,7 +2,7 @@
 import type { DrawerRootPropsLoose } from './types'
 
 import { DialogRoot } from 'reka-ui'
-import { computed, nextTick } from 'vue'
+import { computed } from 'vue'
 import { useDrawer } from './composables/useDrawer'
 import { provideDrawerRootContext } from './context'
 import './style.css'
@@ -103,7 +103,6 @@ const props = withDefaults(defineProps<DrawerRootPropsLoose>(), {
 // })
 
 const drawerContext = useDrawer(props)
-// const snapPointsContext = useSnapPoints()
 
 const modelValueOpen = defineModel('open', {
   default: false,

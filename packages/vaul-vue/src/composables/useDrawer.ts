@@ -1,12 +1,17 @@
-import type { ComponentPublicInstance, StyleValue } from 'vue'
-import type { DrawerRootProps } from '../types'
+import type { ComponentPublicInstance, MaybeRefOrGetter, StyleValue } from 'vue'
+import type { DrawerSide } from '../types'
 import { useWindowSize } from '@vueuse/core'
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, toValue, watch } from 'vue'
 import { isVertical, range } from '../utils'
 import { useElSize } from './useElSize'
 import { useSnapPoints } from './useSnapPoints'
 
-export function useDrawer(props: DrawerRootProps) {
+export interface UseDrawerProps {
+  snapPoints: MaybeRefOrGetter<number[]>,
+  side: MaybeRefOrGetter<DrawerSide>
+}
+
+export function useDrawer(props: UseDrawerProps) {
   const open = ref(false)
 
   const drawerContentRef = ref<ComponentPublicInstance>()
@@ -49,21 +54,20 @@ export function useDrawer(props: DrawerRootProps) {
 
   const onDragStart = (event: PointerEvent) => {
     isDragging.value = true
-    pointerStart.value = isVertical(drawerSide.value) ? event.clientY : event.clientX
+    pointerStart.value = isVertical(toValue(drawerSide.value)) ? event.clientY : event.clientX
   }
 
   const onDrag = (event: PointerEvent) => {
     if (!isDragging.value)
       return
 
-    const dragDistance = (pointerStart.value - (isVertical(drawerSide.value) ? event.clientY : event.clientX)) * -1
+    const dragDistance = (pointerStart.value - (isVertical(toValue(drawerSide.value)) ? event.clientY : event.clientX)) * -1
 
     offset.value = activeSnapPointOffset.value + dragDistance
   }
 
   const onDragEnd = () => {
     isDragging.value = false
-
     offset.value = snapTo(closestSnapPointIndex.value)!
   }
 
