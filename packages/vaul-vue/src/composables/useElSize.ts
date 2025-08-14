@@ -12,15 +12,10 @@ export function useElSize(
   const element = shallowRef<HTMLElement>()
 
   const onResize = (entries: ResizeObserverEntry[]) => {
-    console.log('resize', entries)
     const target = entries[0]
 
     height.value = target.contentRect.height
     width.value = target.contentRect.width
-  }
-
-  const checkMounted = () => {
-    console.log('element empt', element.value)
   }
   
   watch(() => toValue(open), (_open) => {
@@ -53,6 +48,5 @@ export function useElSize(
     height,
     width,
     element,
-    checkMounted,
   }
 }

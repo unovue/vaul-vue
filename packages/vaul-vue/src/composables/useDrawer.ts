@@ -1,7 +1,7 @@
 import type { ComponentPublicInstance, StyleValue } from 'vue'
 import type { DrawerRootProps } from '../types'
 import { useWindowSize } from '@vueuse/core'
-import { computed, nextTick, ref, watch, watchEffect } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { isVertical, range } from '../utils'
 import { useElSize } from './useElSize'
 import { useSnapPoints } from './useSnapPoints'
@@ -21,7 +21,6 @@ export function useDrawer(props: DrawerRootProps) {
   const {
     height: contentHeight,
     element: contentElement,
-    checkMounted,
   } = useElSize(drawerContentRef, open)
 
   const {

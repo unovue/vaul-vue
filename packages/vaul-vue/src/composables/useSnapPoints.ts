@@ -30,7 +30,10 @@ export function useSnapPoints({
   })
 
   const closestSnapPoint = computed(() => {
-    const sheetOpenPositionY = toValue(contentHeight) + toValue(offset)
+    const sheetOpenPositionY = toValue(contentHeight) + Math.abs(toValue(offset))
+    const sheetPositionNormalized = range(0, windowHeight.value, 0, 1, sheetOpenPositionY)
+
+    console.log(sheetPositionNormalized)
   })
 
   const snapTo = (snapPointIndex: number) => {
@@ -40,6 +43,10 @@ export function useSnapPoints({
     const newOffset = screenYOffset - toValue(contentHeight)
     return newOffset
   }
+
+  watch(closestSnapPoint, () => {
+    console.log(closestSnapPoint.value)
+  })
 
   return {
     points,
