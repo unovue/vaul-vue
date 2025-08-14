@@ -42,5 +42,6 @@ export function useElSize(
   return {
     height,
     width,
+    element,
   }
 }

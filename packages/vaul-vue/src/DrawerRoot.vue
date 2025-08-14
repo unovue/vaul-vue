@@ -2,6 +2,7 @@
 import type { DrawerRootProps } from './types'
 import { syncRef } from '@vueuse/core'
 import { DialogRoot } from 'reka-ui'
+import { computed } from 'vue'
 import { useDrawer } from './composables/useDrawer'
 import { useSnapPoints } from './composables/useSnapPoints'
 import { provideDrawerRootContext } from './context'
@@ -35,7 +36,7 @@ import { provideDrawerRootContext } from './context'
 
 const props = withDefaults(defineProps<DrawerRootProps>(), {
   snapPoints: undefined,
-  direction: 'bottom'
+  direction: 'bottom',
 })
 
 // const emits = defineEmits<DrawerRootEmits>()
@@ -109,7 +110,30 @@ const modelValueOpen = defineModel('open', {
   required: false,
 })
 
-syncRef(modelValueOpen, drawerContext.open)
+const open = computed({
+  get() {
+    return drawerContext.open.value
+  },
+  set(_open: boolean) {
+    if (_open) {
+      drawerContext.open.value = _open
+
+      drawerContext
+        .present()
+        .then(() => {
+          modelValueOpen.value = _open
+        })
+    }
+    else {
+      drawerContext
+        .dismiss()
+        .then(() => {
+          modelValueOpen.value = _open
+          drawerContext.open.value = _open
+        })
+    }
+  },
+})
 
 provideDrawerRootContext({
   ...drawerContext,
@@ -119,9 +143,9 @@ provideDrawerRootContext({
 
 <template>
   <DialogRoot
-    v-model:open="modelValueOpen"
-    :default-open="modelValueOpen"
+    v-model:open="open"
+    :default-open="open"
   >
-    <slot :open="modelValueOpen" />
+    <slot :open="open" />
   </DialogRoot>
 </template>

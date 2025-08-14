@@ -19,6 +19,7 @@ export function useDrawer(props: DrawerRootProps) {
 
   const {
     height: contentHeight,
+    element: contentElement,
   } = useElSize(drawerContentRef, open)
 
   const {
@@ -61,32 +62,44 @@ export function useDrawer(props: DrawerRootProps) {
     const normalized = range(0, windowHeight.value, 0, 1, dragDistance)
 
     console.warn(normalized)
-
-    // pointerOffset.value = dragDistance
   }
 
   const onDragEnd = () => {
     isDragging.value = false
   }
 
-  watch(open, async () => {
-    if (!open.value)
-      return
+  const dismiss = async () => {
+    return new Promise((resolve) => {
+      contentElement.value?.addEventListener('transitionend', () => {
+        open.value = false
+        resolve(false)
+      }, { once: true })
 
+      heightOffset.value = windowHeight.value
+    })
+  }
+
+  const present = async () => {
     heightOffset.value = windowHeight.value
     await nextTick()
-    heightOffset.value = 0
-  })
 
-  // watch([() => open.value, () => contentHeight.value], () => {
+    return new Promise((resolve) => {
+      contentElement.value?.addEventListener('transitionend', () => {
+        open.value = true
+        resolve(true)
+      }, { once: true })
+
+      heightOffset.value = 0
+    })
+  }
+
+  // watch(open, async () => {
   //   if (!open.value)
   //     return
 
-  //   heightOffset.value = contentHeight.value
-  // })
-
-  // watch(contentHeight, () => {
-  //   console.warn('content height change')
+  //   heightOffset.value = windowHeight.value
+  //   await nextTick()
+  //   heightOffset.value = 0
   // })
 
   return {
@@ -97,5 +110,7 @@ export function useDrawer(props: DrawerRootProps) {
     drawerHandleRef,
     containerStyle,
     open,
+    dismiss,
+    present,
   }
 }
