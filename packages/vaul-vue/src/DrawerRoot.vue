@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DrawerRootPropsLoose } from './types'
+import type { DrawerRootProps } from './types'
 
 import { DialogRoot } from 'reka-ui'
 import { computed } from 'vue'
@@ -34,9 +34,11 @@ import './style.css'
 //   handleOnly: false,
 // })
 
-const props = withDefaults(defineProps<DrawerRootPropsLoose>(), {
+const props = withDefaults(defineProps<DrawerRootProps>(), {
   snapPoints: () => [],
   side: 'bottom',
+  scaleBackground: true,
+  setBackgroundColorOnScale: true,
 })
 
 // const emits = defineEmits<DrawerRootEmits>()

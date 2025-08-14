@@ -7,7 +7,9 @@ export type DrawerSide = 'top' | 'bottom' | 'left' | 'right'
 
 export type AnyFunction = (...args: any) => any
 
-export interface DrawerRootPropsLoose {
+export interface DrawerRootProps {
   snapPoints?: number[]
   side?: DrawerSide
+  scaleBackground?: boolean
+  setBackgroundColorOnScale?: boolean
 }
