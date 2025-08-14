@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { DrawerRootProps } from './types'
-import { syncRef } from '@vueuse/core'
+import type { DrawerRootPropsLoose } from './types'
+
 import { DialogRoot } from 'reka-ui'
 import { computed } from 'vue'
 import { useDrawer } from './composables/useDrawer'
-import { useSnapPoints } from './composables/useSnapPoints'
 import { provideDrawerRootContext } from './context'
+import './style.css'
 
 // import type { DrawerRootEmits, DrawerRootProps } from './controls'
 // import { useVModel } from '@vueuse/core'
@@ -34,9 +34,9 @@ import { provideDrawerRootContext } from './context'
 //   handleOnly: false,
 // })
 
-const props = withDefaults(defineProps<DrawerRootProps>(), {
-  snapPoints: undefined,
-  direction: 'bottom',
+const props = withDefaults(defineProps<DrawerRootPropsLoose>(), {
+  snapPoints: () => [],
+  side: 'bottom',
 })
 
 // const emits = defineEmits<DrawerRootEmits>()
@@ -103,7 +103,7 @@ const props = withDefaults(defineProps<DrawerRootProps>(), {
 // })
 
 const drawerContext = useDrawer(props)
-const snapPointsContext = useSnapPoints(props)
+// const snapPointsContext = useSnapPoints()
 
 const modelValueOpen = defineModel('open', {
   default: false,
@@ -137,7 +137,7 @@ const open = computed({
 
 provideDrawerRootContext({
   ...drawerContext,
-  ...snapPointsContext,
+  // ...snapPointsContext,
 })
 </script>
 

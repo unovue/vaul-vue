@@ -10,7 +10,7 @@ export type {
 } from './controls'
 
 export type {
-  DrawerDirection,
+  DrawerSide,
   SnapPoint,
 } from './types'
 

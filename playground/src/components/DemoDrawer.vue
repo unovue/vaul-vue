@@ -11,14 +11,14 @@ import {
 </script>
 
 <template>
-  <DrawerRoot>
+  <DrawerRoot :snap-points="[0.5, 0.8]">
     <DrawerTrigger>
       OpenDrawer
     </DrawerTrigger>
 
     <DrawerPortal>
-      <DrawerContent class="bg-gray-300 flex flex-col rounded-t-lg h-full mt-24 max-h-[96%] fixed bottom-0 left-0 right-0">
-        <div class="p-4 flex-1">
+      <DrawerContent class="bg-gray-300 flex flex-col rounded-t-lg mt-24 fixed bottom-0 left-0 right-0">
+        <div class="p-4 h-52">
           <DrawerHandle />
 
           <p>a lot of content wow</p>

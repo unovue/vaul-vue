@@ -1,4 +1,16 @@
-:where(:root) {
+[data-vaul-drawer]::after {
+  top: calc(100% - 1px);
+  bottom: initial;
+  left: 0;
+  right: 0;
+  height: 200%;
+  content: "";
+  position: absolute;
+  background: inherit;
+  background-color: inherit;
+}
+
+/* :where(:root) {
   --vaul-duration: 0.5s;
   --vaul-easing: cubic-bezier(0.32, 0.72, 0, 1);
 }
@@ -19,7 +31,7 @@
 }
 
 /* REVIEW: Is this really necessary? Can we set it to clip instead? */
-:where(body:has([data-vaul-drawer]) :is([data-vaul-drawer-wrapper], [vaul-drawer-wrapper])) {
+/* :where(body:has([data-vaul-drawer]) :is([data-vaul-drawer-wrapper], [vaul-drawer-wrapper])) {
   overflow: hidden;
 }
 
@@ -209,12 +221,12 @@ body:has([data-vaul-drawer]:active) :is([data-vaul-drawer-wrapper], [vaul-drawer
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: max(100%, 2.75rem); /* 44px */
-  height: max(100%, 2.75rem); /* 44px */
+  width: max(100%, 2.75rem);
+  height: max(100%, 2.75rem);
   touch-action: inherit;
 }
 
-@media (hover: hover) and (pointer: fine) {
+/* @media (hover: hover) and (pointer: fine) {
   [data-vaul-drawer] {
     user-select: none;
   }
@@ -293,4 +305,4 @@ body:has([data-vaul-drawer]:active) :is([data-vaul-drawer-wrapper], [vaul-drawer
   to {
     transform: translate3d(var(--vaul-initial-translate, 100%), 0, 0);
   }
-}
+} */

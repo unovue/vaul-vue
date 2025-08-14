@@ -76,6 +76,7 @@ const { drawerContentRef, onDrag, onDragEnd, onDragStart, containerStyle } = inj
     ref="drawerContentRef"
     :style="containerStyle"
     class="transition-all"
+    data-vaul-drawer
     @pointerdown="onDragStart"
     @pointerup="onDragEnd"
     @pointermove="onDrag"

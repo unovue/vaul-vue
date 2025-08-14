@@ -1,7 +1,7 @@
-import type { DrawerDirection } from './types'
+import type { DrawerSide } from './types'
 
-export function isVertical(direction: DrawerDirection) {
-  if (direction === 'top' || direction || 'bottom')
+export function isVertical(side: DrawerSide) {
+  if (side === 'top' || side || 'bottom')
     return true
 
   return false

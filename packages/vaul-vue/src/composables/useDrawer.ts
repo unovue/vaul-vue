@@ -1,9 +1,10 @@
 import type { ComponentPublicInstance, StyleValue } from 'vue'
 import type { DrawerRootProps } from '../types'
 import { useWindowSize } from '@vueuse/core'
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { isVertical, range } from '../utils'
 import { useElSize } from './useElSize'
+import { useSnapPoints } from './useSnapPoints'
 
 export function useDrawer(props: DrawerRootProps) {
   const open = ref(false)
@@ -12,9 +13,9 @@ export function useDrawer(props: DrawerRootProps) {
   const drawerHandleRef = ref<ComponentPublicInstance>()
 
   const pointerStart = ref(0)
-  const heightOffset = ref(0)
+  const offset = ref(0)
 
-  const drawerDirection = ref(props.direction!)
+  const drawerSide = ref(props.side!)
   const isDragging = ref(false)
 
   const {
@@ -27,23 +28,20 @@ export function useDrawer(props: DrawerRootProps) {
     height: windowHeight,
   } = useWindowSize()
 
-  const directionMultiplier = computed(() => props.direction === 'bottom' || props.direction === 'right' ? 1 : -1)
-
-  // should be from 0 to 1
-  const snapPoints = computed(() => {
-    if (props.snapPoints && props.snapPoints.length > 0) {
-      return props.snapPoints
-    }
-
-    return [range(0, windowHeight.value, 0, 1, contentHeight.value)]
+  useSnapPoints({
+    snapPoints: props.snapPoints,
+    contentHeight,
+    offset,
   })
+
+  const directionMultiplier = computed(() => props.side === 'bottom' || props.side === 'right' ? 1 : -1)
 
   const containerStyle = computed(() => {
     return {
-      transform: `translateY(${heightOffset.value}px)`,
+      transform: `translateY(${offset.value}px)`,
 
       // for now leave like this
-      transitionProperty: 'transform',
+      transitionProperty: isDragging.value ? 'none' : 'transform',
       transitionDuration: '500ms',
       transitionTimingFunction: 'cubic-bezier(0.32, 0.72, 0, 1)',
     } satisfies StyleValue
@@ -51,17 +49,17 @@ export function useDrawer(props: DrawerRootProps) {
 
   const onDragStart = (event: PointerEvent) => {
     isDragging.value = true
-    pointerStart.value = isVertical(drawerDirection.value) ? event.clientY : event.clientX
+    pointerStart.value = isVertical(drawerSide.value) ? event.clientY : event.clientX
   }
 
   const onDrag = (event: PointerEvent) => {
     if (!isDragging.value)
       return
 
-    const dragDistance = pointerStart.value - (isVertical(drawerDirection.value) ? event.clientY : event.clientY) * directionMultiplier.value
-    const normalized = range(0, windowHeight.value, 0, 1, dragDistance)
+    const dragDistance = (pointerStart.value - (isVertical(drawerSide.value) ? event.clientY : event.clientX)) * directionMultiplier.value
+    const normalized = range(0, windowHeight.value, 0, 1, dragDistance * -1)
 
-    console.warn(normalized)
+    offset.value = dragDistance * -1
   }
 
   const onDragEnd = () => {
@@ -75,12 +73,12 @@ export function useDrawer(props: DrawerRootProps) {
         resolve(false)
       }, { once: true })
 
-      heightOffset.value = windowHeight.value
+      offset.value = windowHeight.value
     })
   }
 
   const present = async () => {
-    heightOffset.value = windowHeight.value
+    offset.value = windowHeight.value
     await nextTick()
 
     return new Promise((resolve) => {
@@ -89,18 +87,9 @@ export function useDrawer(props: DrawerRootProps) {
         resolve(true)
       }, { once: true })
 
-      heightOffset.value = 0
+      offset.value = 0
     })
   }
-
-  // watch(open, async () => {
-  //   if (!open.value)
-  //     return
-
-  //   heightOffset.value = windowHeight.value
-  //   await nextTick()
-  //   heightOffset.value = 0
-  // })
 
   return {
     onDragStart,

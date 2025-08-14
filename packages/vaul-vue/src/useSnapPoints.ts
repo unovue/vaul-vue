@@ -1,5 +1,5 @@
 import type { ComponentPublicInstance, Ref, ShallowRef } from 'vue'
-import type { DrawerDirection } from './types'
+import type { DrawerSide as DrawerDirection } from './types'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './constants'
 import { isVertical, set } from './helpers'

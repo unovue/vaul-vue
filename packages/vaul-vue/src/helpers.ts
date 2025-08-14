@@ -1,4 +1,4 @@
-import type { DrawerDirection } from './types'
+import type { DrawerSide as DrawerDirection } from './types'
 
 interface Style {
   [key: string]: string | null

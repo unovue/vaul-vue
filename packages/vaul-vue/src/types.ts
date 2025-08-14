@@ -3,11 +3,16 @@ export interface SnapPoint {
   height: number
 }
 
-export type DrawerDirection = 'top' | 'bottom' | 'left' | 'right'
+export type DrawerSide = 'top' | 'bottom' | 'left' | 'right'
 
 export type AnyFunction = (...args: any) => any
 
-export type DrawerRootProps = {
+export interface DrawerRootProps {
+  snapPoints: number[]
+  side: DrawerSide
+}
+
+export interface DrawerRootPropsLoose {
   snapPoints?: number[]
-  direction?: DrawerDirection
+  side?: DrawerSide
 }
