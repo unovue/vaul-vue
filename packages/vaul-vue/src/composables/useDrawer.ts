@@ -93,7 +93,7 @@ export function useDrawer(props: UseDrawerProps) {
         }
       }, { once: true })
 
-      offset.value = windowHeight.value
+      offsetInitial.value = windowHeight.value
     })
   }
 
