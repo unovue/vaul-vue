@@ -1,5 +1,5 @@
 import type { ComponentPublicInstance, MaybeRefOrGetter, StyleValue } from 'vue'
-import type { DrawerRootProps, DrawerSide } from '../types'
+import type { DrawerRootProps } from '../types'
 import { useWindowSize } from '@vueuse/core'
 import { computed, nextTick, onMounted, ref, shallowRef, toValue, watch } from 'vue'
 import { range } from '../utils'
@@ -18,7 +18,12 @@ export function useDrawer(props: UseDrawerProps) {
   const drawerWrapperRef = shallowRef<HTMLElement>()
 
   const pointerStart = ref(0)
+
+  // this is the offset we use when dragging
   const offset = ref(0)
+  // this is the offset we use when mounting. Set using computed
+  // so we don't have flickers on mount. It's also updated when snap happens
+  const offsetInitial = ref(0)
 
   const drawerSide = ref(props.side)
   const isDragging = ref(false)
@@ -42,17 +47,17 @@ export function useDrawer(props: UseDrawerProps) {
   // const directionMultiplier = computed(() => props.side === 'bottom' || props.side === 'right' ? 1 : -1)
   // const normalizedOffset = computed(() => range(0, windowHeight.value, 0, 1, offset.value))
 
-  const isVertical = computed(() => drawerSide.value === 'top' || drawerSide.value === 'bottom' ? true : false)
+  const isVertical = computed(() => !!(drawerSide.value === 'top' || drawerSide.value === 'bottom'))
 
-  const containerStyle = computed(() => {
+  const initialContainerStyle = computed(() => {
     return {
-      transform: `translateY(${offset.value}px)`,
-      touchAction: 'none',
+      transform: `translateY(${offsetInitial.value}px)`,
+      // touchAction: 'none',
 
       // for now leave like this
-      transitionProperty: isDragging.value ? 'none' : 'transform',
-      transitionDuration: '500ms',
-      transitionTimingFunction: 'cubic-bezier(0.32, 0.72, 0, 1)',
+      // transitionProperty: isDragging.value ? 'none' : 'transform',
+      // transitionDuration: '500ms',
+      // transitionTimingFunction: 'cubic-bezier(0.32, 0.72, 0, 1)',
     } satisfies StyleValue
   })
 
@@ -62,17 +67,20 @@ export function useDrawer(props: UseDrawerProps) {
   }
 
   const onDrag = (event: PointerEvent) => {
-    if (!isDragging.value)
+    if (!isDragging.value || !contentElement.value)
       return
 
     const dragDistance = (pointerStart.value - (isVertical.value ? event.clientY : event.clientX)) * -1
+    const newOffset = activeSnapPointOffset.value + dragDistance
 
-    offset.value = activeSnapPointOffset.value + dragDistance
+    offset.value = newOffset
   }
 
   const onDragEnd = () => {
     isDragging.value = false
+
     offset.value = snapTo(closestSnapPointIndex.value)!
+    offsetInitial.value = offset.value
   }
 
   const dismiss = async () => {
@@ -80,7 +88,7 @@ export function useDrawer(props: UseDrawerProps) {
       contentElement.value?.addEventListener('transitionend', () => {
         resolve(false)
 
-        if (props.setBackgroundColorOnScale)  {
+        if (props.setBackgroundColorOnScale) {
           document.body.style.backgroundColor = ''
         }
       }, { once: true })
@@ -94,23 +102,23 @@ export function useDrawer(props: UseDrawerProps) {
       document.body.style.backgroundColor = 'black'
     }
 
-    offset.value = windowHeight.value
+    offsetInitial.value = windowHeight.value
     await nextTick()
 
-    return new Promise(async (resolve) => {
+    if (contentElement.value) {
+      contentElement.value.style.transform = `translateY(${offset.value}px)`
+    }
+
+    return new Promise((resolve) => {
       contentElement.value?.addEventListener('transitionend', () => {
         resolve(true)
       }, { once: true })
 
-      offset.value = snapTo(0)!
+      offsetInitial.value = snapTo(0)!
     })
   }
 
-  onMounted(() => {
-    drawerWrapperRef.value = document.querySelector('[data-vaul-drawer-wrapper]') as HTMLElement | undefined
-  })
-
-  watch(offset, () => {
+  const updateBackground = (_offset: number) => {
     if (!toValue(props.scaleBackground))
       return
 
@@ -119,19 +127,41 @@ export function useDrawer(props: UseDrawerProps) {
       return
     }
 
-    const offsetScreen = windowHeight.value - (contentHeight.value + -offset.value)
+    const offsetScreen = windowHeight.value - (contentHeight.value + -_offset)
     const depth = range(0, windowHeight.value, 14, 0, offsetScreen)
     const scale = range(0, windowHeight.value, 0.95, 1, offsetScreen)
     const borderRadius = range(0, windowHeight.value, 14, 0, offsetScreen)
 
+    let cssText = `
+      overflow: hidden;
+      transform-origin: center top;
+      transform: scale(${scale}) translate3d(0, calc(env(safe-area-inset-top) + ${depth}px), 0);
+      border-radius: ${borderRadius.toFixed(0)}px;
+    `
+
+    if (!isDragging.value) {
+      cssText += `transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), border-radius;`
+    }
+
     drawerWrapperRef.value
       .style
-      .cssText = `
-        overflow: hidden;
-        transform-origin: center top;
-        transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), border-radius;
-        transform: scale(${scale.toFixed(2)}) translate3d(0, calc(env(safe-area-inset-top) + ${depth.toFixed(2)}px), 0);
-        border-radius: ${borderRadius.toFixed(0)}px`
+      .cssText = cssText
+  }
+
+  onMounted(() => {
+    drawerWrapperRef.value = document.querySelector('[data-vaul-drawer-wrapper]') as HTMLElement | undefined
+  })
+
+  watch(offsetInitial, () => {
+    updateBackground(offsetInitial.value)
+  })
+
+  watch(offset, () => {
+    if (contentElement.value) {
+      contentElement.value.style.transform = `translateY(${offset.value}px)`
+    }
+
+    updateBackground(offset.value)
   })
 
   return {
@@ -140,9 +170,10 @@ export function useDrawer(props: UseDrawerProps) {
     onDragEnd,
     drawerContentRef,
     drawerHandleRef,
-    containerStyle,
     open,
     dismiss,
     present,
+    isDragging,
+    initialContainerStyle,
   }
 }

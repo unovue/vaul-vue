@@ -10,6 +10,23 @@
   background-color: inherit;
 }
 
+[data-vaul-drawer] {
+  transition-property: transform;
+  transition-duration: 500ms;
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  touch-action: none;
+}
+
+[data-vaul-drawer][data-vaul-drawer-dragging="true"] {
+  transition-property: none;
+}
+
+[data-vaul-drawer][data-vaul-drawer-dragging="false"] {
+  transition-property: transform;
+  /* touch-action: auto; */
+}
+
+
 /* :where(:root) {
   --vaul-duration: 0.5s;
   --vaul-easing: cubic-bezier(0.32, 0.72, 0, 1);

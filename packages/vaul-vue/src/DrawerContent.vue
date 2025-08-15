@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { DialogContent } from 'reka-ui'
 import { injectDrawerRootContext } from './context'
-import { onUpdated } from 'vue'
 // import { computed, ref, watchEffect } from 'vue'
 // import { injectDrawerRootContext } from './context'
 
@@ -69,15 +68,15 @@ import { onUpdated } from 'vue'
 //   }
 // })
 
-const { drawerContentRef, onDrag, onDragEnd, onDragStart, containerStyle } = injectDrawerRootContext()
+const { drawerContentRef, onDrag, onDragEnd, onDragStart, isDragging, initialContainerStyle } = injectDrawerRootContext()
 </script>
 
 <template>
   <DialogContent
     ref="drawerContentRef"
-    :style="containerStyle"
-    class="transition-all"
+    :style="initialContainerStyle"
     data-vaul-drawer
+    :data-vaul-drawer-dragging="isDragging"
     @pointerdown="onDragStart"
     @pointerup="onDragEnd"
     @pointermove="onDrag"
@@ -97,6 +96,6 @@ const { drawerContentRef, onDrag, onDragEnd, onDragStart, containerStyle } = inj
       if (!dismissible)
         event.preventDefault()
     }" -->
-    <slot v-once />
+    <slot />
   </DialogContent>
 </template>

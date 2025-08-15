@@ -12,13 +12,13 @@ import { ref } from 'vue'
 
 const snapPoints = ref([0.5])
 
-const addSnapPoint = () => {
+function addSnapPoint() {
   snapPoints.value.push(0.8)
 }
 </script>
 
 <template>
-  <DrawerRoot :snap-points="snapPoints" :scale-background="false" :set-background-color-on-scale="false">
+  <DrawerRoot :snap-points="snapPoints">
     <DrawerTrigger>
       OpenDrawer, content height smaller than 0.5 snap point
     </DrawerTrigger>
@@ -29,7 +29,9 @@ const addSnapPoint = () => {
           <DrawerHandle />
 
           <p>{{ snapPoints }}</p>
-          <button @click="addSnapPoint">add snap point</button>
+          <button @click="addSnapPoint">
+            add snap point
+          </button>
         </div>
       </DrawerContent>
     </DrawerPortal>
