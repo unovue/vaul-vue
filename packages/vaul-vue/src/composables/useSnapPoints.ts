@@ -35,7 +35,7 @@ export function useSnapPoints({
       return _p[0]
 
     // change offset to positive number to check against offset points.
-    const offsetNormalized = range(0, toValue(windowSize), 1, 0, -toValue(offset))
+    const offsetNormalized = range(0, toValue(windowSize), 1, 0, Math.abs(toValue(offset)))
 
     return getClosestNumber(points.value, offsetNormalized)
   })
