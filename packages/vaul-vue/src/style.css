@@ -1,20 +1,17 @@
-[data-vaul-drawer]::after {
-  top: calc(100% - 1px);
-  bottom: initial;
-  left: 0;
-  right: 0;
-  height: 200%;
+/* [data-vaul-drawer]::after {
   content: "";
   position: absolute;
   background: inherit;
   background-color: inherit;
-}
+} */
 
 [data-vaul-drawer] {
-  transition-property: transform;
+  transition-property: transform, border-radius;
   transition-duration: 500ms;
   transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
   touch-action: none;
+
+  position: fixed;
 }
 
 [data-vaul-drawer][data-vaul-drawer-dragging="true"] {
@@ -23,8 +20,88 @@
 
 [data-vaul-drawer][data-vaul-drawer-dragging="false"] {
   transition-property: transform;
-  /* touch-action: auto; */
 }
+
+[data-vaul-drawer][data-vaul-drawer-side="left"] {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  transform-origin: center right;
+}
+
+[data-vaul-drawer][data-vaul-drawer-side="left"]::after {
+  content: "";
+  position: absolute;
+
+  right: calc(100% - 1px);
+  top: 0;
+  bottom: 0;
+  width: 100vw;
+
+  background: inherit;
+  background-color: inherit;
+}
+
+[data-vaul-drawer][data-vaul-drawer-side="top"] {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform-origin: center bottom;
+}
+
+[data-vaul-drawer][data-vaul-drawer-side="top"]::before {
+  content: "";
+  position: absolute;
+
+  bottom: calc(100% - 1px);
+  left: 0;
+  right: 0;
+  height: 100vw;
+
+  background: inherit;
+  background-color: inherit;
+}
+
+[data-vaul-drawer][data-vaul-drawer-side="right"] {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  transform-origin: center left;
+}
+
+[data-vaul-drawer][data-vaul-drawer-side="right"]::after {
+  content: "";
+  position: absolute;
+
+  left: calc(100% - 1px);
+  top: 0;
+  bottom: 0;
+  width: 100vw;
+
+  background: inherit;
+  background-color: inherit;
+}
+
+[data-vaul-drawer][data-vaul-drawer-side="bottom"] {
+  top: 0;
+  left: 0;
+  right: 0;
+  transform-origin: center top;
+}
+
+[data-vaul-drawer][data-vaul-drawer-side="bottom"]::after {
+    content: "";
+  position: absolute;
+
+  top: calc(100% - 1px);
+  left: 0;
+  right: 0;
+  height: 100vw;
+
+  background: inherit;
+  background-color: inherit;
+}
+
 
 
 /* :where(:root) {
@@ -322,4 +399,6 @@ body:has([data-vaul-drawer]:active) :is([data-vaul-drawer-wrapper], [vaul-drawer
   to {
     transform: translate3d(var(--vaul-initial-translate, 100%), 0, 0);
   }
-} */
+} 
+  
+*/

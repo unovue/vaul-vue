@@ -1,37 +1,81 @@
 <script setup lang="ts">
+import type { DrawerSide } from 'vaul-vue'
 import {
   DrawerContent,
   DrawerHandle,
   DrawerOverlay,
   DrawerPortal,
   DrawerRoot,
+
   DrawerTitle,
   DrawerTrigger,
 } from 'vaul-vue'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 
-const snapPoints = ref([0.5])
+const sides = ['left', 'top', 'right', 'bottom'] satisfies DrawerSide[]
 
-function addSnapPoint() {
-  snapPoints.value.push(0.8)
-}
+const snapPoints = ref([0.2, 0.5, 0.9])
+
+const i = 2
+
+const side = ref(sides[i])
+const sideIndex = ref(i)
 </script>
 
 <template>
-  <DrawerRoot :snap-points="snapPoints">
+  <DrawerRoot :snap-points="snapPoints" side="left">
     <DrawerTrigger>
-      OpenDrawer, content height smaller than 0.5 snap point
+      Drawer Left
     </DrawerTrigger>
 
     <DrawerPortal>
-      <DrawerContent class="bg-gray-300 flex flex-col rounded-t-lg fixed bottom-0 left-0 right-0">
-        <div class="p-4 h-96">
+      <DrawerContent class="bg-gray-300 flex flex-col">
+        <div class="flex flex-col gap-4 p-4 h-96">
           <DrawerHandle />
 
-          <p>{{ snapPoints }}</p>
-          <button @click="addSnapPoint">
-            add snap point
-          </button>
+          <p>lots of content for real for real lorem ipsum falan filan</p>
+        </div>
+      </DrawerContent>
+    </DrawerPortal>
+  </DrawerRoot>
+
+  <DrawerRoot :snap-points="snapPoints" side="right">
+    <DrawerTrigger>
+      Drawer Right
+    </DrawerTrigger>
+
+    <DrawerPortal>
+      <DrawerContent class="bg-gray-300 flex flex-col">
+        <div class="flex flex-col gap-4 p-4 h-96">
+          <DrawerHandle />
+        </div>
+      </DrawerContent>
+    </DrawerPortal>
+  </DrawerRoot>
+
+  <DrawerRoot :snap-points="snapPoints" side="top">
+    <DrawerTrigger>
+      Drawer Top
+    </DrawerTrigger>
+
+    <DrawerPortal>
+      <DrawerContent class="bg-gray-300 flex flex-col">
+        <div class="flex flex-col gap-4 p-4 h-96">
+          <DrawerHandle />
+        </div>
+      </DrawerContent>
+    </DrawerPortal>
+  </DrawerRoot>
+
+    <DrawerRoot :snap-points="snapPoints" side="bottom">
+    <DrawerTrigger>
+      Drawer Bottom
+    </DrawerTrigger>
+
+    <DrawerPortal>
+      <DrawerContent class="bg-gray-300 flex flex-col">
+        <div class="flex flex-col gap-4 p-4 h-96">
+          <DrawerHandle />
         </div>
       </DrawerContent>
     </DrawerPortal>

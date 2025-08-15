@@ -25,11 +25,12 @@ export function useDrawer(props: UseDrawerProps) {
   // so we don't have flickers on mount. It's also updated when snap happens
   const offsetInitial = ref(0)
 
-  const drawerSide = ref(props.side)
+  const side = ref(props.side)
   const isDragging = ref(false)
 
   const {
     height: contentHeight,
+    width: contentWidth,
     element: contentElement,
   } = useElSize(drawerContentRef, open)
 
@@ -38,26 +39,27 @@ export function useDrawer(props: UseDrawerProps) {
     height: windowHeight,
   } = useWindowSize()
 
+  const isVertical = computed(() => side.value === 'top' || side.value === 'bottom')
+
+  // this is because, for example
+  // when side is set to right. we snap drawer to the left side of the screen
+  // to move it out of screen to right, we have to add windowWidth and should be positive
+  // positive translateY means it goes down, position translateX means it goes right
+  const sideInitialOffsetModifier = computed(() => side.value === 'right' || side.value === 'bottom' ? 1 : -1)
+
+  const windowSize = computed(() => isVertical.value ? windowHeight.value : windowWidth.value)
+  const contentSize = computed(() => isVertical.value ? contentHeight.value : contentWidth.value)
+
   const { snapTo, closestSnapPointIndex, activeSnapPointOffset } = useSnapPoints({
     snapPoints: props.snapPoints,
-    contentHeight,
+    contentSize,
+    windowSize,
     offset,
   })
 
-  // const directionMultiplier = computed(() => props.side === 'bottom' || props.side === 'right' ? 1 : -1)
-  // const normalizedOffset = computed(() => range(0, windowHeight.value, 0, 1, offset.value))
-
-  const isVertical = computed(() => !!(drawerSide.value === 'top' || drawerSide.value === 'bottom'))
-
   const initialContainerStyle = computed(() => {
     return {
-      transform: `translateY(${offsetInitial.value}px)`,
-      // touchAction: 'none',
-
-      // for now leave like this
-      // transitionProperty: isDragging.value ? 'none' : 'transform',
-      // transitionDuration: '500ms',
-      // transitionTimingFunction: 'cubic-bezier(0.32, 0.72, 0, 1)',
+      transform: isVertical.value ? `translateY(${offsetInitial.value}px)` : `translateX(${offsetInitial.value}px)`,
     } satisfies StyleValue
   })
 
@@ -70,17 +72,21 @@ export function useDrawer(props: UseDrawerProps) {
     if (!isDragging.value || !contentElement.value)
       return
 
-    const dragDistance = (pointerStart.value - (isVertical.value ? event.clientY : event.clientX)) * -1
-    const newOffset = activeSnapPointOffset.value + dragDistance
+    const clientPosition = isVertical.value ? event.clientY : event.clientX
+    const dragDistance = pointerStart.value - clientPosition
 
+    const newOffset = (activeSnapPointOffset.value * sideInitialOffsetModifier.value) + -dragDistance
+    
     offset.value = newOffset
   }
 
   const onDragEnd = () => {
     isDragging.value = false
 
-    offset.value = snapTo(closestSnapPointIndex.value)!
-    offsetInitial.value = offset.value
+    const result = snapTo(closestSnapPointIndex.value)! * sideInitialOffsetModifier.value
+
+    offset.value = result
+    offsetInitial.value = result
   }
 
   const dismiss = async () => {
@@ -93,7 +99,7 @@ export function useDrawer(props: UseDrawerProps) {
         }
       }, { once: true })
 
-      offsetInitial.value = windowHeight.value
+      offsetInitial.value = windowSize.value * sideInitialOffsetModifier.value
     })
   }
 
@@ -102,19 +108,15 @@ export function useDrawer(props: UseDrawerProps) {
       document.body.style.backgroundColor = 'black'
     }
 
-    offsetInitial.value = windowHeight.value
+    offsetInitial.value = windowSize.value * sideInitialOffsetModifier.value
     await nextTick()
-
-    if (contentElement.value) {
-      contentElement.value.style.transform = `translateY(${offset.value}px)`
-    }
 
     return new Promise((resolve) => {
       contentElement.value?.addEventListener('transitionend', () => {
         resolve(true)
       }, { once: true })
 
-      offsetInitial.value = snapTo(0)!
+      offsetInitial.value = snapTo(0)! * sideInitialOffsetModifier.value
     })
   }
 
@@ -127,10 +129,11 @@ export function useDrawer(props: UseDrawerProps) {
       return
     }
 
-    const offsetScreen = windowHeight.value - (contentHeight.value + -_offset)
-    const depth = range(0, windowHeight.value, 14, 0, offsetScreen)
-    const scale = range(0, windowHeight.value, 0.95, 1, offsetScreen)
-    const borderRadius = range(0, windowHeight.value, 14, 0, offsetScreen)
+    const off = windowSize.value - Math.abs(_offset)
+
+    const depth = range(0, windowSize.value, 0, 14, off)
+    const scale = range(0, windowSize.value, 1, 0.95, off)
+    const borderRadius = range(0, windowSize.value, 0, 14, off)
 
     let cssText = `
       overflow: hidden;
@@ -140,7 +143,7 @@ export function useDrawer(props: UseDrawerProps) {
     `
 
     if (!isDragging.value) {
-      cssText += `transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), border-radius;`
+      cssText += `transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), border-radius 0.5s cubic-bezier(0.32, 0.72, 0, 1);`
     }
 
     drawerWrapperRef.value
@@ -158,7 +161,7 @@ export function useDrawer(props: UseDrawerProps) {
 
   watch(offset, () => {
     if (contentElement.value) {
-      contentElement.value.style.transform = `translateY(${offset.value}px)`
+      contentElement.value.style.transform = isVertical.value ? `translateY(${offset.value}px)` : `translateX(${offset.value}px)`
     }
 
     updateBackground(offset.value)
@@ -175,5 +178,6 @@ export function useDrawer(props: UseDrawerProps) {
     present,
     isDragging,
     initialContainerStyle,
+    side,
   }
 }

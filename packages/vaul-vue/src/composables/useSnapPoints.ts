@@ -1,32 +1,28 @@
 import type { MaybeRefOrGetter } from 'vue'
-import { useWindowSize } from '@vueuse/core'
 import { computed, ref, toValue } from 'vue'
 import { getClosestNumber, range } from '../utils'
 
 export interface useSnapPointsProps {
   snapPoints: MaybeRefOrGetter<number[]>
-  contentHeight: MaybeRefOrGetter<number>
+  contentSize: MaybeRefOrGetter<number>
+  windowSize: MaybeRefOrGetter<number>
   offset: MaybeRefOrGetter<number>
 }
 
 export function useSnapPoints({
   snapPoints,
-  contentHeight,
+  contentSize,
+  windowSize,
   offset,
 }: useSnapPointsProps) {
   const activeSnapPoint = ref(0)
 
-  const {
-    width: windowWidth,
-    height: windowHeight,
-  } = useWindowSize()
-
   const points = computed(() => {
-    const _contentHeight = toValue(contentHeight)
+    const _contentSize = toValue(contentSize)
     const _snapPoints = toValue(snapPoints)
 
     if (_snapPoints.length < 1) {
-      return [range(0, windowHeight.value, 0, 1, _contentHeight)]
+      return [range(0, toValue(windowSize), 0, 1, _contentSize)]
     }
 
     return _snapPoints
@@ -38,34 +34,34 @@ export function useSnapPoints({
     if (_p.length <= 1)
       return _p[0]
 
-    const sheetOpenPositionY = windowHeight.value - (toValue(contentHeight) + -toValue(offset))
-    const sheetPositionNormalized = range(0, windowHeight.value, 1, 0, sheetOpenPositionY)
+    // change offset to positive number to check against offset points.
+    const offsetNormalized = range(0, toValue(windowSize), 1, 0, -toValue(offset))
 
-    return getClosestNumber(points.value, sheetPositionNormalized)
+    return getClosestNumber(points.value, offsetNormalized)
   })
 
   const closestSnapPointIndex = computed(
-    () => points.value.findIndex(point => point === closestSnapPoint.value)
+    () => points.value.findIndex(point => point === closestSnapPoint.value),
   )
 
   const activeSnapPointOffset = computed(() => {
-    const off = (activeSnapPoint.value * windowHeight.value) - toValue(contentHeight)
-    return off * -1
+    const wSize = toValue(windowSize)
+
+    return wSize - (toValue(windowSize) * activeSnapPoint.value)
   })
 
   const snapTo = (snapPointIndex: number) => {
     const point = points.value[snapPointIndex]
-    
+
     if (!point) {
       console.error('Snap point not found')
       return
     }
 
-    activeSnapPoint.value = point
-    const screenYOffset = point * windowHeight.value
+    const wSize = toValue(windowSize)
 
-    const newOffset = screenYOffset - toValue(contentHeight)
-    return -newOffset
+    activeSnapPoint.value = point
+    return wSize - (wSize * point)
   }
 
   return {
@@ -74,6 +70,6 @@ export function useSnapPoints({
     activeSnapPoint,
     activeSnapPointOffset,
     closestSnapPoint,
-    closestSnapPointIndex
+    closestSnapPointIndex,
   }
 }

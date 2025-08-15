@@ -68,7 +68,7 @@ import { injectDrawerRootContext } from './context'
 //   }
 // })
 
-const { drawerContentRef, onDrag, onDragEnd, onDragStart, isDragging, initialContainerStyle } = injectDrawerRootContext()
+const { drawerContentRef, onDrag, onDragEnd, onDragStart, isDragging, side, initialContainerStyle } = injectDrawerRootContext()
 </script>
 
 <template>
@@ -77,6 +77,7 @@ const { drawerContentRef, onDrag, onDragEnd, onDragStart, isDragging, initialCon
     :style="initialContainerStyle"
     data-vaul-drawer
     :data-vaul-drawer-dragging="isDragging"
+    :data-vaul-drawer-side="side"
     @pointerdown="onDragStart"
     @pointerup="onDragEnd"
     @pointermove="onDrag"
