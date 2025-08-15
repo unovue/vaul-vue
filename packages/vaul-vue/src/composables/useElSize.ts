@@ -1,5 +1,5 @@
 import type { ComponentPublicInstance, MaybeRefOrGetter } from 'vue'
-import { computed, onMounted, onUnmounted, ref, shallowRef, toValue, watch } from 'vue'
+import { onUnmounted, ref, shallowRef, toValue, watch } from 'vue'
 
 export function useElSize(
   target: MaybeRefOrGetter<ComponentPublicInstance | undefined>,
@@ -17,13 +17,13 @@ export function useElSize(
     height.value = target.contentRect.height
     width.value = target.contentRect.width
   }
-  
+
   watch(() => toValue(open), (_open) => {
     if (!open)
       return
 
     const el = toValue(target)?.$el
-    
+
     if (!(el instanceof HTMLElement))
       return
 
@@ -34,7 +34,7 @@ export function useElSize(
     width.value = element.value.clientWidth
     height.value = element.value.clientHeight
   }, {
-    flush: 'post'
+    flush: 'post',
   })
 
   onUnmounted(() => {

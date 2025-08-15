@@ -76,7 +76,7 @@ export function useDrawer(props: UseDrawerProps) {
     const dragDistance = pointerStart.value - clientPosition
 
     const newOffset = (activeSnapPointOffset.value * sideInitialOffsetModifier.value) + -dragDistance
-    
+
     offset.value = newOffset
   }
 
@@ -156,7 +156,7 @@ export function useDrawer(props: UseDrawerProps) {
   })
 
   watch(offsetInitial, () => {
-    updateBackground(offsetInitial.value)
+    // updateBackground(offsetInitial.value)
   })
 
   watch(offset, () => {
@@ -164,7 +164,7 @@ export function useDrawer(props: UseDrawerProps) {
       contentElement.value.style.transform = isVertical.value ? `translateY(${offset.value}px)` : `translateX(${offset.value}px)`
     }
 
-    updateBackground(offset.value)
+    // updateBackground(offset.value)
   })
 
   return {
