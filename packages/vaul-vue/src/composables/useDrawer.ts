@@ -2,7 +2,7 @@ import type { ComponentPublicInstance, MaybeRefOrGetter, StyleValue } from 'vue'
 import type { DrawerRootProps } from '../types'
 import { useWindowSize } from '@vueuse/core'
 import { computed, nextTick, onMounted, ref, shallowRef, toValue, watch } from 'vue'
-import { range } from '../utils'
+import { dampen, range } from '../utils'
 import { useElSize } from './useElSize'
 import { useSnapPoints } from './useSnapPoints'
 
@@ -50,7 +50,7 @@ export function useDrawer(props: UseDrawerProps) {
   const windowSize = computed(() => isVertical.value ? windowHeight.value : windowWidth.value)
   const contentSize = computed(() => isVertical.value ? contentHeight.value : contentWidth.value)
 
-  const { snapTo, closestSnapPointIndex, activeSnapPointOffset, shouldDismiss } = useSnapPoints({
+  const { snapTo, closestSnapPointIndex, activeSnapPointOffset, isSnappedToLastPoint, shouldDismiss } = useSnapPoints({
     snapPoints: props.snapPoints,
     contentSize,
     windowSize,
@@ -107,11 +107,18 @@ export function useDrawer(props: UseDrawerProps) {
       return
 
     const clientPosition = isVertical.value ? event.clientY : event.clientX
-    const dragDistance = pointerStart.value - clientPosition
 
-    const newOffset = activeSnapPointOffset.value * sideInitialOffsetModifier.value + -dragDistance
+    let dragDistance = pointerStart.value - clientPosition
 
-    offset.value = newOffset
+    if (isSnappedToLastPoint.value) {
+      const draggingInDirectionDrawerWantsToGo = dragDistance * sideInitialOffsetModifier.value > 0
+
+      if (draggingInDirectionDrawerWantsToGo) {
+        dragDistance = dampen(Math.abs(dragDistance)) * sideInitialOffsetModifier.value
+      }
+    }
+
+    offset.value = activeSnapPointOffset.value * sideInitialOffsetModifier.value + -dragDistance
   }
 
   const onDragEnd = () => {

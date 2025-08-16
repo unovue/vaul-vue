@@ -32,8 +32,6 @@ const sideIndex = ref(i)
       <DrawerContent class="bg-gray-300 flex flex-col">
         <div class="flex flex-col gap-4 p-4 h-96">
           <DrawerHandle />
-
-          <p>lots of content for real for real lorem ipsum falan filan</p>
         </div>
       </DrawerContent>
     </DrawerPortal>
@@ -67,7 +65,7 @@ const sideIndex = ref(i)
     </DrawerPortal>
   </DrawerRoot>
 
-    <DrawerRoot :snap-points="snapPoints" side="bottom">
+  <DrawerRoot :snap-points="snapPoints" side="bottom">
     <DrawerTrigger>
       Drawer Bottom
     </DrawerTrigger>

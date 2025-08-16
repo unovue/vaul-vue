@@ -50,6 +50,8 @@ export function useSnapPoints({
     return wSize - (toValue(windowSize) * activeSnapPoint.value)
   })
 
+  const isSnappedToLastPoint = computed(() => activeSnapPoint.value === points.value[points.value.length - 1])
+
   const shouldDismiss = computed(() => {
     const div = 2
 
@@ -82,5 +84,6 @@ export function useSnapPoints({
     closestSnapPoint,
     closestSnapPointIndex,
     shouldDismiss,
+    isSnappedToLastPoint,
   }
 }

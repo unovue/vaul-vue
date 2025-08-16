@@ -16,6 +16,7 @@
 
 [data-vaul-drawer][data-vaul-drawer-dragging="true"] {
   transition-property: none;
+  pointer-events: none;
 }
 
 [data-vaul-drawer][data-vaul-drawer-dragging="false"] {
