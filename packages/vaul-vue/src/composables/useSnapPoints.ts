@@ -25,7 +25,7 @@ export function useSnapPoints({
       return [range(0, toValue(windowSize), 0, 1, _contentSize)]
     }
 
-    return _snapPoints
+    return _snapPoints.sort()
   })
 
   const closestSnapPoint = computed(() => {
@@ -50,6 +50,16 @@ export function useSnapPoints({
     return wSize - (toValue(windowSize) * activeSnapPoint.value)
   })
 
+  const shouldDismiss = computed(() => {
+    const div = 2
+
+    const smallestPoint = toValue(snapPoints)[0] / div
+    const drawerVisible = toValue(windowSize) - Math.abs(toValue(offset))
+
+    return drawerVisible < toValue(windowSize) * smallestPoint
+  })
+
+  // returns the offset the drawer should snap to
   const snapTo = (snapPointIndex: number) => {
     const point = points.value[snapPointIndex]
 
@@ -71,5 +81,6 @@ export function useSnapPoints({
     activeSnapPointOffset,
     closestSnapPoint,
     closestSnapPointIndex,
+    shouldDismiss,
   }
 }

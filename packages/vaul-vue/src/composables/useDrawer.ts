@@ -50,7 +50,7 @@ export function useDrawer(props: UseDrawerProps) {
   const windowSize = computed(() => isVertical.value ? windowHeight.value : windowWidth.value)
   const contentSize = computed(() => isVertical.value ? contentHeight.value : contentWidth.value)
 
-  const { snapTo, closestSnapPointIndex, activeSnapPointOffset } = useSnapPoints({
+  const { snapTo, closestSnapPointIndex, activeSnapPointOffset, shouldDismiss } = useSnapPoints({
     snapPoints: props.snapPoints,
     contentSize,
     windowSize,
@@ -62,6 +62,40 @@ export function useDrawer(props: UseDrawerProps) {
       transform: isVertical.value ? `translateY(${offsetInitial.value}px)` : `translateX(${offsetInitial.value}px)`,
     } satisfies StyleValue
   })
+
+  const dismiss = async () => {
+    return new Promise<void>((resolve) => {
+      contentElement.value?.addEventListener('transitionend', () => {
+        if (props.setBackgroundColorOnScale) {
+          document.body.style.backgroundColor = ''
+        }
+
+        open.value = false
+        resolve()
+      }, { once: true })
+
+      offsetInitial.value = windowSize.value * sideInitialOffsetModifier.value
+    })
+  }
+
+  const present = async () => {
+    open.value = true
+
+    if (props.setBackgroundColorOnScale) {
+      document.body.style.backgroundColor = 'black'
+    }
+
+    offsetInitial.value = windowSize.value * sideInitialOffsetModifier.value
+    await nextTick()
+
+    return new Promise<void>((resolve) => {
+      contentElement.value?.addEventListener('transitionend', () => {
+        resolve()
+      }, { once: true })
+
+      offsetInitial.value = snapTo(0)! * sideInitialOffsetModifier.value
+    })
+  }
 
   const onDragStart = (event: PointerEvent) => {
     isDragging.value = true
@@ -75,7 +109,7 @@ export function useDrawer(props: UseDrawerProps) {
     const clientPosition = isVertical.value ? event.clientY : event.clientX
     const dragDistance = pointerStart.value - clientPosition
 
-    const newOffset = (activeSnapPointOffset.value * sideInitialOffsetModifier.value) + -dragDistance
+    const newOffset = activeSnapPointOffset.value * sideInitialOffsetModifier.value + -dragDistance
 
     offset.value = newOffset
   }
@@ -83,41 +117,15 @@ export function useDrawer(props: UseDrawerProps) {
   const onDragEnd = () => {
     isDragging.value = false
 
+    if (shouldDismiss.value) {
+      dismiss()
+      return
+    }
+
     const result = snapTo(closestSnapPointIndex.value)! * sideInitialOffsetModifier.value
 
     offset.value = result
     offsetInitial.value = result
-  }
-
-  const dismiss = async () => {
-    return new Promise((resolve) => {
-      contentElement.value?.addEventListener('transitionend', () => {
-        resolve(false)
-
-        if (props.setBackgroundColorOnScale) {
-          document.body.style.backgroundColor = ''
-        }
-      }, { once: true })
-
-      offsetInitial.value = windowSize.value * sideInitialOffsetModifier.value
-    })
-  }
-
-  const present = async () => {
-    if (props.setBackgroundColorOnScale) {
-      document.body.style.backgroundColor = 'black'
-    }
-
-    offsetInitial.value = windowSize.value * sideInitialOffsetModifier.value
-    await nextTick()
-
-    return new Promise((resolve) => {
-      contentElement.value?.addEventListener('transitionend', () => {
-        resolve(true)
-      }, { once: true })
-
-      offsetInitial.value = snapTo(0)! * sideInitialOffsetModifier.value
-    })
   }
 
   const updateBackground = (_offset: number) => {
@@ -156,7 +164,7 @@ export function useDrawer(props: UseDrawerProps) {
   })
 
   watch(offsetInitial, () => {
-    // updateBackground(offsetInitial.value)
+    updateBackground(offsetInitial.value)
   })
 
   watch(offset, () => {
@@ -164,7 +172,7 @@ export function useDrawer(props: UseDrawerProps) {
       contentElement.value.style.transform = isVertical.value ? `translateY(${offset.value}px)` : `translateX(${offset.value}px)`
     }
 
-    // updateBackground(offset.value)
+    updateBackground(offset.value)
   })
 
   return {
