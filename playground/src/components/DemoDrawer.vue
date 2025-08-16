@@ -29,6 +29,8 @@ const sideIndex = ref(i)
     </DrawerTrigger>
 
     <DrawerPortal>
+      <DrawerOverlay class="fixed inset-0 bg-black/75" />
+
       <DrawerContent class="bg-gray-300 flex flex-col">
         <div class="flex flex-col gap-4 p-4 h-96">
           <DrawerHandle />

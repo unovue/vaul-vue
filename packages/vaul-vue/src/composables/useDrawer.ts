@@ -3,7 +3,7 @@ import type { DrawerRootProps } from '../types'
 import { useWindowSize } from '@vueuse/core'
 import { computed, nextTick, onMounted, ref, shallowRef, toValue, watch } from 'vue'
 import { dampen, range } from '../utils'
-import { useElSize } from './useElSize'
+import { useEl } from './useEl'
 import { useSnapPoints } from './useSnapPoints'
 
 export type UseDrawerProps = {
@@ -13,8 +13,9 @@ export type UseDrawerProps = {
 export function useDrawer(props: UseDrawerProps) {
   const open = ref(false)
 
-  const drawerContentRef = shallowRef<ComponentPublicInstance>()
   const drawerHandleRef = shallowRef<ComponentPublicInstance>()
+  const drawerContentRef = shallowRef<ComponentPublicInstance>()
+  const drawerOverlayRef = shallowRef<ComponentPublicInstance>()
   const drawerWrapperRef = shallowRef<HTMLElement>()
 
   const pointerStart = ref(0)
@@ -32,7 +33,11 @@ export function useDrawer(props: UseDrawerProps) {
     height: contentHeight,
     width: contentWidth,
     element: contentElement,
-  } = useElSize(drawerContentRef, open)
+  } = useEl(drawerContentRef, open)
+
+  const {
+    element: overlayElement,
+  } = useEl(drawerOverlayRef, open)
 
   const {
     width: windowWidth,
@@ -166,11 +171,19 @@ export function useDrawer(props: UseDrawerProps) {
       .cssText = cssText
   }
 
+  const updateOverlay = (_offset: number) => {
+    if (overlayElement.value) {
+      const off = windowSize.value - Math.abs(_offset)
+      overlayElement.value.style.opacity = range(0, windowSize.value, 0, 1, off).toString()
+    }
+  }
+
   onMounted(() => {
     drawerWrapperRef.value = document.querySelector('[data-vaul-drawer-wrapper]') as HTMLElement | undefined
   })
 
   watch(offsetInitial, () => {
+    updateOverlay(offsetInitial.value)
     updateBackground(offsetInitial.value)
   })
 
@@ -179,6 +192,7 @@ export function useDrawer(props: UseDrawerProps) {
       contentElement.value.style.transform = isVertical.value ? `translateY(${offset.value}px)` : `translateX(${offset.value}px)`
     }
 
+    updateOverlay(offset.value)
     updateBackground(offset.value)
   })
 
@@ -188,6 +202,7 @@ export function useDrawer(props: UseDrawerProps) {
     onDragEnd,
     drawerContentRef,
     drawerHandleRef,
+    drawerOverlayRef,
     open,
     dismiss,
     present,

@@ -1,7 +1,7 @@
 import type { ComponentPublicInstance, MaybeRefOrGetter } from 'vue'
 import { onUnmounted, ref, shallowRef, toValue, watch } from 'vue'
 
-export function useElSize(
+export function useEl(
   target: MaybeRefOrGetter<ComponentPublicInstance | undefined>,
   open: MaybeRefOrGetter<boolean>,
 ) {

@@ -3,16 +3,16 @@ import { DialogOverlay } from 'reka-ui'
 import { injectDrawerRootContext } from './context'
 
 const {
-  overlayRef,
+  drawerOverlayRef,
+  isDragging,
 } = injectDrawerRootContext()
-
-defineExpose({
-  el: overlayRef,
-})
 </script>
 
 <template>
-  <DialogOverlay />
+  <DialogOverlay
+    ref="drawerOverlayRef"
+    data-vaul-overlay
+  />
 
   <!-- <DialogOverlay
     ref="overlayRef"

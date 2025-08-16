@@ -5,7 +5,10 @@ import { DialogRoot } from 'reka-ui'
 import { computed } from 'vue'
 import { useDrawer } from './composables/useDrawer'
 import { provideDrawerRootContext } from './context'
-import './style.css'
+
+import './css/drawer.css'
+import './css/overlay.css'
+import './css/style.css'
 
 // import type { DrawerRootEmits, DrawerRootProps } from './controls'
 // import { useVModel } from '@vueuse/core'
