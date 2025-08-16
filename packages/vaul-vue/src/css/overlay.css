@@ -4,10 +4,10 @@
   opacity: 0;
 }
 
-body:has([data-vaul-drawer][data-vaul-drawer-dragging="false"]) {
+body:has([data-vaul-drawer][data-vaul-drawer-dragging="false"]) [data-vaul-overlay] {
   transition-property: opacity;
 }
 
-body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) {
+body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) [data-vaul-overlay] {
   transition-property: none;
 }
