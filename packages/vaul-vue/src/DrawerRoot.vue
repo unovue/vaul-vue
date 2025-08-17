@@ -42,6 +42,8 @@ const props = withDefaults(defineProps<DrawerRootProps>(), {
   side: 'bottom',
   scaleBackground: true,
   setBackgroundColorOnScale: true,
+  defaultOpen: false,
+  modal: true,
 })
 
 const emit = defineEmits<DrawerRootEmits>()
@@ -116,6 +118,8 @@ const modelValueOpen = defineModel('open', {
   required: false,
 })
 
+modelValueOpen.value = props.defaultOpen
+
 const open = computed({
   get() {
     return drawerContext.open.value
@@ -128,16 +132,14 @@ const open = computed({
 
 provideDrawerRootContext({
   ...drawerContext,
-  // ...snapPointsContext,
 })
-
-// const forwardedPropsEmits = useForwardPropsEmits(props, emit)
 </script>
 
 <template>
   <DialogRoot
     v-model:open="open"
-    :default-open="open"
+    :default-open="props.defaultOpen"
+    :modal="modal"
   >
     <slot :open="open" />
   </DialogRoot>

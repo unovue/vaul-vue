@@ -12,6 +12,8 @@ export interface DrawerRootProps {
   side?: DrawerSide
   scaleBackground?: boolean
   setBackgroundColorOnScale?: boolean
+  defaultOpen?: boolean
+  modal?: boolean
 }
 
 export interface DrawerRootEmits {

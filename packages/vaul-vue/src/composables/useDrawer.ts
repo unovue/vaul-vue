@@ -2,7 +2,7 @@ import type { ComponentPublicInstance, EmitFn, MaybeRefOrGetter, StyleValue } fr
 import type { DrawerRootEmits, DrawerRootProps } from '../types'
 
 import { useWindowSize } from '@vueuse/core'
-import { computed, nextTick, ref, shallowRef, watch, watchEffect } from 'vue'
+import { computed, nextTick, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
 import { dampen } from '../utils'
 import { useEl } from './useEl'
 import { useSnapPoints } from './useSnapPoints'
@@ -13,8 +13,8 @@ export type UseDrawerProps = {
 }
 
 export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) {
-  const open = ref(false)
-  const shouldMount = ref(false)
+  const open = ref(toValue(props.defaultOpen) || false)
+  const shouldMount = ref(toValue(props.defaultOpen) || false)
 
   const drawerHandleRef = shallowRef<ComponentPublicInstance>()
   const drawerContentRef = shallowRef<ComponentPublicInstance>()
