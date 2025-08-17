@@ -1,6 +1,7 @@
 import DrawerContent from './DrawerContent.vue'
 import DrawerHandle from './DrawerHandle.vue'
 import DrawerOverlay from './DrawerOverlay.vue'
+import DrawerPortal from './DrawerPortal.vue'
 import DrawerRoot from './DrawerRoot.vue'
 import DrawerRootNested from './DrawerRootNested.vue'
 
@@ -18,6 +19,7 @@ export {
   DrawerContent,
   DrawerHandle,
   DrawerOverlay,
+  DrawerPortal,
   DrawerRoot,
   DrawerRootNested,
 }
@@ -28,9 +30,6 @@ export {
 
   DialogDescription as DrawerDescription,
   type DialogDescriptionProps as DrawerDescriptionProps,
-
-  DialogPortal as DrawerPortal,
-  type DialogPortalProps as DrawerPortalProps,
 
   DialogTitle as DrawerTitle,
   type DialogTitleProps as DrawerTitleProps,

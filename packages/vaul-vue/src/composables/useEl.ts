@@ -1,5 +1,5 @@
 import type { ComponentPublicInstance, MaybeRefOrGetter } from 'vue'
-import { onUnmounted, ref, shallowRef, toValue, watch } from 'vue'
+import { onUnmounted, ref, shallowRef, toValue, watchEffect } from 'vue'
 
 export function useEl(
   target: MaybeRefOrGetter<ComponentPublicInstance | undefined>,
@@ -18,23 +18,15 @@ export function useEl(
     width.value = target.contentRect.width
   }
 
-  watch(() => toValue(open), (_open) => {
-    if (!open)
+  watchEffect(() => {
+    const instance = toValue(target)
+    if (!instance)
       return
 
-    const el = toValue(target)?.$el
+    element.value = instance.$el
 
-    if (!(el instanceof HTMLElement))
-      return
-
-    element.value = el
-    observer.value = new ResizeObserver(onResize)
-    observer.value.observe(el)
-
-    width.value = element.value.clientWidth
-    height.value = element.value.clientHeight
-  }, {
-    flush: 'post',
+    width.value = element.value?.clientWidth || 0
+    height.value = element.value?.clientHeight || 0
   })
 
   onUnmounted(() => {

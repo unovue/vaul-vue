@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter } from 'vue'
-import { computed, onMounted, ref, toValue } from 'vue'
+import { computed, ref, toValue } from 'vue'
 import { getClosestNumber, range } from '../utils'
 
 export interface useSnapPointsProps {

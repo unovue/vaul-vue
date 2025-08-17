@@ -121,20 +121,8 @@ const open = computed({
     return drawerContext.open.value
   },
   set(_open: boolean) {
-    if (_open) {
-      drawerContext
-        .present()
-        .then(() => {
-          modelValueOpen.value = _open
-        })
-    }
-    else {
-      drawerContext
-        .dismiss()
-        .then(() => {
-          modelValueOpen.value = _open
-        })
-    }
+    drawerContext.open.value = _open
+    modelValueOpen.value = _open
   },
 })
 

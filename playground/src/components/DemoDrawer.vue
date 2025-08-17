@@ -1,25 +1,15 @@
 <script setup lang="ts">
-import type { DrawerSide } from 'vaul-vue'
 import {
   DrawerContent,
   DrawerHandle,
   DrawerOverlay,
   DrawerPortal,
   DrawerRoot,
-
-  DrawerTitle,
   DrawerTrigger,
 } from 'vaul-vue'
-import { nextTick, ref } from 'vue'
-
-const sides = ['left', 'top', 'right', 'bottom'] satisfies DrawerSide[]
+import { ref } from 'vue'
 
 const snapPoints = ref([0.5, 0.8])
-
-const i = 2
-
-const side = ref(sides[i])
-const sideIndex = ref(i)
 </script>
 
 <template>

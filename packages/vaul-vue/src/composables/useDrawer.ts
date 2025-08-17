@@ -2,7 +2,7 @@ import type { ComponentPublicInstance, EmitFn, MaybeRefOrGetter, StyleValue } fr
 import type { DrawerRootEmits, DrawerRootProps } from '../types'
 
 import { useWindowSize } from '@vueuse/core'
-import { computed, nextTick, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, ref, shallowRef, watch, watchEffect } from 'vue'
 import { dampen } from '../utils'
 import { useEl } from './useEl'
 import { useSnapPoints } from './useSnapPoints'
@@ -14,6 +14,7 @@ export type UseDrawerProps = {
 
 export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) {
   const open = ref(false)
+  const shouldMount = ref(false)
 
   const drawerHandleRef = shallowRef<ComponentPublicInstance>()
   const drawerContentRef = shallowRef<ComponentPublicInstance>()
@@ -34,7 +35,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     height: contentHeight,
     width: contentWidth,
     element: contentElement,
-  } = useEl(drawerContentRef, open)
+  } = useEl(drawerContentRef, shouldMount)
 
   const {
     width: windowWidth,
@@ -52,7 +53,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   const windowSize = computed(() => isVertical.value ? windowHeight.value : windowWidth.value)
   const contentSize = computed(() => isVertical.value ? contentHeight.value : contentWidth.value)
 
-  const { addStack, popStack, updateDepths } = useStacks(drawerOverlayRef, open, isDragging, windowSize, sideOffsetModifier)
+  const { addStack, popStack, updateDepths } = useStacks(drawerOverlayRef, shouldMount, isDragging, windowSize, sideOffsetModifier)
 
   const { snapTo, closestSnapPointIndex, closestSnapPoint, activeSnapPointOffset, isSnappedToLastPoint, shouldDismiss } = useSnapPoints({
     snapPoints: props.snapPoints,
@@ -70,9 +71,8 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   const dismiss = async () => {
     return new Promise<void>((resolve) => {
       contentElement.value?.addEventListener('transitionend', () => {
-        open.value = false
+        shouldMount.value = false
         emit('dismiss')
-
         resolve()
       }, { once: true })
 
@@ -82,9 +82,9 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   }
 
   const present = async () => {
-    open.value = true
-
+    shouldMount.value = true
     offsetInitial.value = windowSize.value * sideOffsetModifier.value
+
     await nextTick()
 
     return new Promise<void>((resolve) => {
@@ -154,6 +154,15 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     updateDepths(offset.value)
   })
 
+  watchEffect(() => {
+    if (open.value) {
+      present()
+    }
+    else {
+      dismiss()
+    }
+  })
+
   return {
     onDragStart,
     onDrag,
@@ -167,5 +176,6 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     isDragging,
     initialContainerStyle,
     side,
+    shouldMount,
   }
 }

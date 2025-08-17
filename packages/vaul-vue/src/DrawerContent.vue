@@ -78,6 +78,7 @@ const { drawerContentRef, onDrag, onDragEnd, onDragStart, isDragging, side, init
     data-vaul-drawer
     :data-vaul-drawer-dragging="isDragging"
     :data-vaul-drawer-side="side"
+    force-mount
     @pointerdown="onDragStart"
     @pointerup="onDragEnd"
     @pointermove="onDrag"

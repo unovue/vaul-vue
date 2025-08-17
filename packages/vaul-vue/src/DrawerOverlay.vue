@@ -12,6 +12,7 @@ const {
   <DialogOverlay
     ref="drawerOverlayRef"
     data-vaul-overlay
+    force-mount
   />
 
   <!-- <DialogOverlay
