@@ -2,10 +2,11 @@ import type { ComponentPublicInstance, EmitFn, MaybeRefOrGetter, StyleValue } fr
 import type { DrawerRootEmits, DrawerRootProps } from '../types'
 
 import { useWindowSize } from '@vueuse/core'
-import { computed, nextTick, onMounted, ref, shallowRef, toValue, watch } from 'vue'
-import { dampen, range } from '../utils'
+import { computed, nextTick, ref, shallowRef, watch } from 'vue'
+import { dampen } from '../utils'
 import { useEl } from './useEl'
 import { useSnapPoints } from './useSnapPoints'
+import { useStacks } from './useStacks'
 
 export type UseDrawerProps = {
   [K in keyof DrawerRootProps]-?: MaybeRefOrGetter<NonNullable<DrawerRootProps[K]>>
@@ -17,7 +18,6 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   const drawerHandleRef = shallowRef<ComponentPublicInstance>()
   const drawerContentRef = shallowRef<ComponentPublicInstance>()
   const drawerOverlayRef = shallowRef<ComponentPublicInstance>()
-  const drawerWrapperRef = shallowRef<HTMLElement>()
 
   const pointerStart = ref(0)
 
@@ -37,10 +37,6 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   } = useEl(drawerContentRef, open)
 
   const {
-    element: overlayElement,
-  } = useEl(drawerOverlayRef, open)
-
-  const {
     width: windowWidth,
     height: windowHeight,
   } = useWindowSize()
@@ -51,10 +47,12 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   // when side is set to right. we snap drawer to the left side of the screen
   // to move it out of screen to right, we have to add windowWidth and should be positive
   // positive translateY means it goes down, position translateX means it goes right
-  const sideInitialOffsetModifier = computed(() => side.value === 'right' || side.value === 'bottom' ? 1 : -1)
+  const sideOffsetModifier = computed(() => side.value === 'right' || side.value === 'bottom' ? 1 : -1)
 
   const windowSize = computed(() => isVertical.value ? windowHeight.value : windowWidth.value)
   const contentSize = computed(() => isVertical.value ? contentHeight.value : contentWidth.value)
+
+  const { addStack, popStack, updateDepths } = useStacks(drawerOverlayRef, open, isDragging, windowSize, sideOffsetModifier)
 
   const { snapTo, closestSnapPointIndex, closestSnapPoint, activeSnapPointOffset, isSnappedToLastPoint, shouldDismiss } = useSnapPoints({
     snapPoints: props.snapPoints,
@@ -65,35 +63,28 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
 
   const initialContainerStyle = computed(() => {
     return {
-      transform: isVertical.value ? `translateY(${offsetInitial.value}px)` : `translateX(${offsetInitial.value}px)`,
+      translate: isVertical.value ? `0px ${offsetInitial.value}px` : `${offsetInitial.value}px 0px`,
     } satisfies StyleValue
   })
 
   const dismiss = async () => {
     return new Promise<void>((resolve) => {
       contentElement.value?.addEventListener('transitionend', () => {
-        if (props.setBackgroundColorOnScale) {
-          document.body.style.backgroundColor = ''
-        }
-
         open.value = false
+        emit('dismiss')
 
         resolve()
-        emit('dismiss')
       }, { once: true })
 
-      offsetInitial.value = windowSize.value * sideInitialOffsetModifier.value
+      popStack()
+      offsetInitial.value = windowSize.value * sideOffsetModifier.value
     })
   }
 
   const present = async () => {
     open.value = true
 
-    if (props.setBackgroundColorOnScale) {
-      document.body.style.backgroundColor = 'black'
-    }
-
-    offsetInitial.value = windowSize.value * sideInitialOffsetModifier.value
+    offsetInitial.value = windowSize.value * sideOffsetModifier.value
     await nextTick()
 
     return new Promise<void>((resolve) => {
@@ -101,7 +92,8 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
         resolve()
       }, { once: true })
 
-      offsetInitial.value = snapTo(0)! * sideInitialOffsetModifier.value
+      addStack(contentElement.value!)
+      offsetInitial.value = snapTo(0)! * sideOffsetModifier.value
     })
   }
 
@@ -115,18 +107,17 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
       return
 
     const clientPosition = isVertical.value ? event.clientY : event.clientX
-
     let dragDistance = pointerStart.value - clientPosition
 
     if (isSnappedToLastPoint.value) {
-      const draggingInDirectionDrawerWantsToGo = dragDistance * sideInitialOffsetModifier.value > 0
+      const draggingInDirectionDrawerWantsToGo = dragDistance * sideOffsetModifier.value > 0
 
       if (draggingInDirectionDrawerWantsToGo) {
-        dragDistance = dampen(Math.abs(dragDistance)) * sideInitialOffsetModifier.value
+        dragDistance = dampen(Math.abs(dragDistance)) * sideOffsetModifier.value
       }
     }
 
-    offset.value = activeSnapPointOffset.value * sideInitialOffsetModifier.value + -dragDistance
+    offset.value = activeSnapPointOffset.value * sideOffsetModifier.value + -dragDistance
     emit('drag', offset.value)
   }
 
@@ -138,67 +129,29 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
       return
     }
 
-    const result = snapTo(closestSnapPointIndex.value)! * sideInitialOffsetModifier.value
+    const result = snapTo(closestSnapPointIndex.value)! * sideOffsetModifier.value
     emit('snap', closestSnapPoint.value)
 
     offset.value = result
     offsetInitial.value = result
   }
 
-  const updateBackground = (_offset: number) => {
-    if (!toValue(props.scaleBackground))
-      return
-
-    if (!drawerWrapperRef.value) {
-      console.warn('Wrapper element is not found even though scaleBackground is set to true.')
-      return
-    }
-
-    const off = windowSize.value - Math.abs(_offset)
-
-    const depth = range(0, windowSize.value, 0, 14, off)
-    const scale = range(0, windowSize.value, 1, 0.95, off)
-    const borderRadius = range(0, windowSize.value, 0, 14, off)
-
-    let cssText = `
-      overflow: hidden;
-      transform-origin: center top;
-      transform: scale(${scale}) translate3d(0, calc(env(safe-area-inset-top) + ${depth}px), 0);
-      border-radius: ${borderRadius.toFixed(0)}px;
-    `
-
-    if (!isDragging.value) {
-      cssText += `transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), border-radius 0.5s cubic-bezier(0.32, 0.72, 0, 1);`
-    }
-
-    drawerWrapperRef.value
-      .style
-      .cssText = cssText
-  }
-
-  const updateOverlay = (_offset: number) => {
-    if (overlayElement.value) {
-      const off = windowSize.value - Math.abs(_offset)
-      overlayElement.value.style.opacity = range(0, windowSize.value, 0, 1, off).toString()
-    }
-  }
-
-  onMounted(() => {
-    drawerWrapperRef.value = document.querySelector('[data-vaul-drawer-wrapper]') as HTMLElement | undefined
-  })
-
   watch(offsetInitial, () => {
-    updateOverlay(offsetInitial.value)
-    updateBackground(offsetInitial.value)
+    if (!contentElement.value)
+      return
+
+    updateDepths(offsetInitial.value)
   })
 
   watch(offset, () => {
-    if (contentElement.value) {
-      contentElement.value.style.transform = isVertical.value ? `translateY(${offset.value}px)` : `translateX(${offset.value}px)`
-    }
+    if (!contentElement.value)
+      return
 
-    updateOverlay(offset.value)
-    updateBackground(offset.value)
+    contentElement.value.style.translate = isVertical.value
+      ? `0px ${offset.value}px`
+      : `${offset.value}px 0px`
+
+    updateDepths(offset.value)
   })
 
   return {

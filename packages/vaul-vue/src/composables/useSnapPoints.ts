@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter } from 'vue'
-import { computed, ref, toValue } from 'vue'
+import { computed, onMounted, ref, toValue } from 'vue'
 import { getClosestNumber, range } from '../utils'
 
 export interface useSnapPointsProps {
@@ -29,7 +29,7 @@ export function useSnapPoints({
   })
 
   const closestSnapPoint = computed(() => {
-    const _p = toValue(snapPoints)
+    const _p = toValue(points)
 
     if (_p.length <= 1)
       return _p[0]
@@ -50,12 +50,18 @@ export function useSnapPoints({
     return wSize - (toValue(windowSize) * activeSnapPoint.value)
   })
 
-  const isSnappedToLastPoint = computed(() => activeSnapPoint.value === points.value[points.value.length - 1])
+  const isSnappedToLastPoint = computed(() => {
+    if (points.value.length <= 1) {
+      return true
+    }
+
+    return activeSnapPoint.value === points.value[points.value.length - 1]
+  })
 
   const shouldDismiss = computed(() => {
     const div = 2
 
-    const smallestPoint = toValue(snapPoints)[0] / div
+    const smallestPoint = points.value[0] / div
     const drawerVisible = toValue(windowSize) - Math.abs(toValue(offset))
 
     return drawerVisible < toValue(windowSize) * smallestPoint

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DrawerRootEmits, DrawerRootProps } from './types'
 
-import { DialogRoot } from 'reka-ui'
+import { DialogRoot, useForwardPropsEmits } from 'reka-ui'
 import { computed } from 'vue'
 import { useDrawer } from './composables/useDrawer'
 import { provideDrawerRootContext } from './context'
@@ -142,6 +142,8 @@ provideDrawerRootContext({
   ...drawerContext,
   // ...snapPointsContext,
 })
+
+// const forwardedPropsEmits = useForwardPropsEmits(props, emit)
 </script>
 
 <template>

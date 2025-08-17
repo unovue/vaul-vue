@@ -23,24 +23,43 @@ const sideIndex = ref(i)
 </script>
 
 <template>
-  <DrawerRoot
-    :snap-points="snapPoints" side="left" @snap="(s) => {
-      console.log('on snap', s)
-    }"
-    @drag="() => {
-      console.log('drag')
-    }"
-  >
+  <DrawerRoot side="left">
     <DrawerTrigger>
-      Drawer Left
+      Open sheet 1
     </DrawerTrigger>
 
     <DrawerPortal>
       <DrawerOverlay class="fixed inset-0 bg-black/75" />
 
-      <DrawerContent class="bg-gray-300 flex flex-col">
-        <div class="flex flex-col gap-4 p-4 h-96">
+      <DrawerContent class="w-1/2">
+        <div class="bg-red-400 h-full p-4 w-full">
           <DrawerHandle />
+
+          <DrawerRoot side="bottom">
+            <DrawerTrigger>
+              Open sheet 2
+            </DrawerTrigger>
+
+            <DrawerPortal>
+              <DrawerContent class="h-1/2">
+                <div class="bg-blue-400 p-4 h-full">
+                  <p>nested draver content here</p>
+
+                  <DrawerRoot>
+                    <DrawerTrigger>Open sheet 3</DrawerTrigger>
+
+                    <DrawerPortal>
+                      <DrawerContent class="h-1/2">
+                        <div class="bg-purple-400 p-4 h-full">
+                          <p>sheet 3 content</p>
+                        </div>
+                      </DrawerContent>
+                    </DrawerPortal>
+                  </DrawerRoot>
+                </div>
+              </DrawerContent>
+            </DrawerPortal>
+          </DrawerRoot>
         </div>
       </DrawerContent>
     </DrawerPortal>

@@ -4,10 +4,10 @@
   opacity: 0;
 }
 
-body:has([data-vaul-drawer][data-vaul-drawer-dragging="false"]) [data-vaul-overlay] {
-  transition-property: opacity;
+body:has([data-vaul-drawer][data-vaul-drawer-dragging="false"]) :is([data-vaul-overlay], [data-vaul-drawer]) {
+  transition-property: opacity, translate, transform;
 }
 
-body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) [data-vaul-overlay] {
+body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) :is([data-vaul-overlay], [data-vaul-drawer]) {
   transition-property: none;
 }

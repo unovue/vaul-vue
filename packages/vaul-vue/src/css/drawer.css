@@ -1,5 +1,4 @@
 [data-vaul-drawer] {
-  transition-property: transform, border-radius;
   transition-duration: var(--vaul-duration);
   transition-timing-function: var(--vaul-easing);
 
@@ -7,14 +6,16 @@
   position: fixed;
 }
 
-[data-vaul-drawer][data-vaul-drawer-dragging="true"] {
-  transition-property: none;
-  pointer-events: none;
-}
-
-[data-vaul-drawer][data-vaul-drawer-dragging="false"] {
+/* we have this is overlay.css */
+/* body:has([data-vaul-drawer][data-vaul-drawer-dragging="false"]) [data-vaul-drawer] {
   transition-property: transform;
 }
+
+body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) [data-vaul-drawer] {
+  transition-property: none;
+  pointer-events: none;
+  user-select: none;
+} */
 
 [data-vaul-drawer][data-vaul-drawer-side="left"] {
   right: 0;
