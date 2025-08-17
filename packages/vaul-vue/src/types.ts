@@ -13,3 +13,9 @@ export interface DrawerRootProps {
   scaleBackground?: boolean
   setBackgroundColorOnScale?: boolean
 }
+
+export interface DrawerRootEmits {
+  drag: [offset: number]
+  snap: [snapPoint: number]
+  dismiss: []
+}

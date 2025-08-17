@@ -1,5 +1,6 @@
-import type { ComponentPublicInstance, MaybeRefOrGetter, StyleValue } from 'vue'
-import type { DrawerRootProps } from '../types'
+import type { ComponentPublicInstance, EmitFn, MaybeRefOrGetter, StyleValue } from 'vue'
+import type { DrawerRootEmits, DrawerRootProps } from '../types'
+
 import { useWindowSize } from '@vueuse/core'
 import { computed, nextTick, onMounted, ref, shallowRef, toValue, watch } from 'vue'
 import { dampen, range } from '../utils'
@@ -10,7 +11,7 @@ export type UseDrawerProps = {
   [K in keyof DrawerRootProps]-?: MaybeRefOrGetter<NonNullable<DrawerRootProps[K]>>
 }
 
-export function useDrawer(props: UseDrawerProps) {
+export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) {
   const open = ref(false)
 
   const drawerHandleRef = shallowRef<ComponentPublicInstance>()
@@ -55,7 +56,7 @@ export function useDrawer(props: UseDrawerProps) {
   const windowSize = computed(() => isVertical.value ? windowHeight.value : windowWidth.value)
   const contentSize = computed(() => isVertical.value ? contentHeight.value : contentWidth.value)
 
-  const { snapTo, closestSnapPointIndex, activeSnapPointOffset, isSnappedToLastPoint, shouldDismiss } = useSnapPoints({
+  const { snapTo, closestSnapPointIndex, closestSnapPoint, activeSnapPointOffset, isSnappedToLastPoint, shouldDismiss } = useSnapPoints({
     snapPoints: props.snapPoints,
     contentSize,
     windowSize,
@@ -76,7 +77,9 @@ export function useDrawer(props: UseDrawerProps) {
         }
 
         open.value = false
+
         resolve()
+        emit('dismiss')
       }, { once: true })
 
       offsetInitial.value = windowSize.value * sideInitialOffsetModifier.value
@@ -124,6 +127,7 @@ export function useDrawer(props: UseDrawerProps) {
     }
 
     offset.value = activeSnapPointOffset.value * sideInitialOffsetModifier.value + -dragDistance
+    emit('drag', offset.value)
   }
 
   const onDragEnd = () => {
@@ -135,6 +139,7 @@ export function useDrawer(props: UseDrawerProps) {
     }
 
     const result = snapTo(closestSnapPointIndex.value)! * sideInitialOffsetModifier.value
+    emit('snap', closestSnapPoint.value)
 
     offset.value = result
     offsetInitial.value = result

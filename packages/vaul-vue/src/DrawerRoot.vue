@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DrawerRootProps } from './types'
+import type { DrawerRootEmits, DrawerRootProps } from './types'
 
 import { DialogRoot } from 'reka-ui'
 import { computed } from 'vue'
@@ -43,6 +43,8 @@ const props = withDefaults(defineProps<DrawerRootProps>(), {
   scaleBackground: true,
   setBackgroundColorOnScale: true,
 })
+
+const emit = defineEmits<DrawerRootEmits>()
 
 // const emits = defineEmits<DrawerRootEmits>()
 
@@ -107,7 +109,7 @@ const props = withDefaults(defineProps<DrawerRootProps>(), {
 //   open,
 // })
 
-const drawerContext = useDrawer(props)
+const drawerContext = useDrawer(props, emit)
 
 const modelValueOpen = defineModel('open', {
   default: false,

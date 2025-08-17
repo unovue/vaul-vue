@@ -14,7 +14,7 @@ import { nextTick, ref } from 'vue'
 
 const sides = ['left', 'top', 'right', 'bottom'] satisfies DrawerSide[]
 
-const snapPoints = ref([0.2, 0.5, 0.9])
+const snapPoints = ref([0.5, 0.8])
 
 const i = 2
 
@@ -23,7 +23,14 @@ const sideIndex = ref(i)
 </script>
 
 <template>
-  <DrawerRoot :snap-points="snapPoints" side="left">
+  <DrawerRoot
+    :snap-points="snapPoints" side="left" @snap="(s) => {
+      console.log('on snap', s)
+    }"
+    @drag="() => {
+      console.log('drag')
+    }"
+  >
     <DrawerTrigger>
       Drawer Left
     </DrawerTrigger>
