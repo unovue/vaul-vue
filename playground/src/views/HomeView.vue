@@ -19,8 +19,8 @@ import DemoDrawer from '@/components/DemoDrawer.vue'
           </h1>
           <h2 class="text-gray-600 text-xl">
             A Vue port of the popular React library created by <a
-              target="_blank"
-              href="https://emilkowal.ski/" class="underline decoration-1 underline-offset-2 decoration-gray-400"
+              target="_blank" href="https://emilkowal.ski/"
+              class="underline decoration-1 underline-offset-2 decoration-gray-400"
             > Emil
               Kowalski </a>
           </h2>
@@ -30,11 +30,19 @@ import DemoDrawer from '@/components/DemoDrawer.vue'
             <button>open sheet 1</button>
 
             <template #content>
+              <ol class="p-4 pt-0 overflow-y-auto">
+                <li v-for="i in 50" :key="i">
+                  <p class="font-medium text-center">
+                    {{ i }}
+                  </p>
+                </li>
+              </ol>
+
               <DemoDrawer>
                 <button>open sheet 2</button>
 
                 <template #content>
-                  sheet 2 content
+                  <p>sheet 2</p>
                 </template>
               </DemoDrawer>
             </template>

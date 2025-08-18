@@ -120,12 +120,24 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     })
   }
 
+  let scrollable: HTMLElement | null = null
+
   const onDragStart = (event: PointerEvent) => {
     isDragging.value = true
     pointerStart.value = isVertical.value ? event.clientY : event.clientX
 
-    const target = event.target as HTMLElement
-    target.setPointerCapture(event.pointerId)
+    let element = event.target as HTMLElement | null
+    while (element) {
+      if (element.scrollHeight > element.clientHeight) {
+        scrollable = element
+        break
+      }
+
+      element = element.parentElement
+    }
+
+    let currentTarget = event.currentTarget as HTMLElement | null
+    currentTarget?.setPointerCapture(event.pointerId)
   }
 
   const onDrag = (event: PointerEvent) => {
@@ -135,19 +147,30 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     const clientPosition = isVertical.value ? event.clientY : event.clientX
     let dragDistance = pointerStart.value - clientPosition
 
-    if (isSnappedToLastPoint.value) {
-      const draggingInDirectionDrawerWantsToGo = dragDistance * sideOffsetModifier.value > 0
+    const draggingInDirectionDrawerWantsToGo = dragDistance * sideOffsetModifier.value > 0
 
-      if (draggingInDirectionDrawerWantsToGo) {
-        dragDistance = dampen(Math.abs(dragDistance)) * sideOffsetModifier.value
+    if (isSnappedToLastPoint.value && draggingInDirectionDrawerWantsToGo) {
+      dragDistance = dampen(Math.abs(dragDistance)) * sideOffsetModifier.value
+    }
+
+    let shouldDrag = true
+    if (scrollable) {
+      shouldDrag = false
+
+      if (scrollable.scrollTop <= 0 && !draggingInDirectionDrawerWantsToGo) {
+        shouldDrag = true
       }
     }
+
+    if (!shouldDrag)
+      return
 
     offset.value = activeSnapPointOffset.value * sideOffsetModifier.value + -dragDistance
     emit('drag', offset.value)
   }
 
-  const onDragEnd = () => {
+  const onDragEnd = (event: PointerEvent) => {
+    console.log('drag end', event.target)
     if (!isDragging.value)
       return
 
