@@ -65,6 +65,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   const initialContainerStyle = computed(() => {
     return {
       translate: isVertical.value ? `0px ${offsetInitial.value}px` : `${offsetInitial.value}px 0px`,
+      transitionProperty: !isDragging.value ? 'translate, transform' : 'none',
     } satisfies StyleValue
   })
 
