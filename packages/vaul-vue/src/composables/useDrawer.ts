@@ -2,7 +2,7 @@ import type { ComponentPublicInstance, EmitFn, MaybeRefOrGetter, StyleValue } fr
 import type { DrawerRootEmits, DrawerRootProps } from '../types'
 
 import { useWindowSize } from '@vueuse/core'
-import { computed, nextTick, onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
+import { computed, nextTick, ref, shallowRef, toValue, watch } from 'vue'
 import { dampen } from '../utils'
 import { useEl } from './useEl'
 import { useSnapPoints } from './useSnapPoints'
@@ -53,7 +53,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   const windowSize = computed(() => isVertical.value ? windowHeight.value : windowWidth.value)
   const contentSize = computed(() => isVertical.value ? contentHeight.value : contentWidth.value)
 
-  const { addStack, popStack, updateDepths } = useStacks(drawerOverlayRef, shouldMount, isDragging, windowSize, sideOffsetModifier)
+  const { addStack, popStack, updateDepths } = useStacks(drawerOverlayRef, shouldMount, isDragging, windowSize)
 
   const { snapTo, closestSnapPointIndex, closestSnapPoint, activeSnapPointOffset, isSnappedToLastPoint, shouldDismiss } = useSnapPoints({
     snapPoints: props.snapPoints,
@@ -67,6 +67,14 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
       translate: isVertical.value ? `0px ${offsetInitial.value}px` : `${offsetInitial.value}px 0px`,
     } satisfies StyleValue
   })
+
+  // this causes watchers to trigger, but we don't actually want that
+  const reset = () => {
+    pointerStart.value = 0
+    offset.value = 0
+    offsetInitial.value = 0
+    isDragging.value = false
+  }
 
   const dismiss = async () => {
     open.value = false
@@ -173,14 +181,6 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
 
     updateDepths(offset.value)
   })
-
-  // this causes watchers to trigger, but we don't actually want that
-  const reset = () => {
-    pointerStart.value = 0
-    offset.value = 0
-    offsetInitial.value = 0
-    isDragging.value = false
-  }
 
   return {
     onDragStart,

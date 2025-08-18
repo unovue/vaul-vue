@@ -1,6 +1,5 @@
 import type { ComponentPublicInstance, MaybeRefOrGetter } from 'vue'
 import type { DrawerSide } from '../types'
-import { useId } from 'reka-ui'
 import { onMounted, shallowRef, toValue } from 'vue'
 import { range } from '../utils'
 import { useEl } from './useEl'
@@ -12,22 +11,10 @@ export function useStacks(
   open: MaybeRefOrGetter<boolean>,
   isDragging: MaybeRefOrGetter<boolean>,
   windowSize: MaybeRefOrGetter<number>,
-  sideOffsetModifier: MaybeRefOrGetter<number>,
 ) {
-  const id = useId()
   const drawerWrapperRef = shallowRef<HTMLElement>()
 
   const { element: overlayElement } = useEl(overlayRef, open)
-
-  const addStack = (element: HTMLElement) => {
-    drawerStack.value.push(element)
-    updateDrawerOffsets()
-  }
-
-  const popStack = () => {
-    drawerStack.value.pop()
-    updateDrawerOffsets()
-  }
 
   const updateDrawerOffsets = () => {
     const drawerCounts = {
@@ -61,8 +48,10 @@ export function useStacks(
       if (!side)
         return
 
-      const count = ((drawerCounts[side] - offsets[side]) - 1) * 20 * (side === 'right' || side === 'bottom' ? -1 : 1)
-      element.style.transform = `translate3d(0px, ${count}px, 0px)`
+      const diff = drawerCounts[side] - offsets[side] - 1
+      const yOff = diff * 20 * (side === 'right' || side === 'bottom' ? -1 : 1)
+
+      element.style.transform = `scale(${1 - (diff * 0.05)}) translate3d(0px, ${yOff}px, 0px)`
 
       offsets[side] += 1
     }
@@ -100,6 +89,16 @@ export function useStacks(
         border-radius: ${borderRadius.toFixed(0)}px;
       `
     }
+  }
+
+  const addStack = (element: HTMLElement) => {
+    drawerStack.value.push(element)
+    updateDrawerOffsets()
+  }
+
+  const popStack = () => {
+    drawerStack.value.pop()
+    updateDrawerOffsets()
   }
 
   onMounted(() => {
