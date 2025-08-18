@@ -100,6 +100,9 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   const onDragStart = (event: PointerEvent) => {
     isDragging.value = true
     pointerStart.value = isVertical.value ? event.clientY : event.clientX
+
+    const target = event.target as HTMLElement
+    target.setPointerCapture(event.pointerId)
   }
 
   const onDrag = (event: PointerEvent) => {

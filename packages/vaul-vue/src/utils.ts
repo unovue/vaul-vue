@@ -25,7 +25,7 @@ export function getClosestNumber(numbers: number[], x: number) {
 }
 
 export function dampen(value: number) {
-  return (Math.log(value + 1) - 2)
+  return 8 * (Math.log(value + 1) - 2)
 }
 
 export const lerp = (x: number, y: number, a: number) => x * (1 - a) + y * a
