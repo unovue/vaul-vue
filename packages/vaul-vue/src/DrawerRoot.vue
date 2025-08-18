@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DrawerRootEmits, DrawerRootProps } from './types'
 
-import { DialogRoot, useForwardPropsEmits } from 'reka-ui'
+import { DialogRoot } from 'reka-ui'
 import { computed } from 'vue'
 import { useDrawer } from './composables/useDrawer'
 import { provideDrawerRootContext } from './context'
@@ -126,8 +126,13 @@ const open = computed({
     return drawerContext.open.value
   },
   set(_open: boolean) {
-    drawerContext.open.value = _open
     modelValueOpen.value = _open
+
+    if (_open) {
+      drawerContext.present()
+    } else {
+      drawerContext.dismiss()
+    }
   },
 })
 

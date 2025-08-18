@@ -26,7 +26,20 @@ import DemoDrawer from '@/components/DemoDrawer.vue'
           </h2>
         </div>
         <div class="flex gap-4 justify-center mt-6">
-          <DemoDrawer />
+          <DemoDrawer>
+            <button>open sheet 1</button>
+
+            <template #content>
+              <DemoDrawer>
+                <button>open sheet 2</button>
+
+                <template #content>
+                  sheet 2 content
+                </template>
+              </DemoDrawer>
+            </template>
+          </DemoDrawer>
+
           <a
             href="https://github.com/unovue/vaul-vue" target="_blank"
             class="font-semibold text-sm px-4 py-2.5 hover:bg-gray-100 rounded-full"

@@ -2,7 +2,7 @@ import type { ComponentPublicInstance, EmitFn, MaybeRefOrGetter, StyleValue } fr
 import type { DrawerRootEmits, DrawerRootProps } from '../types'
 
 import { useWindowSize } from '@vueuse/core'
-import { computed, nextTick, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
+import { computed, nextTick, onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
 import { dampen } from '../utils'
 import { useEl } from './useEl'
 import { useSnapPoints } from './useSnapPoints'
@@ -69,12 +69,20 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   })
 
   const dismiss = async () => {
+    open.value = false
+
     return new Promise<void>((resolve) => {
-      contentElement.value?.addEventListener('transitionend', () => {
-        shouldMount.value = false
-        emit('dismiss')
-        resolve()
-      }, { once: true })
+      contentElement.value?.addEventListener(
+        'transitionend',
+        () => {
+          resolve()
+          emit('dismiss')
+
+          shouldMount.value = false
+          reset()
+        },
+        { once: true },
+      )
 
       popStack()
       offsetInitial.value = windowSize.value * sideOffsetModifier.value
@@ -83,16 +91,22 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
 
   const present = async () => {
     shouldMount.value = true
-    offsetInitial.value = windowSize.value * sideOffsetModifier.value
+    open.value = true
 
+    offsetInitial.value = windowSize.value * sideOffsetModifier.value
     await nextTick()
 
-    return new Promise<void>((resolve) => {
-      contentElement.value?.addEventListener('transitionend', () => {
-        resolve()
-      }, { once: true })
+    if (contentElement.value) {
+      addStack(contentElement.value)
+    }
 
-      addStack(contentElement.value!)
+    return new Promise<void>((resolve) => {
+      contentElement.value?.addEventListener(
+        'transitionend',
+        () => resolve(),
+        { once: true },
+      )
+
       offsetInitial.value = snapTo(0)! * sideOffsetModifier.value
     })
   }
@@ -125,6 +139,9 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   }
 
   const onDragEnd = () => {
+    if (!isDragging.value)
+      return
+
     isDragging.value = false
 
     if (shouldDismiss.value) {
@@ -140,14 +157,14 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   }
 
   watch(offsetInitial, () => {
-    if (!contentElement.value)
+    if (!contentElement.value || offsetInitial.value === 0)
       return
 
     updateDepths(offsetInitial.value)
   })
 
   watch(offset, () => {
-    if (!contentElement.value)
+    if (!contentElement.value || offset.value === 0)
       return
 
     contentElement.value.style.translate = isVertical.value
@@ -157,14 +174,13 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     updateDepths(offset.value)
   })
 
-  watchEffect(() => {
-    if (open.value) {
-      present()
-    }
-    else {
-      dismiss()
-    }
-  })
+  // this causes watchers to trigger, but we don't actually want that
+  const reset = () => {
+    pointerStart.value = 0
+    offset.value = 0
+    offsetInitial.value = 0
+    isDragging.value = false
+  }
 
   return {
     onDragStart,
