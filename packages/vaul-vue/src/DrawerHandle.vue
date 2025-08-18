@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { computed, toValue } from 'vue'
+import { injectDrawerRootContext } from './context'
+
 // import type { DrawerHandleProps } from './controls'
 // import { ref } from 'vue'
 // import { injectDrawerRootContext } from './context'
@@ -96,10 +99,20 @@
 //   if (handleOnly.value)
 //     onDrag(event)
 // }
+
+const { onDrag, onDragEnd, onDragStart, handleOnly } = injectDrawerRootContext()
+
+const eventListeners = computed(() => toValue(handleOnly)
+  ? {
+      onPointerdown: onDragStart,
+      onPointerup: onDragEnd,
+      onPointermove: onDrag,
+    }
+  : {})
 </script>
 
 <template>
-  <div>
+  <div v-bind="eventListeners">
     <!-- ref="handleRef"
     :data-vaul-drawer-visible="open ? 'true' : 'false'"
     data-vaul-handle=""

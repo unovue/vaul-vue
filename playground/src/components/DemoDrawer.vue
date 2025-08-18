@@ -8,12 +8,10 @@ import {
   DrawerTrigger,
 } from 'vaul-vue'
 import { ref } from 'vue'
-
-const snapPoints = ref([0.5, 0.8])
 </script>
 
 <template>
-  <DrawerRoot side="left">
+  <DrawerRoot side="left" handle-only>
     <DrawerTrigger>
       Open sheet 1
     </DrawerTrigger>
@@ -21,10 +19,8 @@ const snapPoints = ref([0.5, 0.8])
     <DrawerPortal>
       <DrawerOverlay class="fixed inset-0 bg-black/75" />
 
-      <DrawerContent class="w-1/2">
-        <div class="bg-red-400 h-full p-4 w-full">
-          <DrawerHandle />
-
+      <DrawerContent class="flex justify-between w-1/2">
+        <div class="flex justify-between bg-neutral-100 rounded-r-lg drop-shadow shadow-black h-full w-full">
           <DrawerRoot side="bottom">
             <DrawerTrigger>
               Open sheet 2
@@ -50,48 +46,10 @@ const snapPoints = ref([0.5, 0.8])
               </DrawerContent>
             </DrawerPortal>
           </DrawerRoot>
-        </div>
-      </DrawerContent>
-    </DrawerPortal>
-  </DrawerRoot>
 
-  <DrawerRoot :snap-points="snapPoints" side="right">
-    <DrawerTrigger>
-      Drawer Right
-    </DrawerTrigger>
-
-    <DrawerPortal>
-      <DrawerContent class="bg-gray-300 flex flex-col">
-        <div class="flex flex-col gap-4 p-4 h-96">
-          <DrawerHandle />
-        </div>
-      </DrawerContent>
-    </DrawerPortal>
-  </DrawerRoot>
-
-  <DrawerRoot :snap-points="snapPoints" side="top">
-    <DrawerTrigger>
-      Drawer Top
-    </DrawerTrigger>
-
-    <DrawerPortal>
-      <DrawerContent class="bg-gray-300 flex flex-col">
-        <div class="flex flex-col gap-4 p-4 h-96">
-          <DrawerHandle />
-        </div>
-      </DrawerContent>
-    </DrawerPortal>
-  </DrawerRoot>
-
-  <DrawerRoot :snap-points="snapPoints" side="bottom">
-    <DrawerTrigger>
-      Drawer Bottom
-    </DrawerTrigger>
-
-    <DrawerPortal>
-      <DrawerContent class="bg-gray-300 flex flex-col">
-        <div class="flex flex-col gap-4 p-4 h-96">
-          <DrawerHandle />
+          <DrawerHandle class="flex items-center h-full p-4">
+            <div class="w-3 h-12 bg-neutral-200 rounded-full" />
+          </DrawerHandle>
         </div>
       </DrawerContent>
     </DrawerPortal>

@@ -177,5 +177,6 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     initialContainerStyle,
     side,
     shouldMount,
+    handleOnly: props.handleOnly,
   }
 }

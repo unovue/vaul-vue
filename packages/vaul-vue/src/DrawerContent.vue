@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { DialogContent } from 'reka-ui'
+import { computed, toValue } from 'vue'
 import { injectDrawerRootContext } from './context'
 // import { computed, ref, watchEffect } from 'vue'
 // import { injectDrawerRootContext } from './context'
@@ -68,7 +69,15 @@ import { injectDrawerRootContext } from './context'
 //   }
 // })
 
-const { drawerContentRef, onDrag, onDragEnd, onDragStart, isDragging, side, initialContainerStyle } = injectDrawerRootContext()
+const { drawerContentRef, onDrag, onDragEnd, onDragStart, isDragging, side, initialContainerStyle, handleOnly } = injectDrawerRootContext()
+
+const eventListeners = computed(() => !toValue(handleOnly)
+  ? {
+      onPointerdown: onDragStart,
+      onPointerup: onDragEnd,
+      onPointermove: onDrag,
+    }
+  : {})
 </script>
 
 <template>
@@ -79,9 +88,7 @@ const { drawerContentRef, onDrag, onDragEnd, onDragStart, isDragging, side, init
     :data-vaul-drawer-dragging="isDragging"
     :data-vaul-drawer-side="side"
     force-mount
-    @pointerdown="onDragStart"
-    @pointerup="onDragEnd"
-    @pointermove="onDrag"
+    v-bind="eventListeners"
   >
     <!-- ref="drawerRef"
     data-vaul-drawer=""

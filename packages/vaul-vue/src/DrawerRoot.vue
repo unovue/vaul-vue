@@ -44,6 +44,7 @@ const props = withDefaults(defineProps<DrawerRootProps>(), {
   setBackgroundColorOnScale: true,
   defaultOpen: false,
   modal: true,
+  handleOnly: false,
 })
 
 const emit = defineEmits<DrawerRootEmits>()
