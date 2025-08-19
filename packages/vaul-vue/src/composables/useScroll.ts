@@ -70,7 +70,10 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
     await nextTick()
     const element = document.querySelector('[data-vaul-scrollable]')  as HTMLElement | null
 
-    scrollableElement.value = element ?? undefined
+    if (element) {
+      scrollableElement.value = element
+      element.style.touchAction = 'none'
+    }
   }, {
     flush: 'post'
   })
