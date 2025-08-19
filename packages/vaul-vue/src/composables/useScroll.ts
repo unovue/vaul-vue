@@ -1,5 +1,6 @@
 import { useFps } from '@vueuse/core'
 import { nextTick, ref, shallowRef, toValue, watch, type MaybeRefOrGetter } from 'vue'
+import type { DrawerSide } from '../types'
 
 const DECAY = 0.95
 const MIN_VELOCITY = 0.0001
@@ -22,8 +23,10 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
     lastTime = performance.now()
   }
 
-  const handleScroll = (event: PointerEvent, draggingInDirectionDrawerWantsToGo: boolean) => {
-    if (scrollableElement.value?.scrollTop === 0 && !draggingInDirectionDrawerWantsToGo)
+  const handleScroll = (event: PointerEvent, draggingInDirectionDrawerWantsToGo: boolean, side: MaybeRefOrGetter<DrawerSide>) => {
+    const dir = toValue(side) === 'bottom' ? !draggingInDirectionDrawerWantsToGo : draggingInDirectionDrawerWantsToGo
+
+    if (scrollableElement.value?.scrollTop === 0 && dir)
       return true
 
     if (!lastEvent.value)

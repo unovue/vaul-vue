@@ -14,7 +14,7 @@ export function useStacks(
 ) {
   const drawerWrapperRef = shallowRef<HTMLElement>()
 
-  const { element: overlayElement } = useEl(overlayRef, open)
+  const { element: overlayElement } = useEl(overlayRef)
 
   const updateDrawerOffsets = () => {
     const drawerCounts = {

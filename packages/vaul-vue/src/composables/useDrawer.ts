@@ -151,7 +151,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
       dragDistance = dampen(Math.abs(dragDistance)) * sideOffsetModifier.value
     }
 
-    const shouldDrag = handleScroll(event, draggingInDirectionDrawerWantsToGo)
+    const shouldDrag = handleScroll(event, draggingInDirectionDrawerWantsToGo, toValue(side))
     if (!shouldDrag)
       return
 

@@ -26,7 +26,7 @@ import DemoDrawer from '@/components/DemoDrawer.vue'
           </h2>
         </div>
         <div class="flex gap-4 justify-center mt-6">
-          <DemoDrawer>
+          <DemoDrawer side="top">
             <button>open sheet 1</button>
 
             <template #content>
