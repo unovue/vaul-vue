@@ -1,7 +1,7 @@
 import { useFps } from '@vueuse/core'
 import { nextTick, ref, shallowRef, toValue, watch, type MaybeRefOrGetter } from 'vue'
 
-const DECAY = 0.99
+const DECAY = 0.95
 const MIN_VELOCITY = 0.0001
 
 export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
@@ -52,7 +52,6 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
     if (Math.abs(velocity) <= MIN_VELOCITY)
       return
 
-    console.log(velocity * (1000 / fps.value))
     scrollableElement.value?.scrollBy({
       top: velocity * (1000 / fps.value),
     })
