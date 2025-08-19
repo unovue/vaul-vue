@@ -7,6 +7,7 @@ import { dampen } from '../utils'
 import { useEl } from './useEl'
 import { useSnapPoints } from './useSnapPoints'
 import { useStacks } from './useStacks'
+import { useScroll } from './useScroll'
 
 export type UseDrawerProps = {
   [K in keyof DrawerRootProps]-?: MaybeRefOrGetter<NonNullable<DrawerRootProps[K]>>
@@ -35,7 +36,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     height: contentHeight,
     width: contentWidth,
     element: contentElement,
-  } = useEl(drawerContentRef, shouldMount)
+  } = useEl(drawerContentRef)
 
   const {
     width: windowWidth,
@@ -54,6 +55,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   const contentSize = computed(() => isVertical.value ? contentHeight.value : contentWidth.value)
 
   const { addStack, popStack, updateDepths } = useStacks(drawerOverlayRef, shouldMount, isDragging, windowSize)
+  const { handleScroll, handleScrollStart, handleScrollEnd, startScroll } = useScroll(shouldMount)
 
   const { snapTo, closestSnapPointIndex, closestSnapPoint, activeSnapPointOffset, isSnappedToLastPoint, shouldDismiss } = useSnapPoints({
     snapPoints: props.snapPoints,
@@ -66,6 +68,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     return {
       translate: isVertical.value ? `0px ${offsetInitial.value}px` : `${offsetInitial.value}px 0px`,
       transitionProperty: !isDragging.value ? 'translate, transform' : 'none',
+      touchAction: 'none',
     } satisfies StyleValue
   })
 
@@ -120,24 +123,15 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     })
   }
 
-  let scrollable: HTMLElement | null = null
-
   const onDragStart = (event: PointerEvent) => {
     isDragging.value = true
+
     pointerStart.value = isVertical.value ? event.clientY : event.clientX
 
-    let element = event.target as HTMLElement | null
-    while (element) {
-      if (element.scrollHeight > element.clientHeight) {
-        scrollable = element
-        break
-      }
-
-      element = element.parentElement
-    }
-
-    let currentTarget = event.currentTarget as HTMLElement | null
+    const currentTarget = event.currentTarget as HTMLElement | null
     currentTarget?.setPointerCapture(event.pointerId)
+
+    handleScrollStart(event)
   }
 
   const onDrag = (event: PointerEvent) => {
@@ -145,7 +139,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
       return
 
     const clientPosition = isVertical.value ? event.clientY : event.clientX
-    let dragDistance = pointerStart.value - clientPosition
+    let dragDistance = pointerStart.value - clientPosition + startScroll.value
 
     const draggingInDirectionDrawerWantsToGo = dragDistance * sideOffsetModifier.value > 0
 
@@ -153,15 +147,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
       dragDistance = dampen(Math.abs(dragDistance)) * sideOffsetModifier.value
     }
 
-    let shouldDrag = true
-    if (scrollable) {
-      shouldDrag = false
-
-      if (scrollable.scrollTop <= 0 && !draggingInDirectionDrawerWantsToGo) {
-        shouldDrag = true
-      }
-    }
-
+    const shouldDrag = handleScroll(event, draggingInDirectionDrawerWantsToGo)
     if (!shouldDrag)
       return
 
@@ -169,8 +155,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     emit('drag', offset.value)
   }
 
-  const onDragEnd = (event: PointerEvent) => {
-    console.log('drag end', event.target)
+  const onDragEnd = () => {
     if (!isDragging.value)
       return
 
@@ -180,6 +165,8 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
       dismiss()
       return
     }
+
+    handleScrollEnd()
 
     const result = snapTo(closestSnapPointIndex.value)! * sideOffsetModifier.value
     emit('snap', closestSnapPoint.value)

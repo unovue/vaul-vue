@@ -30,11 +30,9 @@ import DemoDrawer from '@/components/DemoDrawer.vue'
             <button>open sheet 1</button>
 
             <template #content>
-              <ol class="p-4 pt-0 overflow-y-auto">
+              <ol data-vaul-scrollable class="space-y-2 p-4 pt-0 overflow-y-auto touch-none">
                 <li v-for="i in 50" :key="i">
-                  <p class="font-medium text-center">
-                    {{ i }}
-                  </p>
+                  <div class="size-8 bg-neutral-300" />
                 </li>
               </ol>
 

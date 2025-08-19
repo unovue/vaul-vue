@@ -1,10 +1,23 @@
 [data-vaul-drawer] {
   transition-duration: var(--vaul-duration);
   transition-timing-function: var(--vaul-easing);
-
-  touch-action: none;
   position: fixed;
 }
+
+/* For mouse / trackpad */
+@media (hover: hover) and (pointer: fine) {
+  [data-vaul-drawer] {
+    user-select: none;
+  }
+}
+
+/* For touch devices */
+@media (hover: none) and (pointer: coarse) {
+  [data-vaul-drawer] {
+    user-select: none;
+  }
+}
+
 
 /* we have this is overlay.css */
 /* body:has([data-vaul-drawer][data-vaul-drawer-dragging="false"]) [data-vaul-drawer] {

@@ -75,7 +75,10 @@ const eventListeners = computed(() => !toValue(handleOnly)
   ? {
       onPointerdown: onDragStart,
       onPointerup: onDragEnd,
-      onPointermove: onDrag,
+      onpointermove: onDrag,
+      onPointercancel: () => {
+        console.log('pointercancel')
+      }
     }
   : {})
 </script>
