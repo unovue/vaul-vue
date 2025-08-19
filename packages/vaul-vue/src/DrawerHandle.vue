@@ -112,7 +112,7 @@ const eventListeners = computed(() => toValue(handleOnly)
 </script>
 
 <template>
-  <div v-bind="eventListeners">
+  <div data-vaul-handle v-bind="eventListeners">
     <!-- ref="handleRef"
     :data-vaul-drawer-visible="open ? 'true' : 'false'"
     data-vaul-handle=""

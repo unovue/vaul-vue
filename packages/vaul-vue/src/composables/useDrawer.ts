@@ -131,6 +131,10 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     const currentTarget = event.currentTarget as HTMLElement | null
     currentTarget?.setPointerCapture(event.pointerId)
 
+    if (currentTarget?.hasAttribute('data-vaul-handle')) {
+      return
+    }
+
     handleScrollStart(event)
   }
 
