@@ -56,7 +56,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   const contentSize = computed(() => isVertical.value ? contentHeight.value : contentWidth.value)
 
   const { addStack, popStack, updateDepths, clearCss } = useStacks(drawerOverlayRef, shouldMount, isDragging, windowSize)
-  const { handleScroll, handleScrollStart, handleScrollEnd, startScroll, isScrolling } = useScroll(shouldMount)
+  const { handleScroll, handleScrollStart, handleScrollEnd, startScroll } = useScroll(shouldMount)
 
   const { snapTo, closestSnapPointIndex, closestSnapPoint, activeSnapPointOffset, isSnappedToLastPoint, shouldDismiss } = useSnapPoints({
     snapPoints: props.snapPoints,
@@ -73,7 +73,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
 
       transitionProperty: !isPressing.value ? 'translate, transform' : 'none',
       userSelect: isPressing.value ? 'none' : 'auto',
-      // touchAction: 'none',
+      touchAction: 'none',
     } satisfies StyleValue
   })
 
@@ -140,11 +140,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
       return
 
     handleScrollStart(event)
-
-    if (!isScrolling.value && currentTarget?.hasAttribute('data-vaul-drawer')) {
-      target.setPointerCapture(event.pointerId)
-      isDragging.value = true
-    }
+    target.setPointerCapture(event.pointerId)
   }
 
   const onDrag = (event: PointerEvent) => {

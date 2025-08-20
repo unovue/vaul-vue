@@ -10,24 +10,22 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
   const scrollableElement = shallowRef<HTMLElement>()
   const lastEvent = shallowRef<PointerEvent>()
 
-  const isScrolling = ref(false)
   const startScroll = ref(0)
   const fps = useFps()
 
   let lastTime = performance.now()
   let velocity = 0
 
+  /** Returns if should scroll */
   const handleScrollStart = (event: PointerEvent) => {
     const target = event.target as HTMLElement | null
 
     if (!target || !scrollableElement.value) {
-      isScrolling.value = false
-      return
+      return false
     }
 
     if (!scrollableElement.value.contains(target)) {
-      isScrolling.value = false
-      return
+      return false
     }
 
     startScroll.value = scrollableElement.value.scrollTop || 0
@@ -36,7 +34,7 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
     velocity = 0
     lastTime = performance.now()
 
-    isScrolling.value = true
+    return true
   }
 
   /**
@@ -105,6 +103,5 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
     handleScrollStart,
     startScroll,
     handleScrollEnd,
-    isScrolling,
   }
 }

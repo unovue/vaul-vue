@@ -8,7 +8,7 @@
 :root {
   --vaul-easing: cubic-bezier(0.32, 0.72, 0, 1);
   --vaul-duration: 500ms;
-  --vaul-inset: 10px;
+  --vaul-inset: 0px;
 }
 
 /* :where(:root) {
