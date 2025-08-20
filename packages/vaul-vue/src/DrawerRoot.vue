@@ -2,10 +2,10 @@
 import type { DrawerRootEmits, DrawerRootProps } from './types'
 
 import { DialogRoot } from 'reka-ui'
-import { computed } from 'vue'
+import { watch } from 'vue'
 import { useDrawer } from './composables/useDrawer'
-import { provideDrawerRootContext } from './context'
 
+import { provideDrawerRootContext } from './context'
 import './css/drawer.css'
 import './css/overlay.css'
 import './css/style.css'
@@ -112,8 +112,6 @@ const emit = defineEmits<DrawerRootEmits>()
 //   open,
 // })
 
-const drawerContext = useDrawer(props, emit)
-
 const modelValueOpen = defineModel('open', {
   default: false,
   required: false,
@@ -121,19 +119,17 @@ const modelValueOpen = defineModel('open', {
 
 modelValueOpen.value = props.defaultOpen
 
-const open = computed({
-  get() {
-    return drawerContext.open.value
-  },
-  set(_open: boolean) {
-    modelValueOpen.value = _open
+const drawerContext = useDrawer(props, emit)
 
-    if (_open) {
-      drawerContext.present()
-    } else {
-      drawerContext.dismiss()
-    }
-  },
+watch(modelValueOpen, (o) => {
+  if (o) {
+    drawerContext.present()
+  }
+  else {
+    drawerContext.dismiss()
+  }
+}, {
+  immediate: true,
 })
 
 provideDrawerRootContext({
@@ -143,10 +139,11 @@ provideDrawerRootContext({
 
 <template>
   <DialogRoot
-    v-model:open="open"
-    :default-open="props.defaultOpen"
+    v-model:open="modelValueOpen"
+    :default-open="defaultOpen"
     :modal="modal"
   >
-    <slot :open="open" />
+    <slot :open="modelValueOpen" />
+    <p>{{ modelValueOpen }}</p>
   </DialogRoot>
 </template>

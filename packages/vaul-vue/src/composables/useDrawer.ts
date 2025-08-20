@@ -68,7 +68,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   const initialContainerStyle = computed(() => {
     return {
       translate: isVertical.value
-        ? `0px  calc(${offsetInitial.value}px + var(--vaul-inset) * ${-sideOffsetModifier.value})`
+        ? `0px calc(${offsetInitial.value}px + var(--vaul-inset) * ${-sideOffsetModifier.value})`
         : ` calc(${offsetInitial.value}px + var(--vaul-inset) * ${-sideOffsetModifier.value}) 0px`,
 
       transitionProperty: !isPressing.value ? 'translate, transform' : 'none',
@@ -158,7 +158,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     if (isSnappedToLastPoint.value && movingDirectionDrawerWantsToGo) {
       dragDistance = dampen(Math.abs(dragDistance)) * sideOffsetModifier.value
     }
-    
+
     offset.value = activeSnapPointOffset.value * sideOffsetModifier.value + -dragDistance
     emit('drag', offset.value)
   }

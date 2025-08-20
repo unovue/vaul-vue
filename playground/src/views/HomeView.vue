@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import BackgroundTexture from '@/components/BackgroundTexture.vue'
 import DemoDrawer from '@/components/DemoDrawer.vue'
+import { ref } from 'vue'
+
+const open = ref(false)
+
+function toggle() {
+  open.value = !open.value
+}
 </script>
 
 <template>
@@ -25,8 +32,13 @@ import DemoDrawer from '@/components/DemoDrawer.vue'
               Kowalski </a>
           </h2>
         </div>
+
         <div class="flex gap-4 justify-center mt-6">
-          <DemoDrawer>
+          <button @click="toggle">
+            Open from outside {{ open }}
+          </button>
+
+          <DemoDrawer v-model:open="open">
             <button>open sheet 1</button>
 
             <template #content>
