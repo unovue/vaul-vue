@@ -4,32 +4,6 @@
   position: fixed;
 }
 
-/* For mouse / trackpad */
-/* @media (hover: hover) and (pointer: fine) {
-  [data-vaul-drawer] {
-    user-select: none;
-  }
-} */
-
-/* For touch devices */
-/* @media (hover: none) and (pointer: coarse) {
-  [data-vaul-drawer] {
-    user-select: none;
-  }
-} */
-
-
-/* we have this is overlay.css */
-/* body:has([data-vaul-drawer][data-vaul-drawer-dragging="false"]) [data-vaul-drawer] {
-  transition-property: transform;
-}
-
-body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) [data-vaul-drawer] {
-  transition-property: none;
-  pointer-events: none;
-  user-select: none;
-} */
-
 [data-vaul-drawer][data-vaul-drawer-side="left"] {
   right: 0;
   /* right: var(--vaul-inset); */
@@ -100,16 +74,3 @@ body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) [data-vaul-drawer
   right: var(--vaul-inset);
   transform-origin: center top;
 }
-
-/* [data-vaul-drawer][data-vaul-drawer-side="bottom"]::after {
-  content: "";
-  position: absolute;
-
-  top: calc(100% - 1px);
-  left: var(--vaul-inset);
-  right: var(--vaul-inset);
-  height: 100vw;
-
-  background: inherit;
-  background-color: inherit;
-} */
