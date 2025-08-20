@@ -5,18 +5,18 @@
 }
 
 /* For mouse / trackpad */
-@media (hover: hover) and (pointer: fine) {
+/* @media (hover: hover) and (pointer: fine) {
   [data-vaul-drawer] {
     user-select: none;
   }
-}
+} */
 
 /* For touch devices */
-@media (hover: none) and (pointer: coarse) {
+/* @media (hover: none) and (pointer: coarse) {
   [data-vaul-drawer] {
     user-select: none;
   }
-}
+} */
 
 
 /* we have this is overlay.css */

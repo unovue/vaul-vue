@@ -31,6 +31,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
 
   const side = ref(props.side)
   const isDragging = ref(false)
+  const isPressing = ref(false)
 
   const {
     height: contentHeight,
@@ -69,8 +70,10 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
       translate: isVertical.value
         ? `0px  calc(${offsetInitial.value}px + var(--vaul-inset) * ${-sideOffsetModifier.value})`
         : ` calc(${offsetInitial.value}px + var(--vaul-inset) * ${-sideOffsetModifier.value}) 0px`,
-      transitionProperty: !isDragging.value ? 'translate, transform' : 'none',
-      touchAction: 'none',
+
+      transitionProperty: !isPressing.value ? 'translate, transform' : 'none',
+      userSelect: isPressing.value ? 'none' : 'auto',
+      // touchAction: 'none',
     } satisfies StyleValue
   })
 
@@ -127,42 +130,45 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   }
 
   const onDragStart = (event: PointerEvent) => {
-    isDragging.value = true
-
+    isPressing.value = true
     pointerStart.value = isVertical.value ? event.clientY : event.clientX
 
+    const target = event.target as HTMLElement | null
     const currentTarget = event.currentTarget as HTMLElement | null
-    currentTarget?.setPointerCapture(event.pointerId)
 
-    if (currentTarget?.hasAttribute('data-vaul-handle')) {
+    if (!target || !currentTarget)
       return
-    }
 
-    handleScrollStart(event)
+    isDragging.value = handleScrollStart(event)
+
+    if (isDragging.value && currentTarget?.hasAttribute('data-vaul-drawer')) {
+      contentElement.value?.setPointerCapture(event.pointerId)
+    }
   }
 
   const onDrag = (event: PointerEvent) => {
-    if (!isDragging.value || !contentElement.value)
+    if (!contentElement.value || !isPressing.value)
       return
 
     const clientPosition = isVertical.value ? event.clientY : event.clientX
     let dragDistance = pointerStart.value - clientPosition + startScroll.value
+    const movingDirectionDrawerWantsToGo = dragDistance * sideOffsetModifier.value > 0
 
-    const draggingInDirectionDrawerWantsToGo = dragDistance * sideOffsetModifier.value > 0
-
-    if (isSnappedToLastPoint.value && draggingInDirectionDrawerWantsToGo) {
-      dragDistance = dampen(Math.abs(dragDistance)) * sideOffsetModifier.value
-    }
-
-    const shouldDrag = handleScroll(event, draggingInDirectionDrawerWantsToGo, toValue(side))
-    if (!shouldDrag)
+    isDragging.value = handleScroll(event, movingDirectionDrawerWantsToGo, toValue(side))
+    if (!isDragging.value)
       return
 
+    if (isSnappedToLastPoint.value && movingDirectionDrawerWantsToGo) {
+      dragDistance = dampen(Math.abs(dragDistance)) * sideOffsetModifier.value
+    }
+    
     offset.value = activeSnapPointOffset.value * sideOffsetModifier.value + -dragDistance
     emit('drag', offset.value)
   }
 
   const onDragEnd = () => {
+    isPressing.value = false
+
     if (!isDragging.value)
       return
 
@@ -173,7 +179,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
       return
     }
 
-    handleScrollEnd()
+    // handleScrollEnd()
 
     const result = snapTo(closestSnapPointIndex.value)! * sideOffsetModifier.value
     emit('snap', closestSnapPoint.value)

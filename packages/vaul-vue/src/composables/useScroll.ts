@@ -1,6 +1,7 @@
-import { useFps } from '@vueuse/core'
-import { nextTick, ref, shallowRef, toValue, watch, type MaybeRefOrGetter } from 'vue'
+import type { MaybeRefOrGetter } from 'vue'
 import type { DrawerSide } from '../types'
+import { useFps } from '@vueuse/core'
+import { nextTick, ref, shallowRef, toValue, watch } from 'vue'
 
 const DECAY = 0.95
 const MIN_VELOCITY = 0.0001
@@ -9,22 +10,41 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
   const scrollableElement = shallowRef<HTMLElement>()
   const lastEvent = shallowRef<PointerEvent>()
 
+  const isScrolling = ref(false)
   const startScroll = ref(0)
   const fps = useFps()
 
   let lastTime = performance.now()
   let velocity = 0
 
+  /**
+    Returns if we should drag instead
+   */
   const handleScrollStart = (event: PointerEvent) => {
-    startScroll.value = scrollableElement.value?.scrollTop || 0
+    const target = event.target as HTMLElement | null
+    const currentTarget = event.currentTarget as HTMLElement | null
+
+    if (!target || !scrollableElement.value)
+      return true
+
+    if (!scrollableElement.value.contains(target)) {
+      return true
+    }
+
+    startScroll.value = scrollableElement.value.scrollTop || 0
     lastEvent.value = event
 
     velocity = 0
     lastTime = performance.now()
+
+    return false
   }
 
-  const handleScroll = (event: PointerEvent, draggingInDirectionDrawerWantsToGo: boolean, side: MaybeRefOrGetter<DrawerSide>) => {
-    const dir = toValue(side) === 'bottom' ? !draggingInDirectionDrawerWantsToGo : draggingInDirectionDrawerWantsToGo
+  /**
+    Returns if we should drag instead
+   */
+  const handleScroll = (event: PointerEvent, movingDirectionDrawerWantsToGo: boolean, side: MaybeRefOrGetter<DrawerSide>) => {
+    const dir = toValue(side) === 'bottom' ? !movingDirectionDrawerWantsToGo : movingDirectionDrawerWantsToGo
 
     if (scrollableElement.value?.scrollTop === 0 && dir)
       return true
@@ -41,7 +61,7 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
     }
 
     scrollableElement.value?.scrollBy({
-      top: delta
+      top: delta,
     })
 
     lastEvent.value = event
@@ -71,20 +91,20 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
       return
 
     await nextTick()
-    const element = document.querySelector('[data-vaul-scrollable]')  as HTMLElement | null
+    const element = document.querySelector('[data-vaul-scrollable]') as HTMLElement | null
 
     if (element) {
       scrollableElement.value = element
       element.style.touchAction = 'none'
     }
   }, {
-    flush: 'post'
+    flush: 'post',
   })
 
   return {
     handleScroll,
     handleScrollStart,
     startScroll,
-    handleScrollEnd
+    handleScrollEnd,
   }
 }
