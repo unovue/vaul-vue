@@ -37,7 +37,7 @@ import DemoDrawer from '@/components/DemoDrawer.vue'
               </ol>
 
               <DemoDrawer>
-                <button @click="console.log('open shseet2')">
+                <button>
                   open sheet 2
                 </button>
 

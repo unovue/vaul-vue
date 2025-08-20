@@ -17,18 +17,17 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
   let lastTime = performance.now()
   let velocity = 0
 
-  /**
-    Returns if we should drag instead
-   */
   const handleScrollStart = (event: PointerEvent) => {
     const target = event.target as HTMLElement | null
-    const currentTarget = event.currentTarget as HTMLElement | null
 
-    if (!target || !scrollableElement.value)
-      return true
+    if (!target || !scrollableElement.value) {
+      isScrolling.value = false
+      return
+    }
 
     if (!scrollableElement.value.contains(target)) {
-      return true
+      isScrolling.value = false
+      return
     }
 
     startScroll.value = scrollableElement.value.scrollTop || 0
@@ -37,7 +36,7 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
     velocity = 0
     lastTime = performance.now()
 
-    return false
+    isScrolling.value = true
   }
 
   /**
@@ -106,5 +105,6 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
     handleScrollStart,
     startScroll,
     handleScrollEnd,
+    isScrolling,
   }
 }
