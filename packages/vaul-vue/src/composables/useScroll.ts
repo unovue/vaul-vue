@@ -11,6 +11,7 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
   const lastEvent = shallowRef<PointerEvent>()
 
   const startScroll = ref(0)
+  const isScrolling = ref(false)
   const fps = useFps()
 
   let lastTime = performance.now()
@@ -21,10 +22,12 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
     const target = event.target as HTMLElement | null
 
     if (!target || !scrollableElement.value) {
+      isScrolling.value = false
       return false
     }
 
     if (!scrollableElement.value.contains(target)) {
+      isScrolling.value = false
       return false
     }
 
@@ -34,6 +37,7 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
     velocity = 0
     lastTime = performance.now()
 
+    isScrolling.value = true
     return true
   }
 
@@ -41,6 +45,9 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
     Returns if we should drag instead
    */
   const handleScroll = (event: PointerEvent, movingDirectionDrawerWantsToGo: boolean, side: MaybeRefOrGetter<DrawerSide>) => {
+    if (!isScrolling.value)
+      return true
+
     const dir = toValue(side) === 'bottom' ? !movingDirectionDrawerWantsToGo : movingDirectionDrawerWantsToGo
 
     if (scrollableElement.value?.scrollTop === 0 && dir)
@@ -80,6 +87,9 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
   }
 
   const handleScrollEnd = () => {
+    isScrolling.value = false
+    startScroll.value = 0
+
     requestAnimationFrame(step)
   }
 
