@@ -41,12 +41,16 @@ function toggle() {
           <DemoDrawer v-model:open="open">
             <button>open sheet 1</button>
 
-            <template #content>
+            <template #content="{ close }">
               <ol data-vaul-scrollable class="flex-1 space-y-2 p-4 pt-0 overflow-y-auto touch-none">
                 <li v-for="i in 50" :key="i">
                   <div class="size-8 bg-neutral-300" />
                 </li>
               </ol>
+
+              <button @click="close">
+                close sheet 1
+              </button>
 
               <DemoDrawer>
                 <button>

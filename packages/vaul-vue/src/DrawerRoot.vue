@@ -132,6 +132,11 @@ watch(modelValueOpen, (o) => {
   immediate: true,
 })
 
+function close() {
+  drawerContext.dismiss()
+  modelValueOpen.value = false
+}
+
 provideDrawerRootContext({
   ...drawerContext,
 })
@@ -143,7 +148,9 @@ provideDrawerRootContext({
     :default-open="defaultOpen"
     :modal="modal"
   >
-    <slot :open="modelValueOpen" />
-    <p>{{ modelValueOpen }}</p>
+    <slot
+      :open="modelValueOpen"
+      :close="close"
+    />
   </DialogRoot>
 </template>
