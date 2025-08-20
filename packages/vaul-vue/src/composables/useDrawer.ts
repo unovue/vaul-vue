@@ -5,9 +5,9 @@ import { useWindowSize } from '@vueuse/core'
 import { computed, nextTick, ref, shallowRef, toValue, watch } from 'vue'
 import { dampen } from '../utils'
 import { useEl } from './useEl'
+import { useScroll } from './useScroll'
 import { useSnapPoints } from './useSnapPoints'
 import { useStacks } from './useStacks'
-import { useScroll } from './useScroll'
 
 export type UseDrawerProps = {
   [K in keyof DrawerRootProps]-?: MaybeRefOrGetter<NonNullable<DrawerRootProps[K]>>
@@ -54,7 +54,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   const windowSize = computed(() => isVertical.value ? windowHeight.value : windowWidth.value)
   const contentSize = computed(() => isVertical.value ? contentHeight.value : contentWidth.value)
 
-  const { addStack, popStack, updateDepths } = useStacks(drawerOverlayRef, shouldMount, isDragging, windowSize)
+  const { addStack, popStack, updateDepths, clearCss } = useStacks(drawerOverlayRef, shouldMount, isDragging, windowSize)
   const { handleScroll, handleScrollStart, handleScrollEnd, startScroll } = useScroll(shouldMount)
 
   const { snapTo, closestSnapPointIndex, closestSnapPoint, activeSnapPointOffset, isSnappedToLastPoint, shouldDismiss } = useSnapPoints({
@@ -92,6 +92,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
 
           shouldMount.value = false
           reset()
+          clearCss()
         },
         { once: true },
       )
