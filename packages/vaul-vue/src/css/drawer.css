@@ -32,8 +32,9 @@ body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) [data-vaul-drawer
 
 [data-vaul-drawer][data-vaul-drawer-side="left"] {
   right: 0;
-  top: 0;
-  bottom: 0;
+  /* right: var(--vaul-inset); */
+  top: var(--vaul-inset);
+  bottom: var(--vaul-inset);
   transform-origin: center right;
 }
 
@@ -42,8 +43,8 @@ body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) [data-vaul-drawer
   position: absolute;
 
   right: calc(100% - 1px);
-  top: 0;
-  bottom: 0;
+  top: var(--vaul-inset);
+  bottom: var(--vaul-inset);
   width: 100vw;
 
   background: inherit;
@@ -51,9 +52,10 @@ body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) [data-vaul-drawer
 }
 
 [data-vaul-drawer][data-vaul-drawer-side="top"] {
-  left: 0;
-  right: 0;
+  left: var(--vaul-inset);
+  right: var(--vaul-inset);
   bottom: 0;
+  /* bottom: var(--vaul-inset); */
   transform-origin: center bottom;
 }
 
@@ -62,8 +64,8 @@ body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) [data-vaul-drawer
   position: absolute;
 
   bottom: calc(100% - 1px);
-  left: 0;
-  right: 0;
+  left: var(--vaul-inset);
+  right: var(--vaul-inset);
   height: 100vw;
 
   background: inherit;
@@ -72,8 +74,9 @@ body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) [data-vaul-drawer
 
 [data-vaul-drawer][data-vaul-drawer-side="right"] {
   left: 0;
-  top: 0;
-  bottom: 0;
+  /* left: var(--vaul-inset); */
+  top: var(--vaul-inset);
+  bottom: var(--vaul-inset);
   transform-origin: center left;
 }
 
@@ -82,8 +85,8 @@ body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) [data-vaul-drawer
   position: absolute;
 
   left: calc(100% - 1px);
-  top: 0;
-  bottom: 0;
+  top: var(--vaul-inset);
+  bottom: var(--vaul-inset);
   width: 100vw;
 
   background: inherit;
@@ -92,20 +95,21 @@ body:has([data-vaul-drawer][data-vaul-drawer-dragging="true"]) [data-vaul-drawer
 
 [data-vaul-drawer][data-vaul-drawer-side="bottom"] {
   top: 0;
-  left: 0;
-  right: 0;
+  /* top: var(--vaul-inset); */
+  left: var(--vaul-inset);
+  right: var(--vaul-inset);
   transform-origin: center top;
 }
 
-[data-vaul-drawer][data-vaul-drawer-side="bottom"]::after {
-    content: "";
+/* [data-vaul-drawer][data-vaul-drawer-side="bottom"]::after {
+  content: "";
   position: absolute;
 
   top: calc(100% - 1px);
-  left: 0;
-  right: 0;
+  left: var(--vaul-inset);
+  right: var(--vaul-inset);
   height: 100vw;
 
   background: inherit;
   background-color: inherit;
-}
+} */

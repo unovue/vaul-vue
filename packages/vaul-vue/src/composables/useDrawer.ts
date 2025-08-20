@@ -66,7 +66,9 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
 
   const initialContainerStyle = computed(() => {
     return {
-      translate: isVertical.value ? `0px ${offsetInitial.value}px` : `${offsetInitial.value}px 0px`,
+      translate: isVertical.value
+        ? `0px  calc(${offsetInitial.value}px + var(--vaul-inset) * ${-sideOffsetModifier.value})`
+        : ` calc(${offsetInitial.value}px + var(--vaul-inset) * ${-sideOffsetModifier.value}) 0px`,
       transitionProperty: !isDragging.value ? 'translate, transform' : 'none',
       touchAction: 'none',
     } satisfies StyleValue
@@ -192,8 +194,8 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
       return
 
     contentElement.value.style.translate = isVertical.value
-      ? `0px ${offset.value}px`
-      : `${offset.value}px 0px`
+      ? `0px calc(${offset.value}px + var(--vaul-inset) * ${sideOffsetModifier.value})`
+      : ` calc(${offset.value}px + var(--vaul-inset) * ${sideOffsetModifier.value}) 0px`
 
     updateDepths(offset.value)
   })
