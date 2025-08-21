@@ -8,6 +8,7 @@ import { useEl } from './useEl'
 import { useScroll } from './useScroll'
 import { useSnapPoints } from './useSnapPoints'
 import { useStacks } from './useStacks'
+import { useElements } from './useElement'
 
 export type UseDrawerProps = {
   [K in keyof DrawerRootProps]-?: MaybeRefOrGetter<NonNullable<DrawerRootProps[K]>>
@@ -43,6 +44,8 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     width: windowWidth,
     height: windowHeight,
   } = useWindowSize()
+
+  const { anyContains: anyNoDragContains } = useElements('[data-vaul-no-drag]', shouldMount)
 
   const isVertical = computed(() => side.value === 'top' || side.value === 'bottom')
 
@@ -144,7 +147,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   }
 
   const onDrag = (event: PointerEvent) => {
-    if (!contentElement.value || !isPressing.value)
+    if (!contentElement.value || !isPressing.value || anyNoDragContains(event.target as HTMLElement))
       return
 
     const clientPosition = isVertical.value ? event.clientY : event.clientX
