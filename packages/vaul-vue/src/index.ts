@@ -3,12 +3,16 @@ import DrawerHandle from './DrawerHandle.vue'
 import DrawerOverlay from './DrawerOverlay.vue'
 import DrawerPortal from './DrawerPortal.vue'
 import DrawerRoot from './DrawerRoot.vue'
-import DrawerRootNested from './DrawerRootNested.vue'
 
 export type {
   DrawerRootEmits,
   DrawerRootProps,
-} from './controls'
+} from './types'
+
+// export type {
+//   DrawerRootEmits,
+//   DrawerRootProps,
+// } from './controls'
 
 export type {
   DrawerSide,
@@ -21,7 +25,6 @@ export {
   DrawerOverlay,
   DrawerPortal,
   DrawerRoot,
-  DrawerRootNested,
 }
 
 export {
