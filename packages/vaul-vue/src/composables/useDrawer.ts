@@ -5,10 +5,10 @@ import { useWindowSize } from '@vueuse/core'
 import { computed, nextTick, ref, shallowRef, toValue, watch } from 'vue'
 import { dampen } from '../utils'
 import { useEl } from './useEl'
+import { useElements } from './useElement'
 import { useScroll } from './useScroll'
 import { useSnapPoints } from './useSnapPoints'
 import { useStacks } from './useStacks'
-import { useElements } from './useElement'
 
 export type UseDrawerProps = {
   [K in keyof DrawerRootProps]-?: MaybeRefOrGetter<NonNullable<DrawerRootProps[K]>>
@@ -30,7 +30,6 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   // so we don't have flickers on mount. It's also updated when snap happens
   const offsetInitial = ref(0)
 
-  const side = ref(props.side)
   const isDragging = ref(false)
   const isPressing = ref(false)
 
@@ -47,13 +46,13 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
 
   const { anyContains: anyNoDragContains } = useElements('[data-vaul-no-drag]', shouldMount)
 
-  const isVertical = computed(() => side.value === 'top' || side.value === 'bottom')
+  const isVertical = computed(() => props.side === 'top' || props.side === 'bottom')
 
   // this is because, for example
   // when side is set to right. we snap drawer to the left side of the screen
   // to move it out of screen to right, we have to add windowWidth and should be positive
   // positive translateY means it goes down, position translateX means it goes right
-  const sideOffsetModifier = computed(() => side.value === 'right' || side.value === 'bottom' ? 1 : -1)
+  const sideOffsetModifier = computed(() => props.side === 'right' || props.side === 'bottom' ? 1 : -1)
 
   const windowSize = computed(() => isVertical.value ? windowHeight.value : windowWidth.value)
   const contentSize = computed(() => isVertical.value ? contentHeight.value : contentWidth.value)
@@ -154,7 +153,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     let dragDistance = pointerStart.value - clientPosition + startScroll.value
     const movingDirectionDrawerWantsToGo = dragDistance * sideOffsetModifier.value > 0
 
-    isDragging.value = handleScroll(event, movingDirectionDrawerWantsToGo, toValue(side))
+    isDragging.value = handleScroll(event, movingDirectionDrawerWantsToGo, props.side)
     if (!isDragging.value)
       return
 
@@ -214,9 +213,9 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     present,
     isDragging,
     initialContainerStyle,
-    side,
     shouldMount,
     handleOnly: props.handleOnly,
     dismissible: props.dismissible,
+    side: computed(() => props.side), // We return computed because it's assigned to html
   }
 }

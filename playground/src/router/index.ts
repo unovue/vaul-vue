@@ -26,9 +26,9 @@ const router = createRouter({
           component: () => import('../views/tests/InitialSnapView.vue'),
         },
         {
-          path: 'direction',
-          name: 'Drawer Direction',
-          component: () => import('../views/tests/DirectionView.vue'),
+          path: 'side',
+          name: 'Drawer Side',
+          component: () => import('../views/tests/Direction.vue'),
         },
         {
           path: 'nested-drawer',

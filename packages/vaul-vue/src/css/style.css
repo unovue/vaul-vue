@@ -3,3 +3,9 @@
   --vaul-duration: 500ms;
   --vaul-inset: 0px;
 }
+
+body {
+  transition-property: background-color;
+  transition-duration: 500ms;
+  transition-timing-function: var(--default-transition-timing-function);
+}

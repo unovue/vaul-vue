@@ -5,7 +5,7 @@ import TheNav from '@/components/TheNav.vue'
 <template>
   <div
     data-vaul-drawer-wrapper
-    class="flex flex-col w-screen h-screen"
+    class="flex flex-col w-screen h-screen bg-white"
   >
     <TheNav />
     <RouterView />
