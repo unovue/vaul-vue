@@ -128,14 +128,7 @@ watch(modelValueOpen, (o) => {
   else {
     drawerContext.dismiss()
   }
-}, {
-  immediate: true,
 })
-
-function close() {
-  drawerContext.dismiss()
-  modelValueOpen.value = false
-}
 
 provideDrawerRootContext({
   ...drawerContext,
@@ -144,12 +137,12 @@ provideDrawerRootContext({
 
 <template>
   <DialogRoot
+    v-slot="{ open, close }"
     v-model:open="modelValueOpen"
-    :default-open="defaultOpen"
     :modal="modal"
   >
     <slot
-      :open="modelValueOpen"
+      :open="open"
       :close="close"
     />
   </DialogRoot>

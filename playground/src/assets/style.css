@@ -1,6 +1,17 @@
 @import "tailwindcss";
 
-:root {
+html, body {
+  min-height: 100vh;
+}
+
+code {
+  margin-inline: calc(var(--spacing) * 2);
+  padding-inline: calc(var(--spacing) * 2);
+  background-color: var(--color-neutral-300);
+  border-radius: var(--radius-md);
+}
+
+/* :root {
   --vaul-overlay-background: 255, 255, 255;
   --vaul-overlay-background-start: rgba(0, 0, 0, 0);
   --vaul-overlay-background-end: rgba(0, 0, 0, 0.4);
@@ -14,7 +25,6 @@ body {
 body,
 main {
   min-height: 100vh;
-  /* mobile viewport bug fix */
   min-height: -webkit-fill-available;
   overflow-x: hidden;
 }
@@ -39,4 +49,4 @@ a {
 
 button {
   cursor: pointer;
-}
+} */

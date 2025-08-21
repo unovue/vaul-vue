@@ -15,6 +15,8 @@ export interface DrawerRootProps {
   defaultOpen?: boolean
   modal?: boolean
   handleOnly?: boolean
+  open?: boolean
+  dismissible?: boolean
 }
 
 export interface DrawerRootEmits {

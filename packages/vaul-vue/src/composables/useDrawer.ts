@@ -55,7 +55,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   const windowSize = computed(() => isVertical.value ? windowHeight.value : windowWidth.value)
   const contentSize = computed(() => isVertical.value ? contentHeight.value : contentWidth.value)
 
-  const { addStack, popStack, updateDepths, clearCss } = useStacks(drawerOverlayRef, shouldMount, isDragging, windowSize)
+  const { addStack, popStack, updateDepths, clearCss } = useStacks(drawerOverlayRef, isDragging, windowSize)
   const { handleScroll, handleScrollStart, handleScrollEnd, startScroll } = useScroll(shouldMount)
 
   const { snapTo, closestSnapPointIndex, closestSnapPoint, activeSnapPointOffset, isSnappedToLastPoint, shouldDismiss } = useSnapPoints({

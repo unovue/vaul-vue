@@ -8,7 +8,6 @@ const drawerStack = shallowRef<HTMLElement[]>([])
 
 export function useStacks(
   overlayRef: MaybeRefOrGetter<ComponentPublicInstance | undefined>,
-  open: MaybeRefOrGetter<boolean>,
   isDragging: MaybeRefOrGetter<boolean>,
   windowSize: MaybeRefOrGetter<number>,
 ) {

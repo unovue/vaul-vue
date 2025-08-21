@@ -1,15 +1,22 @@
 <script setup lang="ts">
-import {
-  DrawerContent,
-  DrawerOverlay,
-  DrawerPortal,
-  DrawerRoot,
-  DrawerTrigger,
-} from 'vaul-vue'
+import DemoDrawer from '@/components/DemoDrawer.vue';
+import VButton from '@/components/v/Button.vue';
 </script>
 
 <template>
-  <div
+  <div class="flex flex-1 gap-4 items-center justify-center">
+    <DemoDrawer :dismissible="false">
+      <VButton>
+        Open Drawer
+      </VButton>
+
+      <template #content>
+        <p>This drawer can't be dragged</p>
+      </template>
+    </DemoDrawer>
+  </div>
+
+  <!-- <div
     class="w-screen h-screen bg-white p-8 flex justify-center items-center"
     data-vaul-drawer-wrapper
   >
@@ -59,5 +66,5 @@ import {
         </DrawerContent>
       </DrawerPortal>
     </DrawerRoot>
-  </div>
+  </div> -->
 </template>

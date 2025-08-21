@@ -5,57 +5,64 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: () => import('../views/HomeView.vue'),
+      component: () => import('../views/Home.vue'),
     },
     {
       path: '/test',
       children: [
         {
-          path: 'custom-styles',
-          component: () => import('../views/tests/CustomStylesView.vue'),
-        },
-        {
           path: 'controlled',
-          component: () => import('../views/tests/ControlledView.vue'),
+          name: 'Controlled Drawer',
+          component: () => import('../views/tests/Controlled.vue'),
         },
         {
           path: 'no-drag-element',
-          component: () => import('../views/tests/NoDragElementView.vue'),
+          name: 'No Drag Element',
+          component: () => import('../views/tests/NoDrag.vue'),
         },
         {
           path: 'initial-snap',
+          name: 'Initial Snap',
           component: () => import('../views/tests/InitialSnapView.vue'),
         },
         {
           path: 'direction',
+          name: 'Drawer Direction',
           component: () => import('../views/tests/DirectionView.vue'),
         },
         {
           path: 'nested-drawer',
+          name: 'Nested Drawer',
           component: () => import('../views/tests/NestedDrawerView.vue'),
         },
         {
           path: 'non-dismissible',
+          name: 'Non Dismissible',
           component: () => import('../views/tests/NonDismissibleView.vue'),
         },
         {
           path: 'scrollable-with-inputs',
+          name: 'Scrollable With Inputs',
           component: () => import('../views/tests/ScrollableWithInputsView.vue'),
         },
         {
           path: 'without-scaled-background',
+          name: 'Without Scaled Background',
           component: () => import('../views/tests/WithoutScaledBackgroundView.vue'),
         },
         {
           path: 'with-handle',
+          name: 'With Handle',
           component: () => import('../views/tests/WithHandleView.vue'),
         },
         {
           path: 'with-scaled-background',
+          name: 'With Scaled Background',
           component: () => import('../views/tests/WithScaledBackgroundView.vue'),
         },
         {
           path: 'with-snap-points',
+          name: 'With Snap Points',
           component: () => import('../views/tests/WithSnapPointsView.vue'),
         },
 

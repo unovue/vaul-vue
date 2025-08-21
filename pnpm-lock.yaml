@@ -33,8 +33,8 @@ importers:
         specifier: ^13.0.0
         version: 13.0.0(vue@3.5.13(typescript@5.8.2))
       reka-ui:
-        specifier: ^2.1.1
-        version: 2.1.1(typescript@5.8.2)(vue@3.5.13(typescript@5.8.2))
+        specifier: ^2.4.1
+        version: 2.4.1(typescript@5.8.2)(vue@3.5.13(typescript@5.8.2))
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.8.2)
@@ -97,8 +97,8 @@ importers:
   playground:
     dependencies:
       reka-ui:
-        specifier: ^2.1.1
-        version: 2.1.1(typescript@5.8.2)(vue@3.5.13(typescript@5.8.2))
+        specifier: ^2.4.1
+        version: 2.4.1(typescript@5.8.2)(vue@3.5.13(typescript@5.8.2))
       vaul-vue:
         specifier: workspace:*
         version: link:../packages/vaul-vue
@@ -2644,8 +2644,8 @@ packages:
     resolution: {integrity: sha512-cnE+y8bz4NhMjISKbgeVJtqNbtf5QpjZP+Bslo+UqkIt9QPnX9q095eiRRASJG1/tz6dlNr6Z5NsBiWYokp6EQ==}
     hasBin: true
 
-  reka-ui@2.1.1:
-    resolution: {integrity: sha512-awvpQ041LPXAvf2uRVFwedsyz9SwsuoWlRql1fg4XimUCxEI2GOfHo6FIdL44dSPb/eG/gWbdGhoGHLlbX5gPA==}
+  reka-ui@2.4.1:
+    resolution: {integrity: sha512-NB7DrCsODN8MH02BWtgiExygfFcuuZ5/PTn6fMgjppmFHqePvNhmSn1LEuF35nel6PFbA4v+gdj0IoGN1yZ+vw==}
     peerDependencies:
       vue: '>= 3.2.0'
 
@@ -5943,7 +5943,7 @@ snapshots:
     dependencies:
       jsesc: 3.0.2
 
-  reka-ui@2.1.1(typescript@5.8.2)(vue@3.5.13(typescript@5.8.2)):
+  reka-ui@2.4.1(typescript@5.8.2)(vue@3.5.13(typescript@5.8.2)):
     dependencies:
       '@floating-ui/dom': 1.6.13
       '@floating-ui/vue': 1.1.6(vue@3.5.13(typescript@5.8.2))

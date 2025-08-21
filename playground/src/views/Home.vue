@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import BackgroundTexture from '@/components/BackgroundTexture.vue'
 import DemoDrawer from '@/components/DemoDrawer.vue'
-import { ref } from 'vue'
 
-const open = ref(false)
-
-function toggle() {
-  open.value = !open.value
-}
+import VButton from '@/components/v/Button.vue'
 </script>
 
 <template>
-  <main data-vaul-drawer-wrapper>
+  <main>
     <div class="relative">
       <div
         aria-hidden="true"
@@ -34,39 +29,19 @@ function toggle() {
         </div>
 
         <div class="flex gap-4 justify-center mt-6">
-          <button @click="toggle">
-            Open from outside {{ open }}
-          </button>
-
-          <DemoDrawer v-model:open="open">
-            <button>open sheet 1</button>
+          <DemoDrawer>
+            <VButton>
+              Open sheet
+            </VButton>
 
             <template #content="{ close }">
-              <ol data-vaul-scrollable class="flex-1 space-y-2 p-4 pt-0 overflow-y-auto touch-none">
-                <li v-for="i in 50" :key="i">
-                  <div class="size-8 bg-neutral-300" />
-                </li>
-              </ol>
-
-              <button @click="close">
-                close sheet 1
-              </button>
-
-              <DemoDrawer>
-                <button>
-                  open sheet 2
-                </button>
-
-                <template #content>
-                  <p>sheet 2</p>
-                </template>
-              </DemoDrawer>
+              <VButton @click="close">Close Sheet</VButton>
             </template>
           </DemoDrawer>
 
           <a
             href="https://github.com/unovue/vaul-vue" target="_blank"
-            class="font-semibold text-sm px-4 py-2.5 hover:bg-gray-100 rounded-full"
+            class="font-semibold px-4 py-2 hover:bg-gray-200 transition-colors rounded-lg"
           > GitHub <span
             aria-hidden="true"
           >→</span></a>
@@ -75,5 +50,3 @@ function toggle() {
     </div>
   </main>
 </template>
-
-<style scoped></style>

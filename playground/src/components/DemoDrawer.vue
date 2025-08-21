@@ -10,9 +10,9 @@ import {
 </script>
 
 <template>
-  <DrawerRoot v-slot="{ close, open }">
+  <DrawerRoot v-slot="{ open, close }">
     <DrawerTrigger>
-      <slot :close="close" :open="open" />
+      <slot />
     </DrawerTrigger>
 
     <DrawerPortal>
@@ -23,7 +23,9 @@ import {
           <div class="h-2 w-12 bg-neutral-300 rounded-full" />
         </DrawerHandle>
 
-        <slot name="content" :close="close" :open="open" />
+        <div class="flex flex-1 items-center justify-center gap-4">
+          <slot name="content" :open="open" :close="close" />
+        </div>
       </DrawerContent>
     </DrawerPortal>
   </DrawerRoot>

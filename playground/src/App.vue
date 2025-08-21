@@ -1,7 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import TheNav from '@/components/TheNav.vue'
+</script>
 
 <template>
-  <RouterView />
+  <div
+    data-vaul-drawer-wrapper
+    class="flex flex-col w-screen h-screen"
+  >
+    <TheNav />
+    <RouterView />
+  </div>
 </template>
-
-<style scoped></style>
