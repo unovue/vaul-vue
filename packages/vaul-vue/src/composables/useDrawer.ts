@@ -167,7 +167,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     isPressing.value = false
     isDragging.value = false
 
-    if (shouldDismiss.value) {
+    if (props.dismissible && shouldDismiss.value) {
       dismiss()
       return
     }
@@ -214,5 +214,6 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     side,
     shouldMount,
     handleOnly: props.handleOnly,
+    dismissible: props.dismissible,
   }
 }

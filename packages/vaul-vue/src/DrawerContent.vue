@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { DialogContent } from 'reka-ui'
-import { computed, toValue } from 'vue'
+import { DialogContent, type DialogContentEmits } from 'reka-ui'
+import { computed, toValue, type Events, type HTMLAttributes } from 'vue'
 import { injectDrawerRootContext } from './context'
 // import { computed, ref, watchEffect } from 'vue'
 // import { injectDrawerRootContext } from './context'
@@ -69,14 +69,14 @@ import { injectDrawerRootContext } from './context'
 //   }
 // })
 
-const { drawerContentRef, onDrag, onDragEnd, onDragStart, isDragging, side, initialContainerStyle, handleOnly } = injectDrawerRootContext()
+const {drawerContentRef, onDrag, onDragEnd, onDragStart, isDragging, side, initialContainerStyle, handleOnly, dismissible } = injectDrawerRootContext()
 
 const eventListeners = computed(() => !toValue(handleOnly)
   ? {
       onPointerdown: onDragStart,
       onPointerup: onDragEnd,
-      onpointermove: onDrag,
-    }
+      onPointermove: onDrag,
+    } satisfies HTMLAttributes
   : {})
 </script>
 
@@ -89,6 +89,12 @@ const eventListeners = computed(() => !toValue(handleOnly)
     :data-vaul-drawer-side="side"
     force-mount
     v-bind="eventListeners"
+    @escape-key-down="(event) => {
+      if (dismissible)
+        return
+      
+      event.preventDefault()
+    }"
   >
     <!-- ref="drawerRef"
     data-vaul-drawer=""
