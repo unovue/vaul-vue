@@ -59,11 +59,11 @@ export function useStacks(
   const updateDepths = async (_offset: number) => {
     const _windowSize = toValue(windowSize)
 
+    document.body.style.backgroundColor = drawerStack.value.length < 1 ? '' : 'black'
+
     if (drawerStack.value.length > 1 || (drawerStack.value.length === 1 && _windowSize === Math.abs(_offset))) {
       return
     }
-
-    document.body.style.backgroundColor = 'black'
 
     const visibleSize = _windowSize - Math.abs(_offset)
     const scale = range(0, _windowSize, 1, 0.95, visibleSize)
