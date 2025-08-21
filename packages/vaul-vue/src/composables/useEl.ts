@@ -5,7 +5,6 @@ export function useEl(target: MaybeRefOrGetter<ComponentPublicInstance | undefin
   const height = ref(0)
   const width = ref(0)
 
-  const observer = shallowRef<ResizeObserver>()
   const element = shallowRef<HTMLElement>()
 
   watchEffect(() => {
@@ -22,8 +21,6 @@ export function useEl(target: MaybeRefOrGetter<ComponentPublicInstance | undefin
   onUnmounted(() => {
     if (!element.value)
       return
-
-    observer.value?.unobserve(element.value)
   })
 
   return {
