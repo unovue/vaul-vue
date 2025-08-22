@@ -7,6 +7,7 @@ export async function openDrawer(page: Page) {
 
   await page.getByTestId('trigger').click()
 
+  await page.waitForTimeout(800)
   await expect(contentElement).toBeVisible()
   return contentElement
 }
