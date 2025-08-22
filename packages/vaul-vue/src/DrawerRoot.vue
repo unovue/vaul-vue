@@ -45,7 +45,7 @@ const props = withDefaults(defineProps<DrawerRootProps>(), {
   defaultOpen: false,
   modal: true,
   handleOnly: false,
-  dismissible: false,
+  dismissible: true,
 })
 
 const emit = defineEmits<DrawerRootEmits>()
