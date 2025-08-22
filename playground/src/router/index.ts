@@ -38,7 +38,7 @@ const router = createRouter({
         {
           path: 'non-dismissible',
           name: 'Non Dismissible',
-          component: () => import('../views/tests/NonDismissibleView.vue'),
+          component: () => import('../views/tests/NonDismissible.vue'),
         },
         {
           path: 'scrollable-with-inputs',
