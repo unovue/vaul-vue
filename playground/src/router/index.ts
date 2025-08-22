@@ -33,7 +33,7 @@ const router = createRouter({
         {
           path: 'nested-drawer',
           name: 'Nested Drawer',
-          component: () => import('../views/tests/NestedDrawerView.vue'),
+          component: () => import('../views/tests/NestedDrawer.vue'),
         },
         {
           path: 'non-dismissible',
