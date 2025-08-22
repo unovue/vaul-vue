@@ -194,7 +194,6 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   })
 
   watch(offsetInitial, () => {
-    console.log('offset initial change')
     if (!contentElement.value || offsetInitial.value === 0)
       return
 
