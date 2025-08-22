@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { DialogContentProps } from 'reka-ui'
 import {
   DrawerContent,
   DrawerHandle,
@@ -7,6 +8,10 @@ import {
   DrawerRoot,
   DrawerTrigger,
 } from 'vaul-vue'
+
+defineProps<{
+  content?: DialogContentProps
+}>()
 </script>
 
 <template>
@@ -20,6 +25,7 @@ import {
 
       <DrawerContent
         class="flex flex-col rounded-t-lg bg-neutral-100 border-t border-neutral-300 drop-shadow-lg shadow-black data-[vaul-drawer-side=bottom]:h-1/2 data-[vaul-drawer-side=top]:h-1/2 data-[vaul-drawer-side=left]:w-1/2 data-[vaul-drawer-side=right]:w-1/2"
+        v-bind="content"
       >
         <DrawerHandle class="flex items-center justify-center p-4">
           <div class="h-2 w-12 bg-neutral-300 rounded-full" />

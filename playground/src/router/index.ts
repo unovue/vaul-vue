@@ -65,6 +65,11 @@ const router = createRouter({
           name: 'Keep Mounted',
           component: () => import('../views/tests/KeepMounted.vue'),
         },
+        {
+          path: 'with-sonner',
+          name: 'With Sonner',
+          component: () => import('../views/tests/WithSonner.vue'),
+        },
       ],
     },
   ],

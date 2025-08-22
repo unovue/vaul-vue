@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import TheNav from '@/components/TheNav.vue'
+import { Toaster } from 'vue-sonner'
+import 'vue-sonner/style.css'
 </script>
 
 <template>
@@ -9,5 +11,7 @@ import TheNav from '@/components/TheNav.vue'
   >
     <TheNav />
     <RouterView />
+
+    <Toaster class="z-50 bg-red-500" rich-colors />
   </div>
 </template>

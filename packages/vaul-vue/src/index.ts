@@ -9,11 +9,6 @@ export type {
   DrawerRootProps,
 } from './types'
 
-// export type {
-//   DrawerRootEmits,
-//   DrawerRootProps,
-// } from './controls'
-
 export type {
   DrawerSide,
   SnapPoint,

@@ -33,5 +33,3 @@ function changeSide(newSide: DrawerSide) {
     </DemoDrawer>
   </div>
 </template>
-
-<style scoped></style>

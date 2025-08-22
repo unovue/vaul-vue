@@ -16,7 +16,8 @@
     "reka-ui": "^2.4.1",
     "vaul-vue": "workspace:*",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "vue-sonner": "^2.0.8"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.17",
