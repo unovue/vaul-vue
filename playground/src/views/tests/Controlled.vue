@@ -10,7 +10,7 @@ const fullyControlled = ref(false)
 
 <template>
   <div class="flex flex-1 gap-4 items-center justify-center">
-    <VButton @click="open=true">
+    <VButton @click="open = true">
       Open using <code>:open</code> prop
     </VButton>
 
@@ -24,8 +24,12 @@ const fullyControlled = ref(false)
       </DrawerTrigger> -->
 
       <template #content="{ close }">
-        <VButton @click="close">Close using v-slot function</VButton>
-        <VButton @click="open = false">Close using <code>:open</code></VButton>
+        <VButton @click="close">
+          Close using v-slot function
+        </VButton>
+        <VButton @click="open = false">
+          Close using <code>:open</code>
+        </VButton>
       </template>
     </DemoDrawer>
 

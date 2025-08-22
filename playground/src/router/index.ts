@@ -55,6 +55,11 @@ const router = createRouter({
           name: 'Without scaled background',
           component: () => import('../views/tests/WithoutScaledBackground.vue'),
         },
+        {
+          path: 'emits',
+          name: 'Emits',
+          component: () => import('../views/tests/Emits.vue'),
+        },
       ],
     },
   ],

@@ -22,5 +22,8 @@ export interface DrawerRootProps {
 export interface DrawerRootEmits {
   drag: [offset: number]
   snap: [snapPoint: number]
-  dismiss: []
+  close: []
+  closed: []
+  open: []
+  opened: []
 }

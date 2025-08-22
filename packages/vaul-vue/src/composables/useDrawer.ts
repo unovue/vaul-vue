@@ -93,16 +93,16 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
 
   const dismiss = async () => {
     open.value = false
+    emit('close')
 
     return new Promise<void>((resolve) => {
       contentElement.value?.addEventListener(
         'transitionend',
         () => {
-          resolve()
-          emit('dismiss')
-
           shouldMount.value = false
+          emit('closed')
           reset()
+          resolve()
         },
         { once: true },
       )
@@ -117,7 +117,9 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     open.value = true
 
     offsetInitial.value = windowSize.value * sideOffsetModifier.value
+
     await nextTick()
+    emit('open')
 
     if (contentElement.value) {
       addStack(contentElement.value)
@@ -126,7 +128,10 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     return new Promise<void>((resolve) => {
       contentElement.value?.addEventListener(
         'transitionend',
-        () => resolve(),
+        () => {
+          emit('opened')
+          resolve()
+        },
         { once: true },
       )
 
