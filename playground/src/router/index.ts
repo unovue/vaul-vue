@@ -55,12 +55,6 @@ const router = createRouter({
           name: 'Without scaled background',
           component: () => import('../views/tests/WithoutScaledBackground.vue'),
         },
-        {
-          path: 'with-snap-points',
-          name: 'With Snap Points',
-          component: () => import('../views/tests/WithSnapPointsView.vue'),
-        },
-
       ],
     },
   ],
