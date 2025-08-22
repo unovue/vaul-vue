@@ -178,7 +178,14 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     }
 
     handleScrollEnd()
-    props.modelValueSnapIndex.value = closestSnapPointIndex.value
+
+    // Only update depths here because watch callbacks won't trigger if the values are the same
+    if (props.modelValueSnapIndex.value === closestSnapPointIndex.value) {
+      const targetOffset = getSnapOffset(props.modelValueSnapIndex.value)! * sideOffsetModifier.value
+      updateDepths(targetOffset)
+    } else {
+      props.modelValueSnapIndex.value = closestSnapPointIndex.value
+    }
   }
 
   watch(props.modelValueSnapIndex, () => {
@@ -187,6 +194,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   })
 
   watch(offsetInitial, () => {
+    console.log('offset initial change')
     if (!contentElement.value || offsetInitial.value === 0)
       return
 
