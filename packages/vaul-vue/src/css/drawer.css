@@ -74,3 +74,16 @@
   right: var(--vaul-inset);
   transform-origin: center top;
 }
+
+[data-vaul-drawer][data-vaul-drawer-side="bottom"]::after {
+  content: "";
+  position: absolute;
+
+  top: calc(100% - 1px);
+  left: var(--vaul-inset);
+  right: var(--vaul-inset);
+  height: 100vw;
+
+  background: inherit;
+  background-color: inherit;
+}
