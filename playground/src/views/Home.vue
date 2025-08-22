@@ -35,7 +35,7 @@ import VButton from '@/components/v/Button.vue'
             </VButton>
 
             <template #content="{ close }">
-              <VButton @click="close">
+              <VButton data-testid="close-button" @click="close">
                 Close Sheet
               </VButton>
             </template>

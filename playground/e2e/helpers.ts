@@ -1,12 +1,14 @@
 import type { Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { ANIMATION_DURATION } from './constants'
 
 export async function openDrawer(page: Page) {
-  await expect(page.getByTestId('content')).not.toBeVisible()
+  const contentElement = page.getByTestId('content')
+  await expect(contentElement).not.toBeVisible()
+
   await page.getByTestId('trigger').click()
-  await page.waitForTimeout(ANIMATION_DURATION)
-  await expect(page.getByTestId('content')).toBeVisible()
+
+  await expect(contentElement).toBeVisible()
+  return contentElement
 }
 
 // export async function dragWithSpeed(
