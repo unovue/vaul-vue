@@ -2,10 +2,7 @@
 import { DialogOverlay } from 'reka-ui'
 import { injectDrawerRootContext } from './context'
 
-const {
-  drawerOverlayRef,
-  isDragging,
-} = injectDrawerRootContext()
+const { drawerOverlayRef } = injectDrawerRootContext()
 </script>
 
 <template>

@@ -2,7 +2,6 @@
 import type { DrawerRootEmits, DrawerRootProps } from './types'
 
 import { DialogRoot } from 'reka-ui'
-import { watch } from 'vue'
 import { useDrawer } from './composables/useDrawer'
 
 import { provideDrawerRootContext } from './context'

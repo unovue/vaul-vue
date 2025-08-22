@@ -1,8 +1,9 @@
-import { nextTick, shallowRef, toValue, watchEffect, watchPostEffect, type MaybeRefOrGetter } from "vue";
+import type { MaybeRefOrGetter } from 'vue'
+import { nextTick, shallowRef, toValue, watchPostEffect } from 'vue'
 
 export function useElements(query: string, isMounted: MaybeRefOrGetter<boolean>) {
   const elements = shallowRef<HTMLElement[]>([])
-  
+
   watchPostEffect(async () => {
     if (!toValue(isMounted))
       return
@@ -24,9 +25,9 @@ export function useElements(query: string, isMounted: MaybeRefOrGetter<boolean>)
       return true
     }
 
-    return elements.value.findIndex((container) => container.contains(element)) !== -1
+    return elements.value.findIndex(container => container.contains(element)) !== -1
   }
-  
+
   return {
     elements,
     anyContains,

@@ -228,7 +228,8 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   watch(props.modelValueOpen, () => {
     if (props.modelValueOpen.value) {
       present()
-    } else {
+    }
+    else {
       dismiss()
     }
   })

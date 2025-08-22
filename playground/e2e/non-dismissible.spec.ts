@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
-import { openDrawer } from './helpers'
 import { ANIMATION_DURATION } from './constants'
+import { openDrawer } from './helpers'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/test/non-dismissible')

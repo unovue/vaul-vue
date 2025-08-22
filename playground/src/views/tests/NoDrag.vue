@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DemoDrawer from '@/components/DemoDrawer.vue';
-import VButton from '@/components/v/Button.vue';
+import DemoDrawer from '@/components/DemoDrawer.vue'
+import VButton from '@/components/v/Button.vue'
 </script>
 
 <template>
