@@ -182,8 +182,12 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     // Only update depths here because watch callbacks won't trigger if the values are the same
     if (props.modelValueSnapIndex.value === closestSnapPointIndex.value) {
       const targetOffset = getSnapOffset(props.modelValueSnapIndex.value)! * sideOffsetModifier.value
-      updateDepths(targetOffset)
-    } else {
+
+      if (props.scaleBackground) {
+        updateDepths(targetOffset)
+      }
+    }
+    else {
       props.modelValueSnapIndex.value = closestSnapPointIndex.value
     }
   }
@@ -194,7 +198,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   })
 
   watch(offsetInitial, () => {
-    if (!contentElement.value || offsetInitial.value === 0)
+    if (!contentElement.value || offsetInitial.value === 0 || !props.scaleBackground)
       return
 
     updateDepths(offsetInitial.value)
@@ -208,7 +212,9 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
       ? `0px calc(${offset.value}px + var(--vaul-inset) * ${sideOffsetModifier.value})`
       : ` calc(${offset.value}px + var(--vaul-inset) * ${sideOffsetModifier.value}) 0px`
 
-    updateDepths(offset.value)
+    if (props.scaleBackground) {
+      updateDepths(offset.value)
+    }
   })
 
   return {

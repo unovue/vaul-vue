@@ -46,19 +46,14 @@ const router = createRouter({
           component: () => import('../views/tests/ScrollableWithInputsView.vue'),
         },
         {
-          path: 'without-scaled-background',
-          name: 'Without Scaled Background',
-          component: () => import('../views/tests/WithoutScaledBackgroundView.vue'),
-        },
-        {
           path: 'with-handle',
           name: 'With Handle',
           component: () => import('../views/tests/WithHandleView.vue'),
         },
         {
-          path: 'with-scaled-background',
-          name: 'With Scaled Background',
-          component: () => import('../views/tests/WithScaledBackgroundView.vue'),
+          path: 'without-scale-background',
+          name: 'Without scaled background',
+          component: () => import('../views/tests/WithoutScaledBackground.vue'),
         },
         {
           path: 'with-snap-points',
