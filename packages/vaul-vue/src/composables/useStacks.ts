@@ -100,13 +100,6 @@ export function useStacks(
     updateDrawerOffsets()
   }
 
-  const clearCss = () => {
-    if (!drawerWrapperRef.value)
-      return
-
-    drawerWrapperRef.value.style.cssText = ''
-  }
-
   onMounted(() => {
     drawerWrapperRef.value = document.querySelector('[data-vaul-drawer-wrapper]') as HTMLElement | undefined
   })
@@ -114,7 +107,6 @@ export function useStacks(
   return {
     addStack,
     popStack,
-    clearCss,
     updateDepths,
   }
 }
