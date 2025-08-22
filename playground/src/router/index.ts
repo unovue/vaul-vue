@@ -23,7 +23,7 @@ const router = createRouter({
         {
           path: 'initial-snap',
           name: 'Initial Snap',
-          component: () => import('../views/tests/InitialSnapView.vue'),
+          component: () => import('../views/tests/InitialSnap.vue'),
         },
         {
           path: 'side',

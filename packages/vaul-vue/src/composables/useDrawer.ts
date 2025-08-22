@@ -1,4 +1,4 @@
-import type { ComponentPublicInstance, EmitFn, MaybeRefOrGetter, StyleValue } from 'vue'
+import type { ComponentPublicInstance, EmitFn, MaybeRefOrGetter, ModelRef, StyleValue } from 'vue'
 import type { DrawerRootEmits, DrawerRootProps } from '../types'
 
 import { useWindowSize } from '@vueuse/core'
@@ -10,9 +10,13 @@ import { useScroll } from './useScroll'
 import { useSnapPoints } from './useSnapPoints'
 import { useStacks } from './useStacks'
 
-export type UseDrawerProps = {
+export type UseDrawerPropsBase = {
   [K in keyof DrawerRootProps]-?: MaybeRefOrGetter<NonNullable<DrawerRootProps[K]>>
 }
+
+export type UseDrawerProps = {
+  modelValueSnapIndex: ModelRef<number>
+} & UseDrawerPropsBase
 
 export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) {
   const open = ref(toValue(props.defaultOpen) || false)
@@ -60,7 +64,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   const { addStack, popStack, updateDepths, clearCss } = useStacks(drawerOverlayRef, isDragging, windowSize)
   const { handleScroll, handleScrollStart, handleScrollEnd, startScroll } = useScroll(shouldMount)
 
-  const { snapTo, closestSnapPointIndex, closestSnapPoint, activeSnapPointOffset, isSnappedToLastPoint, shouldDismiss } = useSnapPoints({
+  const { getSnapOffset, closestSnapPointIndex, activeSnapPointOffset, isSnappedToLastPoint, shouldDismiss } = useSnapPoints({
     snapPoints: props.snapPoints,
     contentSize,
     windowSize,
@@ -109,7 +113,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     })
   }
 
-  const present = async () => {
+  const present = async (snapIndex?: number) => {
     shouldMount.value = true
     open.value = true
 
@@ -127,7 +131,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
         { once: true },
       )
 
-      offsetInitial.value = snapTo(0)! * sideOffsetModifier.value
+      offsetInitial.value = getSnapOffset(snapIndex ?? 0)! * sideOffsetModifier.value
     })
   }
 
@@ -175,13 +179,13 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     }
 
     handleScrollEnd()
-
-    const result = snapTo(closestSnapPointIndex.value)! * sideOffsetModifier.value
-    emit('snap', closestSnapPoint.value)
-
-    offset.value = result
-    offsetInitial.value = result
+    props.modelValueSnapIndex.value = closestSnapPointIndex.value
   }
+
+  watch(props.modelValueSnapIndex, () => {
+    offsetInitial.value = getSnapOffset(props.modelValueSnapIndex.value)! * sideOffsetModifier.value
+    emit('snap', props.modelValueSnapIndex.value)
+  })
 
   watch(offsetInitial, () => {
     if (!contentElement.value || offsetInitial.value === 0)
@@ -214,6 +218,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     isDragging,
     initialContainerStyle,
     shouldMount,
+    activeSnapPointOffset,
     handleOnly: props.handleOnly,
     dismissible: props.dismissible,
     side: computed(() => props.side), // We return computed because it's assigned to html

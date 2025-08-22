@@ -68,7 +68,9 @@ export function useSnapPoints({
   })
 
   // returns the offset the drawer should snap to
-  const snapTo = (snapPointIndex: number) => {
+
+  /** Returns offset for the target snap Index */
+  const getSnapOffset = (snapPointIndex: number) => {
     const point = points.value[snapPointIndex]
 
     if (!point) {
@@ -84,7 +86,7 @@ export function useSnapPoints({
 
   return {
     points,
-    snapTo,
+    getSnapOffset,
     activeSnapPoint,
     activeSnapPointOffset,
     closestSnapPoint,

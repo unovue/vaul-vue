@@ -1,32 +1,35 @@
 <script setup lang="ts">
-import {
-  DrawerContent,
-  DrawerOverlay,
-  DrawerPortal,
-  DrawerRoot,
-  DrawerTrigger,
-} from 'vaul-vue'
+import DemoDrawer from '@/components/DemoDrawer.vue'
+import VButton from '@/components/v/Button.vue'
+import { ref } from 'vue'
 
-import { computed, ref } from 'vue'
-
-const snapPoints = [0, '148px', '355px', 1]
-
-const snap = ref<number | string | null>(snapPoints[1])
-
-const activeSnapPointIndex = computed(() => snapPoints.indexOf(snap.value as string))
-
-const open = ref<boolean>(true)
+const snapIndex = ref(0)
 </script>
 
 <template>
   <div class="w-screen h-screen bg-white p-8 flex flex-col gap-4 justify-center items-center" data-vaul-drawer-wrapper>
     <div class="flex gap-2">
       <strong>Active snap point:</strong>
+
       <span data-testid="active-snap-index">
-        {{ activeSnapPointIndex }}
+        {{ snapIndex }}
       </span>
     </div>
-    <DrawerRoot v-model:open="open" v-model:active-snap-point="snap" :snap-points="snapPoints">
+
+    <DemoDrawer
+      v-model:snap-index="snapIndex"
+      :snap-points="[0.5, 0.8]"
+    >
+      <VButton>Open Drawer</VButton>
+
+      <template #content>
+        <VButton @click="snapIndex = 1">
+          Change snap index to 1
+        </VButton>
+      </template>
+    </DemoDrawer>
+
+    <!-- <DrawerRoot v-model:open="open" v-model:active-snap-point="snap" :snap-points="snapPoints">
       <DrawerTrigger as-child>
         <button data-testid="trigger" class="text-2xl">
           Open Drawer
@@ -157,7 +160,7 @@ const open = ref<boolean>(true)
           </div>
         </DrawerContent>
       </DrawerPortal>
-    </DrawerRoot>
+    </DrawerRoot> -->
   </div>
 </template>
 

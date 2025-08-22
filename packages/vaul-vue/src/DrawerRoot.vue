@@ -118,13 +118,18 @@ const modelValueOpen = defineModel('open', {
   required: false,
 })
 
+const modelValueSnapIndex = defineModel('snap-index', {
+  default: 0,
+  required: false,
+})
+
 modelValueOpen.value = props.defaultOpen
 
-const drawerContext = useDrawer(props, emit)
+const drawerContext = useDrawer({ modelValueSnapIndex, ...props }, emit)
 
 watch(modelValueOpen, (o) => {
   if (o) {
-    drawerContext.present()
+    drawerContext.present(modelValueSnapIndex.value)
   }
   else {
     drawerContext.dismiss()
