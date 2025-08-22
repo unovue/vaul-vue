@@ -2,7 +2,7 @@ import type { ComponentPublicInstance, EmitFn, MaybeRefOrGetter, ModelRef, Style
 import type { DrawerRootEmits, DrawerRootProps } from '../types'
 
 import { useWindowSize } from '@vueuse/core'
-import { computed, nextTick, ref, shallowRef, toValue, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, shallowRef, toValue, watch } from 'vue'
 import { dampen } from '../utils'
 import { useEl } from './useEl'
 import { useElements } from './useElement'
@@ -16,10 +16,10 @@ export type UseDrawerPropsBase = {
 
 export type UseDrawerProps = {
   modelValueSnapIndex: ModelRef<number>
+  modelValueOpen: ModelRef<boolean>
 } & UseDrawerPropsBase
 
 export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) {
-  const open = ref(toValue(props.defaultOpen) || false)
   const shouldMount = ref(toValue(props.defaultOpen) || false)
 
   const drawerHandleRef = shallowRef<ComponentPublicInstance>()
@@ -86,13 +86,16 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   // this causes watchers to trigger, but we don't actually want that
   const reset = () => {
     pointerStart.value = 0
-    offset.value = 0
-    offsetInitial.value = 0
     isDragging.value = false
+
+    if (!props.keepMounted) {
+      offset.value = 0
+      offsetInitial.value = 0
+    }
   }
 
   const dismiss = async () => {
-    open.value = false
+    props.modelValueOpen.value = false
     emit('close')
 
     return new Promise<void>((resolve) => {
@@ -114,7 +117,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
 
   const present = async (snapIndex?: number) => {
     shouldMount.value = true
-    open.value = true
+    props.modelValueOpen.value = true
 
     offsetInitial.value = windowSize.value * sideOffsetModifier.value
 
@@ -222,6 +225,18 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     }
   })
 
+  watch(props.modelValueOpen, () => {
+    if (props.modelValueOpen.value) {
+      present()
+    } else {
+      dismiss()
+    }
+  })
+
+  onMounted(() => {
+    offsetInitial.value = windowSize.value * sideOffsetModifier.value
+  })
+
   return {
     onDragStart,
     onDrag,
@@ -236,8 +251,9 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     initialContainerStyle,
     shouldMount,
     activeSnapPointOffset,
-    handleOnly: props.handleOnly,
-    dismissible: props.dismissible,
+    handleOnly: toValue(props.handleOnly),
+    dismissible: toValue(props.dismissible),
+    keepMounted: toValue(props.keepMounted),
     side: computed(() => props.side), // We return computed because it's assigned to html
   }
 }

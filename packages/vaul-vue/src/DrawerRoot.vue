@@ -46,6 +46,7 @@ const props = withDefaults(defineProps<DrawerRootProps>(), {
   modal: true,
   handleOnly: false,
   dismissible: true,
+  keepMounted: false,
 })
 
 const emit = defineEmits<DrawerRootEmits>()
@@ -125,16 +126,16 @@ const modelValueSnapIndex = defineModel('snap-index', {
 
 modelValueOpen.value = props.defaultOpen
 
-const drawerContext = useDrawer({ modelValueSnapIndex, ...props }, emit)
+const drawerContext = useDrawer({ modelValueSnapIndex, modelValueOpen, ...props }, emit)
 
-watch(modelValueOpen, (o) => {
-  if (o) {
-    drawerContext.present(modelValueSnapIndex.value)
-  }
-  else {
-    drawerContext.dismiss()
-  }
-})
+// watch(modelValueOpen, (o) => {
+//   if (o) {
+//     drawerContext.present(modelValueSnapIndex.value)
+//   }
+//   else {
+//     drawerContext.dismiss()
+//   }
+// })
 
 provideDrawerRootContext({
   ...drawerContext,

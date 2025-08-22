@@ -12,10 +12,12 @@ export function useEl(target: MaybeRefOrGetter<ComponentPublicInstance | undefin
     if (!instance)
       return
 
-    element.value = instance.$el
+    if (instance.$el instanceof HTMLElement) {
+      element.value = instance.$el
 
-    width.value = element.value?.clientWidth || 0
-    height.value = element.value?.clientHeight || 0
+      width.value = element.value?.clientWidth || 0
+      height.value = element.value?.clientHeight || 0
+    }
   })
 
   onUnmounted(() => {

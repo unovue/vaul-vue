@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { DialogPortal } from 'reka-ui'
+import { DialogPortal, Presence } from 'reka-ui'
 import { injectDrawerRootContext } from './context'
 
-const { shouldMount } = injectDrawerRootContext()
+const { shouldMount, keepMounted } = injectDrawerRootContext()
 </script>
 
 <template>
-  <DialogPortal v-if="shouldMount">
-    <slot />
-  </DialogPortal>
+  <Presence :present="keepMounted ? true : shouldMount">
+    <DialogPortal>
+      <slot />
+    </DialogPortal>
+  </Presence>
 </template>

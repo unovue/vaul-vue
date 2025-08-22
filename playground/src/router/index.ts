@@ -60,6 +60,11 @@ const router = createRouter({
           name: 'Emits',
           component: () => import('../views/tests/Emits.vue'),
         },
+        {
+          path: 'keep-mounted',
+          name: 'Keep Mounted',
+          component: () => import('../views/tests/KeepMounted.vue'),
+        },
       ],
     },
   ],

@@ -17,6 +17,8 @@ export interface DrawerRootProps {
   handleOnly?: boolean
   open?: boolean
   dismissible?: boolean
+  useVShow?: boolean
+  keepMounted?: boolean
 }
 
 export interface DrawerRootEmits {
