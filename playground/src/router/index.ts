@@ -28,7 +28,7 @@ const router = createRouter({
         {
           path: 'side',
           name: 'Drawer Side',
-          component: () => import('../views/tests/Direction.vue'),
+          component: () => import('../views/tests/Side.vue'),
         },
         {
           path: 'nested-drawer',

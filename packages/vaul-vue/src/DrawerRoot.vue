@@ -2,8 +2,8 @@
 import type { DrawerRootEmits, DrawerRootProps } from './types/drawer'
 
 import { DialogRoot } from 'reka-ui'
-import { useDrawer } from './composables/useDrawer'
 
+import { useDrawer } from './composables/useDrawer'
 import { provideDrawerRootContext } from './context'
 import './css/drawer.css'
 import './css/overlay.css'
@@ -62,7 +62,12 @@ const modelValueSnapIndex = defineModel('snap-index', {
 
 modelValueOpen.value = props.defaultOpen
 
-const drawerContext = useDrawer({ modelValueSnapIndex, modelValueOpen, ...props }, emit)
+const drawerContext = useDrawer(
+  props,
+  emit,
+  modelValueSnapIndex,
+  modelValueOpen,
+)
 
 provideDrawerRootContext({
   ...drawerContext,

@@ -1,15 +1,55 @@
-import type { Page } from '@playwright/test'
+import type { Locator, Page, ViewportSize } from '@playwright/test'
 import { expect } from '@playwright/test'
 
-export async function openDrawer(page: Page) {
-  const contentElement = page.getByTestId('content')
-  await expect(contentElement).not.toBeVisible()
+export async function openDrawer(
+  page: Page,
+  side?: string
+) {
+  const triggerSelector = side ? `trigger-${side}` : 'trigger'
+  const contentSelector = side ? `content-${side}` : 'content'
 
-  await page.getByTestId('trigger').click()
+  const trigger = page.getByTestId(triggerSelector)
+  await trigger.click()
 
-  await page.waitForTimeout(800)
-  await expect(contentElement).toBeVisible()
-  return contentElement
+  const content = page.getByTestId(contentSelector)
+  await expect(content).toBeVisible()
+  
+  if (side) {
+    await expect(content).toHaveText(side || 'bottom')
+  }
+
+  const drawer = page.locator('[data-vaul-drawer]')
+  return [drawer, content]
+}
+
+export async function dragDrawer(
+  drawer: Locator,
+  side: string,
+  page: Page,
+  viewport: ViewportSize | null,
+) {
+  const width = (viewport?.width || 1920) + 10
+  const height = (viewport?.height || 1080) + 10
+
+  const modifier = side === 'left' || side === 'top'
+    ? -1
+    : 1
+
+  const isVertical = side === 'top' || side === 'bottom'
+  const offset = isVertical
+    ? height * modifier
+    : width * modifier
+
+  await drawer.hover()
+  await page.mouse.down()
+
+  if (isVertical) {
+    await page.mouse.move(0, offset)
+  } else {
+    await page.mouse.move(offset, 0)
+  }
+
+  await page.mouse.up()
 }
 
 // export async function dragWithSpeed(

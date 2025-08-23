@@ -10,6 +10,8 @@
     "test": "playwright test"
   },
   "dependencies": {
+    "@vueuse/core": "^13.0.0",
+    "@vueuse/router": "^13.7.0",
     "reka-ui": "^2.4.1",
     "vaul-vue": "workspace:*",
     "vue": "^3.5.13",

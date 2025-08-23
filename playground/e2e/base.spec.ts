@@ -15,17 +15,17 @@ test.describe('Base tests', () => {
   })
 
   test('should close drawer on background interaction', async ({ page }) => {
-    const contentElement = await openDrawer(page)
+    const [drawer, content] = await openDrawer(page)
 
     await page.mouse.click(10, 10)
-    await expect(contentElement).toBeHidden()
+    await expect(content).toBeHidden()
   })
 
   test('should close drawer using v-slot close function called', async ({ page }) => {
-    const contentElement = await openDrawer(page)
+    const [drawer, content] = await openDrawer(page)
 
     await page.getByTestId('close-button').click()
-    await expect(contentElement).toBeHidden()
+    await expect(content).toBeHidden()
   })
 })
 

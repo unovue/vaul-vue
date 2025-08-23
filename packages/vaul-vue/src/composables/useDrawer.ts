@@ -10,16 +10,16 @@ import { useScroll } from './useScroll'
 import { useSnapPoints } from './useSnapPoints'
 import { useStacks } from './useStacks'
 
-export type UseDrawerPropsBase = {
+export type UseDrawerProps = {
   [K in keyof DrawerRootProps]-?: MaybeRefOrGetter<NonNullable<DrawerRootProps[K]>>
 }
 
-export type UseDrawerProps = {
-  modelValueSnapIndex: ModelRef<number>
-  modelValueOpen: ModelRef<boolean>
-} & UseDrawerPropsBase
-
-export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) {
+export function useDrawer(
+  props: UseDrawerProps,
+  emit: EmitFn<DrawerRootEmits>,
+  modelValueSnapIndex: ModelRef<number>,
+  modelValueOpen: ModelRef<boolean>,
+) {
   const shouldMount = ref(toValue(props.defaultOpen) || false)
 
   const drawerHandleRef = shallowRef<ComponentPublicInstance>()
@@ -50,7 +50,9 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
 
   const { anyContains: anyNoDragContains } = useElements('[data-vaul-no-drag]', shouldMount)
 
-  const isVertical = computed(() => props.side === 'top' || props.side === 'bottom')
+  const side = computed(() => props.side)
+
+  const isVertical = computed(() => side.value === 'top' || side.value === 'bottom')
 
   // this is because, for example
   // when side is set to right. we snap drawer to the left side of the screen
@@ -95,7 +97,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
   }
 
   const dismiss = async () => {
-    props.modelValueOpen.value = false
+    modelValueOpen.value = false
     emit('close')
 
     return new Promise<void>((resolve) => {
@@ -117,7 +119,7 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
 
   const present = async (snapIndex?: number) => {
     shouldMount.value = true
-    props.modelValueOpen.value = true
+    modelValueOpen.value = true
 
     offsetInitial.value = windowSize.value * sideOffsetModifier.value
 
@@ -188,21 +190,21 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     handleScrollEnd()
 
     // Only update depths here because watch callbacks won't trigger if the values are the same
-    if (props.modelValueSnapIndex.value === closestSnapPointIndex.value) {
-      const targetOffset = getSnapOffset(props.modelValueSnapIndex.value)! * sideOffsetModifier.value
+    if (modelValueSnapIndex.value === closestSnapPointIndex.value) {
+      const targetOffset = getSnapOffset(modelValueSnapIndex.value)! * sideOffsetModifier.value
 
       if (props.scaleBackground) {
         updateDepths(targetOffset)
       }
     }
     else {
-      props.modelValueSnapIndex.value = closestSnapPointIndex.value
+      modelValueSnapIndex.value = closestSnapPointIndex.value
     }
   }
 
-  watch(props.modelValueSnapIndex, () => {
-    offsetInitial.value = getSnapOffset(props.modelValueSnapIndex.value)! * sideOffsetModifier.value
-    emit('snap', props.modelValueSnapIndex.value)
+  watch(modelValueSnapIndex, () => {
+    offsetInitial.value = getSnapOffset(modelValueSnapIndex.value)! * sideOffsetModifier.value
+    emit('snap', modelValueSnapIndex.value)
   })
 
   watch(offsetInitial, () => {
@@ -225,8 +227,8 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     }
   })
 
-  watch(props.modelValueOpen, () => {
-    if (props.modelValueOpen.value) {
+  watch(modelValueOpen, () => {
+    if (modelValueOpen.value) {
       present()
     }
     else {
@@ -255,6 +257,6 @@ export function useDrawer(props: UseDrawerProps, emit: EmitFn<DrawerRootEmits>) 
     handleOnly: toValue(props.handleOnly),
     dismissible: toValue(props.dismissible),
     keepMounted: toValue(props.keepMounted),
-    side: computed(() => props.side), // We return computed because it's assigned to html
+    side, // We return computed because it's assigned to html
   }
 }

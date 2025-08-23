@@ -96,6 +96,12 @@ importers:
 
   playground:
     dependencies:
+      '@vueuse/core':
+        specifier: ^13.0.0
+        version: 13.0.0(vue@3.5.19(typescript@5.8.3))
+      '@vueuse/router':
+        specifier: ^13.7.0
+        version: 13.7.0(vue-router@4.5.1(vue@3.5.19(typescript@5.8.3)))(vue@3.5.19(typescript@5.8.3))
       reka-ui:
         specifier: ^2.4.1
         version: 2.4.1(typescript@5.8.3)(vue@3.5.19(typescript@5.8.3))
@@ -2401,11 +2407,22 @@ packages:
   '@vueuse/metadata@13.0.0':
     resolution: {integrity: sha512-TRNksqmvtvqsuHf7bbgH9OSXEV2b6+M3BSN4LR5oxWKykOFT9gV78+C2/0++Pq9KCp9KQ1OQDPvGlWNQpOb2Mw==}
 
+  '@vueuse/router@13.7.0':
+    resolution: {integrity: sha512-nsl86yjQ/RNeSf3KDY9QnAWQxfPQAfXFHANC4GhDGNW+BXYRPVqh2+hXLn8K/EoD2dwZ2apsCqgLYwNfLLM+tw==}
+    peerDependencies:
+      vue: ^3.5.0
+      vue-router: ^4.0.0
+
   '@vueuse/shared@12.8.2':
     resolution: {integrity: sha512-dznP38YzxZoNloI0qpEfpkms8knDtaoQ6Y/sfS0L7Yki4zh40LFHEhur0odJC6xTHG5dxWVPiUWBXn+wCG2s5w==}
 
   '@vueuse/shared@13.0.0':
     resolution: {integrity: sha512-9MiHhAPw+sqCF/RLo8V6HsjRqEdNEWVpDLm2WBRW2G/kSQjb8X901sozXpSCaeLG0f7TEfMrT4XNaA5m1ez7Dg==}
+    peerDependencies:
+      vue: ^3.5.0
+
+  '@vueuse/shared@13.7.0':
+    resolution: {integrity: sha512-Wi2LpJi4UA9kM0OZ0FCZslACp92HlVNw1KPaDY6RAzvQ+J1s7seOtcOpmkfbD5aBSmMn9NvOakc8ZxMxmDXTIg==}
     peerDependencies:
       vue: ^3.5.0
 
@@ -8743,6 +8760,12 @@ snapshots:
 
   '@vueuse/metadata@13.0.0': {}
 
+  '@vueuse/router@13.7.0(vue-router@4.5.1(vue@3.5.19(typescript@5.8.3)))(vue@3.5.19(typescript@5.8.3))':
+    dependencies:
+      '@vueuse/shared': 13.7.0(vue@3.5.19(typescript@5.8.3))
+      vue: 3.5.19(typescript@5.8.3)
+      vue-router: 4.5.1(vue@3.5.19(typescript@5.8.3))
+
   '@vueuse/shared@12.8.2(typescript@5.8.3)':
     dependencies:
       vue: 3.5.19(typescript@5.8.3)
@@ -8750,6 +8773,10 @@ snapshots:
       - typescript
 
   '@vueuse/shared@13.0.0(vue@3.5.19(typescript@5.8.3))':
+    dependencies:
+      vue: 3.5.19(typescript@5.8.3)
+
+  '@vueuse/shared@13.7.0(vue@3.5.19(typescript@5.8.3))':
     dependencies:
       vue: 3.5.19(typescript@5.8.3)
 
