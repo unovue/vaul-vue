@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DrawerRootEmits, DrawerRootProps } from './types'
+import type { DrawerRootEmits, DrawerRootProps } from './types/drawer'
 
 import { DialogRoot } from 'reka-ui'
 import { useDrawer } from './composables/useDrawer'
@@ -50,69 +50,6 @@ const props = withDefaults(defineProps<DrawerRootProps>(), {
 
 const emit = defineEmits<DrawerRootEmits>()
 
-// const emits = defineEmits<DrawerRootEmits>()
-
-// const slots = defineSlots<{
-//   default: (props: {
-//     open: typeof open.value
-//   }) => any
-// }>()
-
-// const open = useVModel(props, 'open', emits, {
-//   defaultValue: props.defaultOpen,
-//   passive: (props.open === undefined) as false,
-// })
-
-// const activeSnapPoint = useVModel(props, 'activeSnapPoint', emits, {
-//   passive: (props.activeSnapPoint === undefined) as false,
-// })
-
-// const fadeFromIndex = computed(() => props.fadeFromIndex ?? (props.snapPoints && props.snapPoints.length - 1))
-
-// const emitHandlers = {
-//   emitDrag: (percentageClosed: number) => emits('drag', percentageClosed),
-//   emitRelease: (open: boolean) => emits('release', open),
-//   emitClose: () => emits('close'),
-//   emitOpenChange: (o: boolean) => {
-//     window.setTimeout(() => {
-//       emits('animationEnd', o)
-//     }, transitionDurationToMs(TRANSITIONS.DURATION))
-//   },
-// }
-
-// const context = useDrawer({
-//   ...emitHandlers,
-//   ...toRefs(props),
-//   activeSnapPoint,
-//   fadeFromIndex,
-//   open: open as any,
-// })
-
-// const { hasBeenOpened, modal } = context
-
-// provideDrawerRootContext(context)
-
-// const openProxy = computed({
-//   get: () => open.value,
-//   set: (o: boolean) => {
-//     if (!props.dismissible && !open.value)
-//       return
-
-//     if (o) {
-//       hasBeenOpened.value = true
-//     }
-//     else {
-//       context.closeDrawer(true)
-//     }
-
-//     open.value = o
-//   },
-// })
-
-// defineExpose({
-//   open,
-// })
-
 const modelValueOpen = defineModel('open', {
   default: false,
   required: false,
@@ -126,15 +63,6 @@ const modelValueSnapIndex = defineModel('snap-index', {
 modelValueOpen.value = props.defaultOpen
 
 const drawerContext = useDrawer({ modelValueSnapIndex, modelValueOpen, ...props }, emit)
-
-// watch(modelValueOpen, (o) => {
-//   if (o) {
-//     drawerContext.present(modelValueSnapIndex.value)
-//   }
-//   else {
-//     drawerContext.dismiss()
-//   }
-// })
 
 provideDrawerRootContext({
   ...drawerContext,

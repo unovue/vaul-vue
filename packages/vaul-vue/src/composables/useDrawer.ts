@@ -1,5 +1,5 @@
 import type { ComponentPublicInstance, EmitFn, MaybeRefOrGetter, ModelRef, StyleValue } from 'vue'
-import type { DrawerRootEmits, DrawerRootProps } from '../types'
+import type { DrawerRootEmits, DrawerRootProps } from '../types/drawer'
 
 import { useWindowSize } from '@vueuse/core'
 import { computed, nextTick, onMounted, ref, shallowRef, toValue, watch } from 'vue'

@@ -1,4 +1,4 @@
-import type { DrawerSide } from './types'
+import type { DrawerSide } from './types/drawer'
 
 export function isVertical(side: DrawerSide) {
   if (side === 'top' || side === 'bottom')

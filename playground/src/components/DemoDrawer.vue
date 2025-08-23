@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { DialogContentProps } from 'reka-ui'
+import type { EmitsToProps } from '@/types'
+import type { DialogContentEmits, DialogContentProps } from 'reka-ui'
 import {
   DrawerContent,
   DrawerHandle,
@@ -10,7 +11,7 @@ import {
 } from 'vaul-vue'
 
 defineProps<{
-  content?: DialogContentProps
+  content?: DialogContentProps & Partial<EmitsToProps<DialogContentEmits>>
 }>()
 </script>
 

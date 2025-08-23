@@ -1,5 +1,5 @@
 import type { ComponentPublicInstance, MaybeRefOrGetter } from 'vue'
-import type { DrawerSide } from '../types'
+import type { DrawerSide } from '../types/drawer'
 import { onMounted, shallowRef, toValue } from 'vue'
 import { range } from '../utils'
 import { useEl } from './useEl'

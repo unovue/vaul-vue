@@ -7,12 +7,9 @@ import DrawerRoot from './DrawerRoot.vue'
 export type {
   DrawerRootEmits,
   DrawerRootProps,
-} from './types'
-
-export type {
   DrawerSide,
   SnapPoint,
-} from './types'
+} from './types/drawer'
 
 export {
   DrawerContent,

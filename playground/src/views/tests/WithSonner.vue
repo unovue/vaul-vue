@@ -23,7 +23,7 @@ function openToast() {
       v-model:open="open"
       :modal="false"
       :content="{
-        onInteractOutside: (event: PointerEvent) => {
+        onInteractOutside: (event) => {
           const target = event.target as HTMLElement | null
           if (target?.closest('[data-sonner-toaster]')) return event.preventDefault()
         },

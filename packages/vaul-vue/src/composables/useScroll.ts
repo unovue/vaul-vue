@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter } from 'vue'
-import type { DrawerSide } from '../types'
+import type { DrawerSide } from '../types/drawer'
 import { useFps } from '@vueuse/core'
 import { nextTick, ref, shallowRef, toValue, watch } from 'vue'
 
