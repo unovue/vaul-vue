@@ -1,34 +1,27 @@
 import { expect, test } from '@playwright/test'
-import { ANIMATION_DURATION } from './constants'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/test/controlled')
 })
 
-test.describe('Controlled', () => {
-  test('should not close when clicked on overlay and only the open prop is passsed', async ({
-    page,
-  }) => {
-    await expect(page.getByTestId('content')).not.toBeVisible()
-    await page.getByTestId('trigger').click()
-    await expect(page.getByTestId('content')).toBeVisible()
-    // Click on the background
-    await page.mouse.click(0, 0)
+test.describe('Controlled tests', () => {
+  test('open and close using :open prop', async ({ page }) => {
+    await page.getByTestId('trigger-open-prop').click()
+    const closeButton = page.getByTestId('trigger-open-prop-close')
 
-    await page.waitForTimeout(ANIMATION_DURATION)
-    await expect(page.getByTestId('content')).toBeVisible()
+    await expect(closeButton).toBeVisible()
+    await closeButton.click()
+
+    await expect(closeButton).toBeHidden()
   })
 
-  test('should close when clicked on overlay and open and onOpenChange props are passed', async ({
-    page,
-  }) => {
-    await expect(page.getByTestId('fully-controlled-content')).not.toBeVisible()
-    await page.getByTestId('fully-controlled-trigger').click()
-    await expect(page.getByTestId('fully-controlled-content')).toBeVisible()
-    // Click on the background
-    await page.mouse.click(0, 0)
+  test('open and close using v-model', async ({ page }) => {
+    await page.getByTestId('trigger-v-model').click()
+    const closeButton = page.getByTestId('trigger-v-model-close')
 
-    await page.waitForTimeout(ANIMATION_DURATION)
-    await expect(page.getByTestId('fully-controlled-content')).not.toBeVisible()
+    await expect(closeButton).toBeVisible()
+    await closeButton.click()
+
+    await expect(closeButton).toBeHidden()
   })
 })
