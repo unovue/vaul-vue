@@ -1,48 +1,47 @@
 <script setup lang="ts">
-import { DrawerContent, DrawerHandle, DrawerOverlay, DrawerPortal, DrawerRoot, DrawerTrigger } from 'vaul-vue'
+import type { EmitsToProps } from '@/types'
+import type { DialogContentEmits, DialogContentProps } from 'reka-ui'
+import {
+  DrawerContent,
+  DrawerHandle,
+  DrawerOverlay,
+  DrawerPortal,
+  DrawerRoot,
+  DrawerTrigger,
+} from 'vaul-vue'
+
+defineProps<{
+  content?: DialogContentProps & Partial<EmitsToProps<DialogContentEmits>>
+}>()
 </script>
 
 <template>
-  <DrawerRoot should-scale-background>
+  <DrawerRoot v-slot="{ open, close }">
     <DrawerTrigger
-      class="rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+      v-if="!!$slots.default"
+      data-testid="trigger"
+      as-child
     >
-      Open Drawer
+      <slot />
     </DrawerTrigger>
-    <DrawerPortal>
-      <DrawerOverlay class="fixed bg-black/40 inset-0" />
-      <DrawerContent
-        class="bg-gray-100 flex flex-col rounded-t-[10px] h-full mt-24 max-h-[96%] fixed bottom-0 left-0 right-0"
-      >
-        <div class="p-4 bg-white rounded-t-[10px] flex-1">
-          <DrawerHandle data-testid="handle" class="mb-8 mt-2" />
 
-          <div class="max-w-md mx-auto">
-            <h2 id="radix-:R3emdaH1:" class="font-medium mb-4">
-              Drawer for Vue.
-            </h2>
-            <p class="text-gray-600 mb-2">
-              This component can be used as a Dialog replacement on mobile and tablet devices.
-            </p>
-            <p class="text-gray-600 mb-2">
-              It comes unstyled, has gesture-driven animations, and is made by
-              <a href="https://emilkowal.ski/" class="underline" target="_blank">Emil Kowalski</a>.
-            </p>
-            <p class="text-gray-600 mb-8">
-              It uses
-              <a
-                href="https://www.radix-ui.com/docs/primitives/components/dialog"
-                class="underline"
-                target="_blank"
-              >Radix's Dialog primitive</a>
-              under the hood and is inspired by
-              <a
-                href="https://twitter.com/devongovett/status/1674470185783402496"
-                class="underline"
-                target="_blank"
-              >this tweet.</a>
-            </p>
-          </div>
+    <DrawerPortal>
+      <DrawerOverlay
+        data-testid="overlay"
+        class="fixed inset-0 bg-black/75"
+      />
+
+      <DrawerContent
+        class="flex flex-col rounded-t-lg bg-neutral-100 border-t border-neutral-300 drop-shadow-lg shadow-black data-[vaul-drawer-side=bottom]:h-1/2 data-[vaul-drawer-side=top]:h-1/2 data-[vaul-drawer-side=left]:w-1/2 data-[vaul-drawer-side=right]:w-1/2"
+        v-bind="content"
+        data-testid="content"
+      >
+        <DrawerHandle class="flex items-center justify-center p-4">
+          <div class="h-2 w-12 bg-neutral-300 rounded-full" />
+        </DrawerHandle>
+
+        <div v-if="!!$slots.content" class="h-full grid place-content-center gap-4 p-4">
+          <slot name="content" :open="open" :close="close" />
         </div>
       </DrawerContent>
     </DrawerPortal>

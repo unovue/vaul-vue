@@ -5,56 +5,66 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: () => import('../views/HomeView.vue'),
+      component: () => import('../views/Home.vue'),
     },
     {
       path: '/test',
       children: [
         {
           path: 'controlled',
-          component: () => import('../views/tests/ControlledView.vue'),
+          name: 'Controlled Drawer',
+          component: () => import('../views/tests/Controlled.vue'),
         },
         {
           path: 'no-drag-element',
-          component: () => import('../views/tests/NoDragElementView.vue'),
+          name: 'No Drag Element',
+          component: () => import('../views/tests/NoDrag.vue'),
         },
         {
           path: 'initial-snap',
-          component: () => import('../views/tests/InitialSnapView.vue'),
+          name: 'Initial Snap',
+          component: () => import('../views/tests/InitialSnap.vue'),
         },
         {
-          path: 'direction',
-          component: () => import('../views/tests/DirectionView.vue'),
+          path: 'side',
+          name: 'Drawer Side',
+          component: () => import('../views/tests/Side.vue'),
         },
         {
           path: 'nested-drawer',
-          component: () => import('../views/tests/NestedDrawerView.vue'),
+          name: 'Nested Drawer',
+          component: () => import('../views/tests/NestedDrawer.vue'),
         },
         {
           path: 'non-dismissible',
-          component: () => import('../views/tests/NonDismissibleView.vue'),
+          name: 'Non Dismissible',
+          component: () => import('../views/tests/NonDismissible.vue'),
         },
         {
           path: 'scrollable-with-inputs',
+          name: 'Scrollable With Inputs',
           component: () => import('../views/tests/ScrollableWithInputsView.vue'),
         },
         {
-          path: 'without-scaled-background',
-          component: () => import('../views/tests/WithoutScaledBackgroundView.vue'),
+          path: 'without-scale-background',
+          name: 'Without scaled background',
+          component: () => import('../views/tests/WithoutScaledBackground.vue'),
         },
         {
-          path: 'with-handle',
-          component: () => import('../views/tests/WithHandleView.vue'),
+          path: 'emits',
+          name: 'Emits',
+          component: () => import('../views/tests/Emits.vue'),
         },
         {
-          path: 'with-scaled-background',
-          component: () => import('../views/tests/WithScaledBackgroundView.vue'),
+          path: 'keep-mounted',
+          name: 'Keep Mounted',
+          component: () => import('../views/tests/KeepMounted.vue'),
         },
         {
-          path: 'with-snap-points',
-          component: () => import('../views/tests/WithSnapPointsView.vue'),
+          path: 'with-sonner',
+          name: 'With Sonner',
+          component: () => import('../views/tests/WithSonner.vue'),
         },
-
       ],
     },
   ],

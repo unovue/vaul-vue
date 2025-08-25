@@ -1,106 +1,126 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, toValue } from 'vue'
 import { injectDrawerRootContext } from './context'
-import type { DrawerHandleProps } from './controls'
 
-const props = withDefaults(defineProps<DrawerHandleProps>(), {
-  preventCycle: false,
-})
+// import type { DrawerHandleProps } from './controls'
+// import { ref } from 'vue'
+// import { injectDrawerRootContext } from './context'
 
-const LONG_HANDLE_PRESS_TIMEOUT = 250
-const DOUBLE_TAP_TIMEOUT = 120
+// const props = withDefaults(defineProps<DrawerHandleProps>(), {
+//   preventCycle: false,
+// })
 
-const { onPress, onDrag, handleRef, handleOnly, isOpen, snapPoints, activeSnapPoint, isDragging, dismissible, closeDrawer }
-    = injectDrawerRootContext()
+// const LONG_HANDLE_PRESS_TIMEOUT = 250
+// const DOUBLE_TAP_TIMEOUT = 120
 
-const closeTimeoutId = ref<number | null>(null)
-const shouldCancelInteraction = ref(false)
+// const {
+//   onPress,
+//   onDrag,
+//   handleRef,
+//   handleOnly,
+//   open,
+//   snapPoints,
+//   activeSnapPoint,
+//   isDragging,
+//   dismissible,
+//   closeDrawer,
+// } = injectDrawerRootContext()
 
-function handleStartCycle() {
-  // Stop if this is the second click of a double click
-  if (shouldCancelInteraction.value) {
-    handleCancelInteraction()
-    return
-  }
+// const closeTimeoutId = ref<number | null>(null)
+// const shouldCancelInteraction = ref(false)
 
-  window.setTimeout(() => {
-    handleCycleSnapPoints()
-  }, DOUBLE_TAP_TIMEOUT)
-}
+// function handleStartCycle() {
+//   // Stop if this is the second click of a double click
+//   if (shouldCancelInteraction.value) {
+//     handleCancelInteraction()
+//     return
+//   }
 
-function handleCycleSnapPoints() {
-  // Prevent accidental taps while resizing drawer
-  if (isDragging.value || props.preventCycle || shouldCancelInteraction.value) {
-    handleCancelInteraction()
-    return
-  }
+//   window.setTimeout(() => {
+//     handleCycleSnapPoints()
+//   }, DOUBLE_TAP_TIMEOUT)
+// }
 
-  // Make sure to clear the timeout id if the user releases the handle before the cancel timeout
-  handleCancelInteraction()
+// function handleCycleSnapPoints() {
+//   // Prevent accidental taps while resizing drawer
+//   if (isDragging.value || props.preventCycle || shouldCancelInteraction.value) {
+//     handleCancelInteraction()
+//     return
+//   }
 
-  if (!snapPoints.value || snapPoints.value.length === 0) {
-    if (!dismissible.value)
-      closeDrawer()
+//   // Make sure to clear the timeout id if the user releases the handle before the cancel timeout
+//   handleCancelInteraction()
 
-    return
-  }
+//   if (!snapPoints.value || snapPoints.value.length === 0) {
+//     if (!dismissible.value)
+//       closeDrawer()
 
-  const isLastSnapPoint = activeSnapPoint.value === snapPoints.value[snapPoints.value.length - 1]
+//     return
+//   }
 
-  if (isLastSnapPoint && dismissible.value) {
-    closeDrawer()
-    return
-  }
+//   const isLastSnapPoint = activeSnapPoint.value === snapPoints.value[snapPoints.value.length - 1]
 
-  const currentSnapIndex = snapPoints.value.findIndex(point => point === activeSnapPoint.value)
+//   if (isLastSnapPoint && dismissible.value) {
+//     closeDrawer()
+//     return
+//   }
 
-  if (currentSnapIndex === -1)
-    return // activeSnapPoint not found in snapPoints
+//   const currentSnapIndex = snapPoints.value.findIndex(point => point === activeSnapPoint.value)
 
-  const nextSnapPointIndex = isLastSnapPoint ? 0 : currentSnapIndex + 1
+//   if (currentSnapIndex === -1)
+//     return // activeSnapPoint not found in snapPoints
 
-  activeSnapPoint.value = snapPoints.value[nextSnapPointIndex]
-}
+//   const nextSnapPointIndex = isLastSnapPoint ? 0 : currentSnapIndex + 1
 
-function handleStartInteraction() {
-  closeTimeoutId.value = window.setTimeout(() => {
-    // Cancel click interaction on a long press
-    shouldCancelInteraction.value = true
-  }, LONG_HANDLE_PRESS_TIMEOUT)
-}
+//   activeSnapPoint.value = snapPoints.value[nextSnapPointIndex]
+// }
 
-function handleCancelInteraction() {
-  if (closeTimeoutId.value)
-    window.clearTimeout(closeTimeoutId.value)
+// function handleStartInteraction() {
+//   closeTimeoutId.value = window.setTimeout(() => {
+//     // Cancel click interaction on a long press
+//     shouldCancelInteraction.value = true
+//   }, LONG_HANDLE_PRESS_TIMEOUT)
+// }
 
-  shouldCancelInteraction.value = false
-}
+// function handleCancelInteraction() {
+//   if (closeTimeoutId.value)
+//     window.clearTimeout(closeTimeoutId.value)
 
-function handlePointerDown(event: PointerEvent) {
-  if (handleOnly.value)
-    onPress(event)
-  handleStartInteraction()
-}
+//   shouldCancelInteraction.value = false
+// }
 
-function handleOnDrag(event: PointerEvent) {
-  if (handleOnly.value)
-    onDrag(event)
-}
+// function handlePointerDown(event: PointerEvent) {
+//   if (handleOnly.value)
+//     onPress(event)
+//   handleStartInteraction()
+// }
+
+// function handleOnDrag(event: PointerEvent) {
+//   if (handleOnly.value)
+//     onDrag(event)
+// }
+
+const { onDrag, onDragEnd, onDragStart, handleOnly } = injectDrawerRootContext()
+
+const eventListeners = computed(() => toValue(handleOnly)
+  ? {
+      onPointerdown: onDragStart,
+      onPointerup: onDragEnd,
+      onPointermove: onDrag,
+    }
+  : {})
 </script>
 
 <template>
-  <div
-    ref="handleRef"
-    :data-vaul-drawer-visible="isOpen ? 'true' : 'false'"
+  <div data-vaul-handle v-bind="eventListeners">
+    <!-- ref="handleRef"
+    :data-vaul-drawer-visible="open ? 'true' : 'false'"
     data-vaul-handle=""
     aria-hidden="true"
     @click="handleStartCycle"
     @pointercancel="handleCancelInteraction"
     @pointerdown="handlePointerDown"
-    @pointermove="handleOnDrag"
-  >
-    <span data-vaul-handle-hitarea="" aria-hidden="true">
-      <slot />
-    </span>
+    @pointermove="handleOnDrag" -->
+    <slot />
   </div>
 </template>

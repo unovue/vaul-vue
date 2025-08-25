@@ -1,0 +1,10 @@
+[data-vaul-overlay] {
+  opacity: 0;
+  will-change: opacity;
+}
+
+body:has([data-vaul-drawer][data-vaul-drawer-dragging="false"]) [data-vaul-overlay] {
+  transition-property: opacity;
+  transition-duration: var(--vaul-duration);
+  transition-timing-function: var(--vaul-easing);
+}
