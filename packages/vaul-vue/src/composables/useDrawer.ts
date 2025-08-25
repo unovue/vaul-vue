@@ -229,7 +229,7 @@ export function useDrawer(
 
   watch(modelValueOpen, () => {
     if (modelValueOpen.value) {
-      present()
+      present(modelValueSnapIndex.value)
     }
     else {
       dismiss()
