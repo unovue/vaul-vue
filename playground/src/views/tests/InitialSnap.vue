@@ -23,7 +23,7 @@ const snapIndex = ref(0)
       <VButton>Open Drawer</VButton>
 
       <template #content>
-        <VButton @click="snapIndex = 1">
+        <VButton data-testid="change-snap-index" @click="snapIndex = 1">
           Change snap index to 1
         </VButton>
       </template>
