@@ -20,7 +20,7 @@ const open = ref<boolean>(false)
           <p>This drawer is not dismissible. Dragging it down or clicking outside won't close it.</p>
           <p>If you want to disable dragging too you can checkout No Drag Element example. It uses data-vaul-no-drag attribute</p>
 
-          <VButton @click="open = false">
+          <VButton data-testid="trigger-dismiss" @click="open = false">
             Close
           </VButton>
         </div>

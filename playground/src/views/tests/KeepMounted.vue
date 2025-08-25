@@ -8,9 +8,9 @@ const open = defineModel('open', {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 flex-1 items-center justify-center">
-    <p>This example will not unmount the drawer when closed. You have to set <code>modal</code> to false.</p>
-    <p>If <code>modal</code> is not set to false you can't click anything because <code>pointer-events: none</code> is applied to body. by Reka UI</p>
+  <div class="grid gap-4 place-content-center h-full p-4 justify-items-center">
+    <p>This example will not unmount the drawer when closed. You have to set <span>modal</span> to false.</p>
+    <p>If <span>modal</span> is not set to false you can't click anything because <span>pointer-events: none</span> is applied to body. by Reka UI</p>
 
     <DemoDrawer
       v-model:open="open"

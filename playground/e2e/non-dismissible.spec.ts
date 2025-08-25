@@ -28,8 +28,7 @@ test.describe('Non-dismissible', () => {
   test('should close when the dismiss button is clicked', async ({ page }) => {
     await openDrawer(page)
 
-    await page.getByTestId('dismiss-button').click()
-    await page.waitForTimeout(ANIMATION_DURATION)
-    await expect(page.getByTestId('content')).not.toBeVisible()
+    await page.getByTestId('trigger-dismiss').click()
+    await expect(page.getByTestId('content')).toBeHidden()
   })
 })

@@ -2,7 +2,7 @@ import type { ComponentPublicInstance, EmitFn, MaybeRefOrGetter, ModelRef, Style
 import type { DrawerRootEmits, DrawerRootProps } from '../types/drawer'
 
 import { useWindowSize } from '@vueuse/core'
-import { computed, nextTick, onMounted, ref, shallowRef, toValue, watch } from 'vue'
+import { computed, nextTick, ref, shallowRef, toValue, watch } from 'vue'
 import { dampen } from '../utils'
 import { useEl } from './useEl'
 import { useElements } from './useElement'
@@ -30,9 +30,10 @@ export function useDrawer(
 
   // this is the offset we use when dragging
   const offset = ref(0)
-  // this is the offset we use when mounting. Set using computed
-  // so we don't have flickers on mount. It's also updated when snap happens
-  const offsetInitial = ref(0)
+
+  // this is used so we can set initial offset first after mounting
+  // then fading animation from there.
+  const animateIn = ref(false)
 
   const isDragging = ref(false)
   const isPressing = ref(false)
@@ -63,86 +64,58 @@ export function useDrawer(
   const windowSize = computed(() => isVertical.value ? windowHeight.value : windowWidth.value)
   const contentSize = computed(() => isVertical.value ? contentHeight.value : contentWidth.value)
 
-  const { addStack, popStack, updateDepths } = useStacks(drawerOverlayRef, isDragging, windowSize)
-  const { handleScroll, handleScrollStart, handleScrollEnd, startScroll } = useScroll(shouldMount)
+  const {
+    addStack,
+    popStack,
+    updateDepths,
+  } = useStacks(drawerOverlayRef, isDragging, windowSize)
 
-  const { getSnapOffset, closestSnapPointIndex, activeSnapPointOffset, isSnappedToLastPoint, shouldDismiss } = useSnapPoints({
+  const {
+    handleScroll,
+    handleScrollStart,
+    handleScrollEnd,
+    startScroll,
+  } = useScroll(shouldMount)
+
+  const {
+    currentSnapOffset,
+    activeSnapPointOffset,
+    isSnappedToLastPoint,
+    shouldDismiss,
+  } = useSnapPoints({
     snapPoints: props.snapPoints,
     contentSize,
     windowSize,
     offset,
+    modelValueSnapIndex,
   })
+
+  const offsetInitial = computed(
+    () => {
+      const closeOffset = windowSize.value * sideOffsetModifier.value
+
+      if (modelValueOpen.value && !animateIn.value) {
+        return closeOffset
+      }
+
+      if (modelValueOpen.value && animateIn.value) {
+        return (currentSnapOffset.value ?? 0) * sideOffsetModifier.value
+      }
+
+      return closeOffset
+    },
+  )
 
   const initialContainerStyle = computed(() => {
     return {
       translate: isVertical.value
         ? `0px calc(${offsetInitial.value}px + var(--vaul-inset) * ${-sideOffsetModifier.value})`
         : ` calc(${offsetInitial.value}px + var(--vaul-inset) * ${-sideOffsetModifier.value}) 0px`,
-
       transitionProperty: !isPressing.value ? 'translate, transform' : 'none',
       userSelect: isPressing.value ? 'none' : 'auto',
       touchAction: 'none',
     } satisfies StyleValue
   })
-
-  // this causes watchers to trigger, but we don't actually want that
-  const reset = () => {
-    pointerStart.value = 0
-    isDragging.value = false
-
-    if (!props.keepMounted) {
-      offset.value = 0
-      offsetInitial.value = 0
-    }
-  }
-
-  const dismiss = async () => {
-    modelValueOpen.value = false
-    emit('close')
-
-    return new Promise<void>((resolve) => {
-      contentElement.value?.addEventListener(
-        'transitionend',
-        () => {
-          shouldMount.value = false
-          emit('closed')
-          reset()
-          resolve()
-        },
-        { once: true },
-      )
-
-      popStack()
-      offsetInitial.value = windowSize.value * sideOffsetModifier.value
-    })
-  }
-
-  const present = async (snapIndex?: number) => {
-    shouldMount.value = true
-    modelValueOpen.value = true
-
-    offsetInitial.value = windowSize.value * sideOffsetModifier.value
-
-    await nextTick()
-    emit('open')
-
-    if (contentElement.value) {
-      addStack(contentElement.value)
-    }
-
-    return new Promise<void>((resolve) => {
-      contentElement.value?.addEventListener(
-        'transitionend',
-        () => {
-          emit('opened')
-          resolve()
-        },
-        { once: true },
-      )
-
-      offsetInitial.value = getSnapOffset(snapIndex ?? 0)! * sideOffsetModifier.value
-    })
-  }
 
   const onDragStart = (event: PointerEvent) => {
     isPressing.value = true
@@ -188,30 +161,15 @@ export function useDrawer(
     }
 
     handleScrollEnd()
-
-    // Only update depths here because watch callbacks won't trigger if the values are the same
-    if (modelValueSnapIndex.value === closestSnapPointIndex.value) {
-      const targetOffset = getSnapOffset(modelValueSnapIndex.value)! * sideOffsetModifier.value
-
-      if (props.scaleBackground) {
-        updateDepths(targetOffset)
-      }
-    }
-    else {
-      modelValueSnapIndex.value = closestSnapPointIndex.value
-    }
   }
 
-  watch(modelValueSnapIndex, () => {
-    offsetInitial.value = getSnapOffset(modelValueSnapIndex.value)! * sideOffsetModifier.value
-    emit('snap', modelValueSnapIndex.value)
-  })
-
   watch(offsetInitial, () => {
-    if (!contentElement.value || offsetInitial.value === 0 || !props.scaleBackground)
+    if (!contentElement.value || !props.scaleBackground)
       return
 
     updateDepths(offsetInitial.value)
+  }, {
+    flush: 'post'
   })
 
   watch(offset, () => {
@@ -227,17 +185,34 @@ export function useDrawer(
     }
   })
 
-  watch(modelValueOpen, () => {
+  watch(modelValueOpen, async () => {
     if (modelValueOpen.value) {
-      present(modelValueSnapIndex.value)
+      shouldMount.value = true
+
+      emit('open')
+      await nextTick()
+
+      if (contentElement.value) {
+        addStack(contentElement.value)
+      }
+
+      animateIn.value = true
     }
     else {
-      dismiss()
-    }
-  })
+      emit('close')
+      animateIn.value = false
 
-  onMounted(() => {
-    offsetInitial.value = windowSize.value * sideOffsetModifier.value
+      popStack()
+    }
+
+    contentElement.value?.addEventListener('transitionend', () => {
+      if (modelValueOpen.value) {
+        emit('opened')
+      } else {
+        shouldMount.value = false
+        emit('closed')
+      }
+    }, { once: true })
   })
 
   return {
@@ -248,8 +223,6 @@ export function useDrawer(
     drawerHandleRef,
     drawerOverlayRef,
     open,
-    dismiss,
-    present,
     isDragging,
     initialContainerStyle,
     shouldMount,

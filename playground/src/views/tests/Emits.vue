@@ -11,7 +11,7 @@ function onEvent(label: string) {
 </script>
 
 <template>
-  <div class="flex flex-1 items-center justify-center">
+  <div class="grid gap-4 place-content-center h-full">
     <div class="space-y-4">
       <ol>
         <li v-for="(event, index) in eventHistory" :key="index">

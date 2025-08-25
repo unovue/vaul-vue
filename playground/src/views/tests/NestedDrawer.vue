@@ -6,16 +6,16 @@ import VButton from '@/components/v/Button.vue'
 <template>
   <div class="flex flex-1 items-center justify-center">
     <DemoDrawer>
-      <VButton>Open Drawer</VButton>
+      <VButton data-testid="trigger-1">Open Drawer</VButton>
 
       <template #content>
-        <p>Drawer content</p>
+        <p data-testid="content-nested-1">Drawer content</p>
 
         <DemoDrawer>
-          <VButton>Open another drawer</VButton>
+          <VButton data-testid="trigger-2">Open another drawer</VButton>
 
           <template #content>
-            <p>Drawer Content 2</p>
+            <p data-testid="content-nested-2">Drawer Content 2</p>
 
             <DemoDrawer side="left">
               <VButton>Open another one! but from left</VButton>

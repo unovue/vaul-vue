@@ -1,17 +1,13 @@
 @import "tailwindcss";
 
 html, body {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
-code {
+:is(p, button) span {
   margin-inline: calc(var(--spacing) * 2);
   padding-inline: calc(var(--spacing) * 2);
   background-color: var(--color-neutral-300);
   border-radius: var(--radius-md);
-}
-
-p:has(code) {
-  display: flex;
-  align-items: center;
 }

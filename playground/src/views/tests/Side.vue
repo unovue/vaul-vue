@@ -18,7 +18,7 @@ async function openDrawer(side: DrawerSide) {
 </script>
 
 <template>
-  <div class="flex flex-1 items-center justify-center gap-4">
+  <div class="grid gap-4 place-content-center h-full">
     <VButton
       v-for="side in sides"
       :key="side"

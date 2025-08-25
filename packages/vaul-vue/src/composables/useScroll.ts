@@ -45,7 +45,7 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
     Returns if we should drag instead
    */
   const handleScroll = (event: PointerEvent, movingDirectionDrawerWantsToGo: boolean, side: MaybeRefOrGetter<DrawerSide>) => {
-    if (!isScrolling.value)
+    if (!isScrolling.value || !scrollableElement.value)
       return true
 
     const dir = toValue(side) === 'bottom' ? !movingDirectionDrawerWantsToGo : movingDirectionDrawerWantsToGo
@@ -87,6 +87,9 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
   }
 
   const handleScrollEnd = () => {
+    if (!scrollableElement.value)
+      return
+
     isScrolling.value = false
     startScroll.value = 0
 

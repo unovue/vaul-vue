@@ -7,22 +7,20 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Base tests', () => {
   test('should open drawer', async ({ page }) => {
-    page.goto('/')
-
-    await expect(page.getByTestId('content')).not.toBeVisible()
+    await expect(page.getByTestId('content')).toBeHidden()
     await page.getByTestId('trigger').click()
     await expect(page.getByTestId('content')).toBeVisible()
   })
 
   test('should close drawer on background interaction', async ({ page }) => {
-    const [drawer, content] = await openDrawer(page)
+    const [_, content] = await openDrawer(page)
 
     await page.mouse.click(10, 10)
     await expect(content).toBeHidden()
   })
 
   test('should close drawer using v-slot close function called', async ({ page }) => {
-    const [drawer, content] = await openDrawer(page)
+    const [_, content] = await openDrawer(page)
 
     await page.getByTestId('close-button').click()
     await expect(content).toBeHidden()

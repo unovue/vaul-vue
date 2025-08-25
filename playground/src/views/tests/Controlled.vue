@@ -9,9 +9,9 @@ const fullyControlled = ref(false)
 </script>
 
 <template>
-  <div class="flex flex-1 gap-4 items-center justify-center">
+  <div class="grid gap-4 place-content-center h-full">
     <VButton data-testid="trigger-open-prop" @click="open = true">
-      Open using <code>:open</code> prop
+      Open using <span>:open</span> prop
     </VButton>
 
     <DemoDrawer :open="open">
@@ -24,19 +24,19 @@ const fullyControlled = ref(false)
           Close using v-slot function
         </VButton>
         <VButton data-testid="trigger-open-prop-close" @click="open = false">
-          Close using <code>:open</code>
+          Close using <span>:open</span>
         </VButton>
       </template>
     </DemoDrawer>
 
     <VButton data-testid="trigger-v-model" @click="fullyControlled = true">
-      Open using <code>v-model:code</code>
+      Open using <span>v-model:code</span>
     </VButton>
 
     <DemoDrawer v-model:open="fullyControlled">
       <template #content>
         <VButton data-testid="trigger-v-model-close" @click="fullyControlled = false">
-          Close using <code>v-model:code</code>
+          Close using <span>v-model:code</span>
         </VButton>
       </template>
     </DemoDrawer>

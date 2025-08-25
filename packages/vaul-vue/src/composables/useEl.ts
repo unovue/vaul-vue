@@ -1,11 +1,14 @@
 import type { ComponentPublicInstance, MaybeRefOrGetter } from 'vue'
-import { ref, shallowRef, toValue, watchEffect } from 'vue'
+import { useElementSize } from '@vueuse/core'
+import {  shallowRef, toValue, watchEffect } from 'vue'
 
 export function useEl(target: MaybeRefOrGetter<ComponentPublicInstance | undefined>) {
-  const height = ref(0)
-  const width = ref(0)
-
   const element = shallowRef<HTMLElement>()
+
+  const {
+    height,
+    width,
+  } = useElementSize(element)
 
   watchEffect(() => {
     const instance = toValue(target)
@@ -14,9 +17,6 @@ export function useEl(target: MaybeRefOrGetter<ComponentPublicInstance | undefin
 
     if (instance.$el instanceof HTMLElement) {
       element.value = instance.$el
-
-      width.value = element.value?.clientWidth || 0
-      height.value = element.value?.clientHeight || 0
     }
   })
 

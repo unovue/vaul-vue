@@ -1,5 +1,5 @@
-import type { MaybeRefOrGetter } from 'vue'
-import { computed, ref, toValue } from 'vue'
+import type { MaybeRefOrGetter, ModelRef } from 'vue'
+import { computed, toValue } from 'vue'
 import { getClosestNumber, range } from '../utils'
 
 export interface useSnapPointsProps {
@@ -7,6 +7,7 @@ export interface useSnapPointsProps {
   contentSize: MaybeRefOrGetter<number>
   windowSize: MaybeRefOrGetter<number>
   offset: MaybeRefOrGetter<number>
+  modelValueSnapIndex: ModelRef<number>
 }
 
 export function useSnapPoints({
@@ -14,9 +15,8 @@ export function useSnapPoints({
   contentSize,
   windowSize,
   offset,
+  modelValueSnapIndex,
 }: useSnapPointsProps) {
-  const activeSnapPoint = ref(0)
-
   const points = computed(() => {
     const _contentSize = toValue(contentSize)
     const _snapPoints = toValue(snapPoints)
@@ -47,7 +47,7 @@ export function useSnapPoints({
   const activeSnapPointOffset = computed(() => {
     const wSize = toValue(windowSize)
 
-    return wSize - (toValue(windowSize) * activeSnapPoint.value)
+    return wSize - (toValue(windowSize) * points.value[modelValueSnapIndex.value])
   })
 
   const isSnappedToLastPoint = computed(() => {
@@ -55,43 +55,38 @@ export function useSnapPoints({
       return true
     }
 
-    return activeSnapPoint.value === points.value[points.value.length - 1]
+    return modelValueSnapIndex.value === points.value[points.value.length - 1]
   })
 
   const shouldDismiss = computed(() => {
     const div = 2
+    const wSize = toValue(windowSize)
 
     const smallestPoint = points.value[0] / div
-    const drawerVisible = toValue(windowSize) - Math.abs(toValue(offset))
+    const drawerVisible = wSize - Math.abs(toValue(offset))
 
-    return drawerVisible < toValue(windowSize) * smallestPoint
+    return drawerVisible < wSize * smallestPoint
   })
 
-  // returns the offset the drawer should snap to
+  const currentSnapOffset = computed(() => {
+    const point = points.value[modelValueSnapIndex.value]
 
-  /** Returns offset for the target snap Index */
-  const getSnapOffset = (snapPointIndex: number) => {
-    const point = points.value[snapPointIndex]
-
-    if (!point) {
+    if (point === undefined) {
       console.error('Snap point not found')
       return
     }
 
     const wSize = toValue(windowSize)
-
-    activeSnapPoint.value = point
     return wSize - (wSize * point)
-  }
+  })
 
   return {
     points,
-    getSnapOffset,
-    activeSnapPoint,
     activeSnapPointOffset,
     closestSnapPoint,
     closestSnapPointIndex,
     shouldDismiss,
     isSnappedToLastPoint,
+    currentSnapOffset,
   }
 }

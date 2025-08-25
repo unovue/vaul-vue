@@ -17,7 +17,11 @@ defineProps<{
 
 <template>
   <DrawerRoot v-slot="{ open, close }">
-    <DrawerTrigger data-testid="trigger">
+    <DrawerTrigger
+      v-if="!!$slots.default"
+      data-testid="trigger"
+      as-child
+    >
       <slot />
     </DrawerTrigger>
 
@@ -36,7 +40,7 @@ defineProps<{
           <div class="h-2 w-12 bg-neutral-300 rounded-full" />
         </DrawerHandle>
 
-        <div class="flex flex-1 items-center justify-center gap-4">
+        <div v-if="!!$slots.content" class="h-full grid place-content-center gap-4 p-4">
           <slot name="content" :open="open" :close="close" />
         </div>
       </DrawerContent>

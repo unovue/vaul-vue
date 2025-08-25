@@ -15,3 +15,4 @@ import 'vue-sonner/style.css'
     <Toaster class="z-50 bg-red-500" rich-colors />
   </div>
 </template>
+about:blank
