@@ -183,7 +183,7 @@ export function useDrawer(
     isDragging.value = false
 
     if (props.dismissible && shouldDismiss.value) {
-      dismiss()
+      modelValueOpen.value = false
       return
     }
 
@@ -257,6 +257,6 @@ export function useDrawer(
     handleOnly: toValue(props.handleOnly),
     dismissible: toValue(props.dismissible),
     keepMounted: toValue(props.keepMounted),
-    side, // We return computed because it's assigned to html
+    side,
   }
 }
