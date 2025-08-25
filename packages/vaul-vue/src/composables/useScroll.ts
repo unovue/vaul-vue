@@ -1,6 +1,5 @@
 import type { MaybeRefOrGetter } from 'vue'
 import type { DrawerSide } from '../types/drawer'
-import { useFps } from '@vueuse/core'
 import { nextTick, ref, shallowRef, toValue, watch } from 'vue'
 
 const DECAY = 0.95
@@ -12,7 +11,9 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
 
   const startScroll = ref(0)
   const isScrolling = ref(false)
-  const fps = useFps()
+
+  // const fps = useFps({ every: 60 }) // this uses requestAnimationFrame on every frame
+  // is there a really need for it?
 
   let lastTime = performance.now()
   let velocity = 0
@@ -80,7 +81,7 @@ export function useScroll(isMounted: MaybeRefOrGetter<boolean>) {
       return
 
     scrollableElement.value?.scrollBy({
-      top: velocity * (1000 / fps.value),
+      top: velocity * (1000 / 60),
     })
 
     requestAnimationFrame(step)
